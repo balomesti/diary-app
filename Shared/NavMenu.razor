@@ -1,0 +1,27 @@
+<header class="navmenu">
+    <div class="navmenu-inner">
+        <NavLink class="navmenu-brand" href="/" Match="NavLinkMatch.All">Diary App</NavLink>
+
+        <button class="navmenu-toggle" type="button" @onclick="ToggleNavMenu">
+            Menu
+        </button>
+
+        <nav class="navmenu-links @NavMenuCssClass" @onclick="ToggleNavMenu">
+            <NavLink class="navmenu-link" href="/" Match="NavLinkMatch.All">Home</NavLink>
+            <NavLink class="navmenu-link" href="/diary">My Diary</NavLink>
+            <NavLink class="navmenu-link" href="/setting">Setting</NavLink>
+            <NavLink class="navmenu-link" href="/history">History</NavLink>
+        </nav>
+    </div>
+</header>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : string.Empty;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

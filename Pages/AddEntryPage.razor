@@ -1,0 +1,37 @@
+@page "/diary/add"
+@inject DiaryService DiaryService
+@inject NavigationManager NavigationManager
+
+<h3>Add Diary Entry</h3>
+
+<EditForm Model="newEntry" OnValidSubmit="SaveEntry">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Title:</label>
+        <InputText @bind-Value="newEntry.Title" />
+    </div>
+
+    <div>
+        <label>Date:</label>
+        <InputDate @bind-Value="newEntry.Date" />
+    </div>
+
+    <div>
+        <label>Content:</label>
+        <InputTextArea @bind-Value="newEntry.Content" />
+    </div>
+
+    <button type="submit">Save</button>
+</EditForm>
+
+@code {
+    private DiaryEntry newEntry = new DiaryEntry { Date = DateTime.Today };
+
+    private async Task SaveEntry()
+    {
+        await DiaryService.SaveEntryAsync(newEntry);
+        NavigationManager.NavigateTo("/diary");
+    }
+}

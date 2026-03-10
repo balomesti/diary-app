@@ -1,0 +1,53 @@
+@page "/diary"
+@inject DiaryService DiaryService
+
+<h3>My Diary</h3>
+
+@if (entries == null)
+{
+    <p>Loading...</p>
+}
+else if (!entries.Any())
+{
+    <div class="empty-state">
+        <p class="empty-title">No entries yet.</p>
+        <NavLink class="entry-add" href="/diary/add">Add your first entry</NavLink>
+    </div>
+}
+else
+{
+   <div class="entry-list">
+    @foreach (var entry in entries.OrderByDescending(e => e.Date))
+    {
+        <article class="entry-card">
+            <header class="entry-header">
+                <h4 class="entry-title">@entry.Title</h4>
+                <span class="entry-date">@entry.Date.ToShortDateString()</span>
+            </header>
+
+            <p class="entry-content">@entry.Content</p>
+
+            <div class="entry-actions">
+                <button class="entry-delete" @onclick="() => DeleteEntry(entry)">Delete</button>
+            </div>
+        </article>
+     }
+    </div>
+}
+
+<NavLink class="entry-add" href="/diary/add">Add New Entry</NavLink>
+
+@code {
+    private List<DiaryEntry>? entries;
+
+    protected override async Task OnInitializedAsync()
+    {
+        entries = await DiaryService.GetEntriesAsync();
+    }
+
+    private async Task DeleteEntry(DiaryEntry entry)
+    {
+        await DiaryService.DeleteEntryAsync(entry);
+        entries = await DiaryService.GetEntriesAsync();
+    }
+}
