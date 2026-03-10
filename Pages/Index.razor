@@ -2,12 +2,85 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Welcome to diary app</h1>
+<section class="home-hero">
+    <div class="hero-content">
+        <h1>Welcome to Your Diary</h1>
+        <p>Capture your thoughts, memories, and experiences.</p>
 
-<p>Welcome to your new app.</p>
+        <div class="hero-actions">
+            <NavLink class="btn-outline" href="/diary">View Previous Entries</NavLink>
+            <NavLink class="btn-solid" href="/diary/add">Start a New Entry</NavLink>
+        </div>
 
-<div class="home-actions">
-    <NavLink class="home-btn" href="/diary">Go to Diary</NavLink>
-    <NavLink class="home-btn" href="/setting">Go to Setting</NavLink>
-    <NavLink class="home-btn" href="/reminders">Go to Reminders</NavLink>
-</div>
+        <div class="hero-filters">
+            <button class="chip">Today</button>
+            <button class="chip">This Week</button>
+            <button class="chip">This Month</button>
+        </div>
+    </div>
+
+    <div class="hero-image">
+        <img src="/images/pic1.jpg" alt="Beautiful Mountains" />
+    </div>
+</section>
+
+<section class="recent-section">
+    <div class="recent-header">
+        <h2>Recent Entries</h2>
+        <NavLink class="btn-view-all" href="/diary">View All Entries</NavLink>
+    </div>
+
+    <div class="entries-grid">
+        <div class="entry-card-home">
+            <div class="entry-img-box"></div>
+            <div class="entry-info">
+                <h3>A Day in Nature</h3>
+                <p>Today I went hiking in the mountains. The views were breathtaking!</p>
+                <div class="entry-author">
+                    <span class="author-avatar"></span>
+                    <span class="author-name">John</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="entry-card-home">
+            <div class="entry-img-box"></div>
+            <div class="entry-info">
+                <h3>Reflections on Life</h3>
+                <p>I've been thinking about my goals and aspirations lately.</p>
+                <div class="entry-author">
+                    <span class="author-avatar"></span>
+                    <span class="author-name">Emily</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="entry-card-home">
+            <div class="entry-img-box"></div>
+            <div class="entry-info">
+                <h3>Cooking Adventure</h3>
+                <p>I tried a new recipe for dinner and it turned out fantastic!</p>
+                <div class="entry-author">
+                    <span class="author-avatar"></span>
+                    <span class="author-name">Michael</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="entry-card-home">
+            <div class="entry-img-box"></div>
+            <div class="entry-info">
+                <h3>Weekend Getaway</h3>
+                <p>Spent a lovely weekend by the beach with friends.</p>
+                <div class="entry-author">
+                    <span class="author-avatar"></span>
+                    <span class="author-name">Sarah</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
