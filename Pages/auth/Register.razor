@@ -1,0 +1,51 @@
+@page "/register"
+@inject NavigationManager NavigationManager
+
+<div class="auth-page">
+    <div class="auth-header">
+        <h1>Create an Account</h1>
+        <p>Start your digital diary today.</p>
+        <div class="auth-header-actions">
+            <button class="btn-solid-black" @onclick='() => NavigationManager.NavigateTo("/register")'>Sign Up</button>
+            <button class="btn-outline-white" @onclick='() => NavigationManager.NavigateTo("/")'>Login</button>
+        </div>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-info">
+            <h2>Register</h2>
+            <p>Enter your details below to create an account.</p>
+        </div>
+
+        <div class="auth-form-container">
+            <form class="auth-form" @onsubmit="HandleRegister">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="Enter your full name" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="Enter your email" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Create a password" required />
+                </div>
+
+                <div class="auth-form-actions">
+                    <button type="submit" class="btn-solid-black">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@code {
+    private void HandleRegister()
+    {
+        // For now, just navigate to the sign-in page
+        NavigationManager.NavigateTo("/");
+    }
+}

@@ -2,32 +2,61 @@
 @inject DiaryService DiaryService
 @inject NavigationManager NavigationManager
 
-<h3>Add Diary Entry</h3>
-
-<EditForm Model="newEntry" OnValidSubmit="SaveEntry">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div>
-        <label>Title:</label>
-        <InputText @bind-Value="newEntry.Title" />
+<div class="add-entry-header">
+    <h2>New Diary Entry</h2>
+    <p>Capture your thoughts and experiences here</p>
+    <div class="add-entry-actions">
+        <button class="btn-cancel" @onclick="@(() => NavigationManager.NavigateTo("/diary"))">Cancel</button>
+        <button class="btn-save" type="submit" form="entry-form">Save Entry</button>
     </div>
+</div>
 
-    <div>
-        <label>Date:</label>
-        <InputDate @bind-Value="newEntry.Date" />
-    </div>
+<div class="add-entry-container">
+    <EditForm Model="newEntry" OnValidSubmit="SaveEntry" class="entry-form" id="entry-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-    <div>
-        <label>Content:</label>
-        <InputTextArea @bind-Value="newEntry.Content" />
-    </div>
+        <div class="form-group">
+            <label>Title</label>
+            <InputText @bind-Value="newEntry.Title" placeholder="Enter the title of your entry" />
+        </div>
 
-    <button type="submit">Save</button>
-</EditForm>
+        <div class="form-group">
+            <label>Comment</label>
+            <InputTextArea @bind-Value="newEntry.Content" placeholder="Write your thoughts..." />
+        </div>
+
+        <div class="form-group">
+            <label>Date</label>
+            <InputDate @bind-Value="newEntry.Date" placeholder="Select the date" />
+            <small>Format: YYYY-MM-DD</small>
+        </div>
+
+        <div class="form-group">
+            <label>Image</label>
+            <InputFile OnChange="HandleFileSelected" />
+            <small>Optional: Add a related image</small>
+        </div>
+
+        <div class="form-submit">
+            <button type="submit" class="btn-submit">Submit</button>
+        </div>
+    </EditForm>
+</div>
 
 @code {
     private DiaryEntry newEntry = new DiaryEntry { Date = DateTime.Today };
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        // This is a placeholder to handle the file selection.
+        // You can add your file processing logic here.
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/diary");
+    }
 
     private async Task SaveEntry()
     {

@@ -1,0 +1,49 @@
+@page "/"
+@inject NavigationManager NavigationManager
+
+<div class="auth-page">
+    <div class="auth-header">
+        <h1>Welcome Back!</h1>
+        <p>Please log in to access your diary.</p>
+        <div class="auth-header-actions">
+            <button class="btn-outline-white" @onclick='() => NavigationManager.NavigateTo("/register")'>Sign Up</button>
+            <button class="btn-solid-black" @onclick='() => NavigationManager.NavigateTo("/home")'>Login</button>
+        </div>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-info">
+            <h2>Login</h2>
+            <p>Enter your credentials below.</p>
+        </div>
+
+        <div class="auth-form-container">
+            <form class="auth-form" @onsubmit="HandleLogin">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="Enter your email" />
+                    <small>We'll never share your email with anyone.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Enter your password" />
+                    <small>Make sure it's at least 8 characters long.</small>
+                </div>
+
+                <div class="auth-form-actions">
+                    <button type="button" class="btn-outline-black" @onclick='() => NavigationManager.NavigateTo("/forgot-password")'>Forgot Password?</button>
+                    <button type="submit" class="btn-solid-black">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@code {
+    private void HandleLogin()
+    {
+        // Simple navigation to the index page for now
+        NavigationManager.NavigateTo("/home");
+    }
+}
