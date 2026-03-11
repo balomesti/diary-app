@@ -8,7 +8,6 @@
         <p>Please log in to access your diary.</p>
         <div class="auth-header-actions">
             <button class="btn-outline-white" @onclick='() => NavigationManager.NavigateTo("/register")'>Sign Up</button>
-            <button class="btn-solid-black" @onclick='() => NavigationManager.NavigateTo("/home")'>Login</button>
         </div>
     </div>
 
@@ -37,7 +36,7 @@
                 </div>
 
                 <div class="auth-form-actions">
-                    <button type="button" class="btn-outline-black" @onclick='() => NavigationManager.NavigateTo("/forgot-password")'>Forgot Password?</button>
+                    <button type="button" class="btn-outline-black" @onclick='() => NavigationManager.NavigateTo("/forgot-password")'>Forgot Password</button>
                     <button type="submit" class="btn-solid-black" disabled="@isSubmitting">
                         @if (isSubmitting)
                         {
