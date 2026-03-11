@@ -1,9 +1,10 @@
 @page "/"
 @inject NavigationManager NavigationManager
+@inject AuthService AuthService
 
 <div class="auth-page">
     <div class="auth-header">
-        <h1>Welcome Back!</h1>
+        <h1>Welcome to Diary Me</h1>
         <p>Please log in to access your diary.</p>
         <div class="auth-header-actions">
             <button class="btn-outline-white" @onclick='() => NavigationManager.NavigateTo("/register")'>Sign Up</button>
@@ -15,25 +16,38 @@
         <div class="auth-info">
             <h2>Login</h2>
             <p>Enter your credentials below.</p>
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">@errorMessage</div>
+            }
         </div>
 
         <div class="auth-form-container">
             <form class="auth-form" @onsubmit="HandleLogin">
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" placeholder="Enter your email" />
+                    <input type="email" @bind="loginModel.Email" placeholder="Enter your email" required />
                     <small>We'll never share your email with anyone.</small>
                 </div>
 
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" placeholder="Enter your password" />
+                    <input type="password" @bind="loginModel.Password" placeholder="Enter your password" required />
                     <small>Make sure it's at least 8 characters long.</small>
                 </div>
 
                 <div class="auth-form-actions">
                     <button type="button" class="btn-outline-black" @onclick='() => NavigationManager.NavigateTo("/forgot-password")'>Forgot Password?</button>
-                    <button type="submit" class="btn-solid-black">Login</button>
+                    <button type="submit" class="btn-solid-black" disabled="@isSubmitting">
+                        @if (isSubmitting)
+                        {
+                            <span>Logging in...</span>
+                        }
+                        else
+                        {
+                            <span>Login</span>
+                        }
+                    </button>
                 </div>
             </form>
         </div>
@@ -41,9 +55,40 @@
 </div>
 
 @code {
-    private void HandleLogin()
+    private LoginRequest loginModel = new LoginRequest();
+    private string errorMessage = "";
+    private bool isSubmitting = false;
+
+    private async Task HandleLogin()
     {
-        // Simple navigation to the index page for now
-        NavigationManager.NavigateTo("/home");
+        errorMessage = "";
+        isSubmitting = true;
+
+        try
+        {
+            var success = await AuthService.Login(loginModel.Email, loginModel.Password);
+            if (success)
+            {
+                NavigationManager.NavigateTo("/home");
+            }
+            else
+            {
+                errorMessage = "Invalid email or password.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An error occurred during login. Please try again.";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    public class LoginRequest
+    {
+        public string Email { get; set; } = "";
+        public string Password { get; set; } = "";
     }
 }
