@@ -1,54 +1,62 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.JSInterop;
-using System.Text.Json;
+using System.Net.Http;
+using System.Net.Http.Json;
 using diary_app.Models;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace diary_app.Services
 {
     public class DiaryService
     {
-        private readonly IJSRuntime _js;
+        private readonly HttpClient _http;
 
-        public DiaryService(IJSRuntime js)
+        public DiaryService(HttpClient http)
         {
-            _js = js;
+            _http = http;
         }
 
         public async Task<List<DiaryEntry>> GetEntriesAsync()
         {
-            var json = await _js.InvokeAsync<string>("localStorage.getItem", "diaryEntries");
-            if (string.IsNullOrEmpty(json))
+            try
+            {
+                var entries = await _http.GetFromJsonAsync<List<DiaryEntry>>("http://localhost:5105/api/Diary");
+                return entries ?? new List<DiaryEntry>();
+            }
+            catch
+            {
                 return new List<DiaryEntry>();
-            return JsonSerializer.Deserialize<List<DiaryEntry>>(json) ?? new List<DiaryEntry>();
+            }
         }
 
-        public async Task SaveEntryAsync(DiaryEntry entry)
+        public async Task<bool> SaveEntryAsync(DiaryEntry entry, IBrowserFile? imageFile)
         {
-            var entries = await GetEntriesAsync();
-            entries.Add(entry);
-            var json = JsonSerializer.Serialize(entries);
-            await _js.InvokeVoidAsync("localStorage.setItem", "diaryEntries", json);
+            using var content = new MultipartFormDataContent();
+            content.Add(new StringContent(entry.Title), "Title");
+            content.Add(new StringContent(entry.Content), "Content");
+            content.Add(new StringContent(entry.Date.ToString("yyyy-MM-dd")), "Date");
+
+            if (imageFile != null)
+            {
+                var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // 10MB max
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
+                content.Add(fileContent, "Image", imageFile.Name);
+            }
+
+            var response = await _http.PostAsync("http://localhost:5105/api/Diary", content);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task UpdateEntryAsync(DiaryEntry updatedEntry)
         {
-            var entries = await GetEntriesAsync();
-            var index = entries.FindIndex(e => e.Date == updatedEntry.Date && e.Title == updatedEntry.Title);
-            if (index != -1)
-            {
-                entries[index] = updatedEntry;
-                var json = JsonSerializer.Serialize(entries);
-                await _js.InvokeVoidAsync("localStorage.setItem", "diaryEntries", json);
-            }
+            // Placeholder for future implementation
+            await Task.CompletedTask;
         }
 
         public async Task DeleteEntryAsync(DiaryEntry entry)
         {
-            var entries = await GetEntriesAsync();
-            entries.RemoveAll(e => e.Date == entry.Date && e.Title == entry.Title);
-            var json = JsonSerializer.Serialize(entries);
-            await _js.InvokeVoidAsync("localStorage.setItem", "diaryEntries", json);
+            // Placeholder for future implementation
+            await Task.CompletedTask;
         }
     }
 }

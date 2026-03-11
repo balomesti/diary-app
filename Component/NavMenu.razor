@@ -13,21 +13,27 @@
         </button>
 
         <nav class="navmenu-links @NavMenuCssClass" @onclick="ToggleNavMenu">
-            <NavLink class="navmenu-link" href="/home" Match="NavLinkMatch.All">
-            <span style = "margin-right: 8px;">Home </span> 
-            <span style = "margin-left: 1px;">🏠</span>
-            </NavLink>
-            <NavLink class="navmenu-link" href="/diary">
-            <span style = "margin-right: 8px;">My Diary </span> 
-            <span style = "margin-left: 1px;">📓</span>
-            </NavLink>
-            <NavLink class="navmenu-link" href="/reminders">
-            <span style = "margin-right: 8px;">Reminders </span> 
-            <span style = "margin-left: 1px;">⏰</span>
-            </NavLink>
-            <NavLink class="navmenu-link" href="/setting">
-            <span style = "margin-right: 8px;">Setting </span> 
-            <span style = "margin-left: 1px;">⚙️</span>
+            <div class="nav-links-main">
+                <NavLink class="navmenu-link" href="/home" Match="NavLinkMatch.All">
+                    <span style="margin-right: 8px;">Home</span>
+                    <span style="margin-left: 1px;">🏠</span>
+                </NavLink>
+                <NavLink class="navmenu-link" href="/diary">
+                    <span style="margin-right: 8px;">My Diary</span>
+                    <span style="margin-left: 1px;">📓</span>
+                </NavLink>
+                <NavLink class="navmenu-link" href="/reminders">
+                    <span style="margin-right: 8px;">Reminders</span>
+                    <span style="margin-left: 1px;">⏰</span>
+                </NavLink>
+                <NavLink class="navmenu-link" href="/setting">
+                    <span style="margin-right: 8px;">Setting</span>
+                    <span style="margin-left: 1px;">⚙️</span>
+                </NavLink>
+            </div>
+            <NavLink class="navmenu-link" href="/logout">
+                <span style="margin-right: 8px;">Logout</span>
+                <span style="margin-left: 1px;">🚪</span>
             </NavLink>
         </nav>
     </div>

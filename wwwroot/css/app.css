@@ -102,6 +102,13 @@ a, .btn-link {
     flex-direction: column;
     padding: 10px 0 0 0;
     gap: 6px;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.nav-links-main {
+    display: flex;
+    gap: 8px;
 }
 
 .navmenu-link {

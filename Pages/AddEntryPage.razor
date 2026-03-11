@@ -5,9 +5,22 @@
 <div class="add-entry-header">
     <h2>New Diary Entry</h2>
     <p>Capture your thoughts and experiences here</p>
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
     <div class="add-entry-actions">
-        <button class="btn-cancel" @onclick="@(() => NavigationManager.NavigateTo("/diary"))">Cancel</button>
-        <button class="btn-save" type="submit" form="entry-form">Save Entry</button>
+        <button class="btn-cancel" @onclick="Cancel">Cancel</button>
+        <button class="btn-save" type="submit" form="entry-form" disabled="@isSaving">
+            @if (isSaving)
+            {
+                <span>Saving...</span>
+            }
+            else
+            {
+                <span>Save Entry</span>
+            }
+        </button>
     </div>
 </div>
 
@@ -46,11 +59,13 @@
 
 @code {
     private DiaryEntry newEntry = new DiaryEntry { Date = DateTime.Today };
+    private IBrowserFile? selectedImage;
+    private string errorMessage = "";
+    private bool isSaving = false;
 
     private void HandleFileSelected(InputFileChangeEventArgs e)
     {
-        // This is a placeholder to handle the file selection.
-        // You can add your file processing logic here.
+        selectedImage = e.File;
     }
 
     private void Cancel()
@@ -60,7 +75,28 @@
 
     private async Task SaveEntry()
     {
-        await DiaryService.SaveEntryAsync(newEntry);
-        NavigationManager.NavigateTo("/diary");
+        errorMessage = "";
+        isSaving = true;
+
+        try
+        {
+            var success = await DiaryService.SaveEntryAsync(newEntry, selectedImage);
+            if (success)
+            {
+                NavigationManager.NavigateTo("/diary");
+            }
+            else
+            {
+                errorMessage = "Failed to save the diary entry. Please ensure you are logged in.";
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage = "An error occurred while saving. Please ensure the API is running.";
+        }
+        finally
+        {
+            isSaving = false;
+        }
     }
 }
