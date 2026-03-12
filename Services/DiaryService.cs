@@ -49,8 +49,8 @@ namespace diary_app.Services
 
         public async Task DeleteEntryAsync(DiaryEntry entry)
         {
-            // Placeholder for future implementation
-            await Task.CompletedTask;
+            var response = await _http.DeleteAsync($"api/Diary/{entry.Id}");
+            response.EnsureSuccessStatusCode();
         }
     }
 }
