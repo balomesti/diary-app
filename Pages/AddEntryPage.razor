@@ -87,12 +87,12 @@
             }
             else
             {
-                errorMessage = "Failed to save the diary entry. Please ensure you are logged in.";
+                errorMessage = "Failed to save the diary entry. This may be due to a connection issue or missing required information.";
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            errorMessage = "An error occurred while saving. Please ensure the API is running.";
+            errorMessage = $"An error occurred: {ex.Message}. Please ensure the API is running at http://localhost:5105";
         }
         finally
         {

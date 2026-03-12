@@ -25,6 +25,13 @@ else
                 <span class="entry-date">@entry.Date.ToShortDateString()</span>
             </header>
 
+            @if (!string.IsNullOrEmpty(entry.ImageUrl))
+            {
+                <div class="entry-image-container">
+                    <img src="http://localhost:5105@entry.ImageUrl" alt="@entry.Title" class="entry-image" style="max-width: 100%; border-radius: 8px; margin-bottom: 12px;" />
+                </div>
+            }
+
             <p class="entry-content">@entry.Content</p>
 
             <div class="entry-actions">

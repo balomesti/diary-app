@@ -34,7 +34,7 @@ namespace diary_app.Services
             using var content = new MultipartFormDataContent();
             content.Add(new StringContent(entry.Title), "Title");
             content.Add(new StringContent(entry.Content), "Content");
-            content.Add(new StringContent(entry.Date.ToString("yyyy-MM-dd")), "Date");
+            content.Add(new StringContent(entry.Date.ToString("yyyy-MM-ddTHH:mm:ss")), "Date");
 
             if (imageFile != null)
             {
