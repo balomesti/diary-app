@@ -1,48 +1,62 @@
 @page "/diary"
 @inject DiaryService DiaryService
 
-<h3>My Diary</h3>
-
-@if (entries == null)
-{
-    <p>Loading...</p>
-}
-else if (!entries.Any())
-{
-    <div class="empty-state">
-        <p class="empty-title">No entries yet.</p>
-        <NavLink class="entry-add" href="/diary/add">Add your first entry</NavLink>
+<div class="diary-page">
+    <div class="diary-header">
+        <h1>Welcome to My Diary</h1>
+        <p>Capture your moments and reflections.</p>
+        <div class="diary-header-actions">
+            <NavLink class="btn-outline-diary" href="/diary">View All Entries</NavLink>
+            <NavLink class="btn-solid-diary" href="/diary/add">New Entry</NavLink>
+        </div>
     </div>
-}
-else
-{
-   <div class="entry-list">
-    @foreach (var entry in entries.OrderByDescending(e => e.Date))
-    {
-        <article class="entry-card">
-            <header class="entry-header">
-                <h4 class="entry-title">@entry.Title</h4>
-                <span class="entry-date">@entry.Date.ToShortDateString()</span>
-            </header>
 
-            @if (!string.IsNullOrEmpty(entry.ImageUrl))
+    <div class="diary-container">
+        <div class="diary-info-section">
+            <h2>Recent Entries</h2>
+            <p>Check out your latest reflections.</p>
+        </div>
+
+        <div class="diary-grid-section">
+            @if (entries == null)
             {
-                <div class="entry-image-container">
-                    <img src="http://localhost:5105@entry.ImageUrl" alt="@entry.Title" class="entry-image" style="max-width: 100%; border-radius: 8px; margin-bottom: 12px;" />
+                <p>Loading...</p>
+            }
+            else if (!entries.Any())
+            {
+                <div class="empty-state">
+                    <p class="empty-title">No entries yet.</p>
+                    <NavLink class="btn-solid-diary" href="/diary/add">Add your first entry</NavLink>
                 </div>
             }
-
-            <p class="entry-content">@entry.Content</p>
-
-            <div class="entry-actions">
-                <button class="entry-delete" @onclick="() => DeleteEntry(entry)">Delete</button>
-            </div>
-        </article>
-     }
+            else
+            {
+                <div class="diary-entries-grid">
+                    @foreach (var entry in entries.OrderByDescending(e => e.Date))
+                    {
+                        <div class="diary-entry-card">
+                            <div class="entry-icon-container">
+                                <div class="entry-icon-bg">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11 4H4C2.89543 4 2 4.89543 2 6V20C2 21.1046 2.89543 22 4 22H18C19.1046 22 20 21.1046 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M18.5 2.50001C19.3284 1.67158 20.6716 1.67158 21.5 2.50001C22.3284 3.32844 22.3284 4.67158 21.5 5.50001L12 15L8 16L9 12L18.5 2.50001Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <h3 class="diary-entry-title">@entry.Title</h3>
+                            <p class="diary-entry-excerpt">@entry.Content</p>
+                            <div class="diary-entry-date">@entry.Date.ToString("MMMM d, yyyy")</div>
+                            
+                            <div class="diary-entry-actions">
+                                <button class="btn-delete-small" @onclick="() => DeleteEntry(entry)">Delete</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
     </div>
-}
-
-<NavLink class="entry-add" href="/diary/add">Add New Entry</NavLink>
+</div>
 
 @code {
     private List<DiaryEntry>? entries;
