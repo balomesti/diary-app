@@ -1,11 +1,11 @@
 <header class="navmenu">
     <div class="navmenu-inner">
         <NavLink class="navmenu-brand" href="/home" Match="NavLinkMatch.All">
-        <span style="font-size: 24px; margin-right: 12px;">Diary Me</span>  
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2" />
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" stroke-width="2" />
-        </svg> 
+            <span class="navmenu-brand-text">Diary Me</span>
+            <svg class="navmenu-brand-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" stroke-width="2" />
+            </svg>
         </NavLink>
 
         <button class="navmenu-toggle" type="button" @onclick="ToggleNavMenu">
@@ -14,27 +14,12 @@
 
         <nav class="navmenu-links @NavMenuCssClass" @onclick="ToggleNavMenu">
             <div class="nav-links-main">
-                <NavLink class="navmenu-link" href="/home" Match="NavLinkMatch.All">
-                    <span style="margin-right: 8px;">Home</span>
-                    <span style="margin-left: 1px;">🏠</span>
-                </NavLink>
-                <NavLink class="navmenu-link" href="/diary">
-                    <span style="margin-right: 8px;">My Diary</span>
-                    <span style="margin-left: 1px;">📓</span>
-                </NavLink>
-                <NavLink class="navmenu-link" href="/reminders">
-                    <span style="margin-right: 8px;">Posts</span>
-                    <span style="margin-left: 1px;">📝</span>
-                </NavLink>
-                <NavLink class="navmenu-link" href="/setting">
-                    <span style="margin-right: 8px;">Setting</span>
-                    <span style="margin-left: 1px;">⚙️</span>
-                </NavLink>
+                <NavLink class="navmenu-link" href="/home" Match="NavLinkMatch.All">Home</NavLink>
+                <NavLink class="navmenu-link" href="/diary">My Diary</NavLink>
+                <NavLink class="navmenu-link" href="/reminders">Reminders</NavLink>
+                <NavLink class="navmenu-link" href="/setting">Setting</NavLink>
             </div>
-            <NavLink class="navmenu-link" href="/logout">
-                <span style="margin-right: 8px;">Logout</span>
-                <span style="margin-left: 1px;">🚪</span>
-            </NavLink>
+            <NavLink class="navmenu-link navmenu-link-logout" href="/logout">Logout</NavLink>
         </nav>
     </div>
 </header>
