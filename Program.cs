@@ -4,26 +4,17 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
 using diary_app.Services;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<diary_app.App>("#app");
 
-// 1. Register the token handler
+// Configure HttpClient with a delegating handler to attach JWT tokens
 builder.Services.AddScoped<AuthTokenHandler>();
+builder.Services.AddHttpClient("API", client => client.BaseAddress = new Uri("http://localhost:5105"))
+    .AddHttpMessageHandler<AuthTokenHandler>();
 
-// 2. Configure HttpClient to use the token handler
-builder.Services.AddHttpClient("DiaryAPI", client => 
-{
-    client.BaseAddress = new Uri("http://localhost:5105");
-})
-.AddHttpMessageHandler<AuthTokenHandler>();
-
-// 3. Supply the configured HttpClient by default
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("DiaryAPI"));
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("API"));
 
 // Add Services
 builder.Services.AddBlazoredLocalStorage();
@@ -34,7 +25,7 @@ builder.Services.AddScoped<DiaryService>();
 
 await builder.Build().RunAsync();
 
-// The Handler that attaches the JWT token to every request
+// Delegating handler to add the auth token to outgoing requests
 public class AuthTokenHandler : DelegatingHandler
 {
     private readonly ILocalStorageService _localStorage;
@@ -44,15 +35,13 @@ public class AuthTokenHandler : DelegatingHandler
         _localStorage = localStorage;
     }
 
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
     {
         var token = await _localStorage.GetItemAsync<string>("authToken");
-
         if (!string.IsNullOrEmpty(token))
         {
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
-
         return await base.SendAsync(request, cancellationToken);
     }
 }

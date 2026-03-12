@@ -20,7 +20,7 @@ namespace diary_app.Services
         {
             try
             {
-                var entries = await _http.GetFromJsonAsync<List<DiaryEntry>>("http://localhost:5105/api/Diary");
+                var entries = await _http.GetFromJsonAsync<List<DiaryEntry>>("api/Diary");
                 return entries ?? new List<DiaryEntry>();
             }
             catch
@@ -43,7 +43,7 @@ namespace diary_app.Services
                 content.Add(fileContent, "Image", imageFile.Name);
             }
 
-            var response = await _http.PostAsync("http://localhost:5105/api/Diary", content);
+            var response = await _http.PostAsync("api/Diary", content);
             return response.IsSuccessStatusCode;
         }
 

@@ -19,7 +19,7 @@ public class AuthService
 
     public async Task<bool> Login(string email, string password)
     {
-        var response = await _httpClient.PostAsJsonAsync("http://localhost:5105/api/auth/login", new { Email = email, Password = password });
+        var response = await _httpClient.PostAsJsonAsync("api/auth/login", new { Email = email, Password = password });
 
         if (!response.IsSuccessStatusCode)
             return false;
@@ -35,7 +35,7 @@ public class AuthService
 
     public async Task<bool> Register(string username, string email, string password)
     {
-        var response = await _httpClient.PostAsJsonAsync("http://localhost:5105/api/auth/register", new { Username = username, Email = email, PasswordHash = password });
+        var response = await _httpClient.PostAsJsonAsync("api/auth/register", new { Username = username, Email = email, PasswordHash = password });
 
         return response.IsSuccessStatusCode;
     }
