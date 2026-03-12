@@ -47,12 +47,6 @@ namespace diary_app.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task UpdateEntryAsync(DiaryEntry updatedEntry)
-        {
-            // Placeholder for future implementation
-            await Task.CompletedTask;
-        }
-
         public async Task DeleteEntryAsync(DiaryEntry entry)
         {
             // Placeholder for future implementation
