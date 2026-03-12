@@ -1,4 +1,5 @@
 @page "/home"
+@inject DiaryService DiaryService
 
 <PageTitle>Home</PageTitle>
 
@@ -30,54 +31,49 @@
         <NavLink class="btn-view-all" href="/diary">View All Entries</NavLink>
     </div>
 
-    <div class="entries-grid">
-        <div class="entry-card-home">
-            <div class="entry-img-box"></div>
-            <div class="entry-info">
-                <h3>A Day in Nature</h3>
-                <p>Today I went hiking in the mountains. The views were breathtaking!</p>
-                <div class="entry-author">
-                    <span class="author-avatar"></span>
-                    <span class="author-name">John</span>
-                </div>
-            </div>
+    @if (recentEntries == null)
+    {
+        <p>Loading...</p>
+    }
+    else if (!recentEntries.Any())
+    {
+        <div class="empty-state">
+            <p class="empty-title">No entries yet.</p>
+            <NavLink class="btn-solid-diary" href="/diary/add">Create your first entry</NavLink>
         </div>
-
-        <div class="entry-card-home">
-            <div class="entry-img-box"></div>
-            <div class="entry-info">
-                <h3>Reflections on Life</h3>
-                <p>I've been thinking about my goals and aspirations lately.</p>
-                <div class="entry-author">
-                    <span class="author-avatar"></span>
-                    <span class="author-name">Emily</span>
+    }
+    else
+    {
+        <div class="entries-grid">
+            @foreach (var entry in recentEntries)
+            {
+                <div class="entry-card-home">
+                    <div class="entry-img-box">
+                        @if (!string.IsNullOrEmpty(entry.ImageUrl))
+                        {
+                            <img src="@($"http://localhost:5105{entry.ImageUrl}")" alt="@entry.Title" />
+                        }
+                    </div>
+                    <div class="entry-info">
+                        <h3>@entry.Title</h3>
+                        <p>@entry.Content</p>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
-
-        <div class="entry-card-home">
-            <div class="entry-img-box"></div>
-            <div class="entry-info">
-                <h3>Cooking Adventure</h3>
-                <p>I tried a new recipe for dinner and it turned out fantastic!</p>
-                <div class="entry-author">
-                    <span class="author-avatar"></span>
-                    <span class="author-name">Michael</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="entry-card-home">
-            <div class="entry-img-box"></div>
-            <div class="entry-info">
-                <h3>Weekend Getaway</h3>
-                <p>Spent a lovely weekend by the beach with friends.</p>
-                <div class="entry-author">
-                    <span class="author-avatar"></span>
-                    <span class="author-name">Sarah</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    }
 </section>
+
+@code {
+    private List<DiaryEntry>? recentEntries;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var allEntries = await DiaryService.GetEntriesAsync();
+        recentEntries = allEntries
+            .OrderByDescending(e => e.Date)
+            .Take(4)
+            .ToList();
+    }
+}
 
