@@ -42,31 +42,7 @@ else
         </div>
     </section>
 
-    <section class="entry-detail-content">
-        <div class="entry-detail-content-inner">
-            <div class="entry-detail-highlights-header">
-                <div>
-                    <h2 class="entry-detail-section-title">Key Highlights</h2>
-                    <p class="entry-detail-section-subtitle">Important moments that stood out today:</p>
-                    <button class="entry-detail-add-highlight" type="button">Add Highlight</button>
-                </div>
-            </div>
-
-            <div class="entry-detail-highlights-grid">
-                @foreach (var highlight in highlights)
-                {
-                    <article class="entry-detail-highlight-card">
-                        <div class="entry-detail-highlight-icon">
-                            <span>@highlight.Icon</span>
-                        </div>
-                        <h3 class="entry-detail-highlight-title">@highlight.Title</h3>
-                        <p class="entry-detail-highlight-desc">@highlight.Description</p>
-                        <div class="entry-detail-highlight-time">@highlight.Time</div>
-                    </article>
-                }
-            </div>
-        </div>
-    </section>
+    <KeyHighlights EntryId="@EntryId" />
 }
 
 @code {
@@ -75,12 +51,6 @@ else
     private DiaryEntry? entry;
     private bool isLoading = true;
     private bool isDeleting = false;
-
-    private readonly List<HighlightCard> highlights = new()
-    {
-        new HighlightCard("🌅", "Sunrise Hike", "An early start with the rising sun.", "5:30 AM"),
-        new HighlightCard("🏕️", "Camping", "Set up camp near the lake.", "1:00 PM")
-    };
 
     protected override async Task OnParametersSetAsync()
     {
@@ -119,6 +89,4 @@ else
     {
         NavigationManager.NavigateTo($"/diary/edit/{EntryId}");
     }
-
-    private record HighlightCard(string Icon, string Title, string Description, string Time);
 }

@@ -1,0 +1,162 @@
+@using diary_app.Models
+@inject DiaryService DiaryService
+@code {
+    [Parameter] public int EntryId { get; set; }
+}
+
+<section class="entry-detail-content">
+    <div class="entry-detail-content-inner">
+        <div class="entry-detail-highlights-header">
+            <div class="entry-detail-highlights-top">
+                <div class="entry-detail-highlights-text">
+                    <h2 class="entry-detail-section-title">Key Highlights</h2>
+                    <p class="entry-detail-section-subtitle">Important moments that stood out today:</p>
+                </div>
+                <button class="entry-detail-add-highlight" type="button" @onclick="ToggleAdd" disabled="@isSaving">
+                    Add Highlight
+                </button>
+            </div>
+
+            @if (isAdding)
+            {
+                <div class="entry-detail-highlight-form">
+                    <div class="entry-detail-highlight-form-title">New Highlight</div>
+
+                    @if (!string.IsNullOrWhiteSpace(formError))
+                    {
+                        <div class="entry-detail-highlight-form-error" role="alert">@formError</div>
+                    }
+
+                    <div class="entry-detail-highlight-form-grid">
+                        <div class="entry-detail-highlight-field entry-detail-highlight-field-icon">
+                            <label class="entry-detail-highlight-label">Icon</label>
+                            <input class="entry-detail-highlight-input" placeholder="🌅" @bind="newIcon" maxlength="2" />
+                        </div>
+                        <div class="entry-detail-highlight-field entry-detail-highlight-field-time">
+                            <label class="entry-detail-highlight-label">Time</label>
+                            <input class="entry-detail-highlight-input" placeholder="5:30 AM" @bind="newTime" />
+                        </div>
+                        <div class="entry-detail-highlight-field entry-detail-highlight-field-title">
+                            <label class="entry-detail-highlight-label">Title</label>
+                            <input class="entry-detail-highlight-input" placeholder="Sunrise Hike" @bind="newTitle" />
+                        </div>
+                        <div class="entry-detail-highlight-field entry-detail-highlight-field-desc">
+                            <label class="entry-detail-highlight-label">Description</label>
+                            <input class="entry-detail-highlight-input" placeholder="An early start with the rising sun." @bind="newDescription" />
+                        </div>
+                    </div>
+
+                    <div class="entry-detail-highlight-form-actions">
+                        <button class="entry-detail-btn entry-detail-btn-outline-dark" type="button" @onclick="CancelAdd" disabled="@isSaving">Cancel</button>
+                        <button class="entry-detail-btn entry-detail-btn-solid" type="button" @onclick="AddHighlight" disabled="@isSaving">
+                            @(isSaving ? "Saving..." : "Save")
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="entry-detail-highlights-grid">
+            @if (isLoading)
+            {
+                <p>Loading highlights...</p>
+            }
+            else if (highlights.Count == 0)
+            {
+                <p class="entry-detail-section-subtitle">No highlights yet. Add your first highlight.</p>
+            }
+            else
+            {
+                @foreach (var highlight in highlights)
+                {
+                    <article class="entry-detail-highlight-card">
+                        <div class="entry-detail-highlight-icon">
+                            <span>@highlight.Icon</span>
+                        </div>
+                        <h3 class="entry-detail-highlight-title">@highlight.Title</h3>
+                        <p class="entry-detail-highlight-desc">@highlight.Description</p>
+                        @if (!string.IsNullOrWhiteSpace(highlight.Time))
+                        {
+                            <div class="entry-detail-highlight-time">@highlight.Time</div>
+                        }
+                    </article>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    private readonly List<KeyHighlight> highlights = new();
+    private bool isLoading = true;
+    private bool isAdding;
+    private bool isSaving;
+    private string formError = "";
+    private string newIcon = "🌟";
+    private string newTitle = "";
+    private string newDescription = "";
+    private string newTime = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isLoading = true;
+        highlights.Clear();
+        var items = await DiaryService.GetHighlightsAsync(EntryId);
+        highlights.AddRange(items);
+        isLoading = false;
+    }
+
+    private void ToggleAdd()
+    {
+        isAdding = true;
+        formError = "";
+    }
+
+    private async Task AddHighlight()
+    {
+        formError = "";
+        if (string.IsNullOrWhiteSpace(newTitle) || string.IsNullOrWhiteSpace(newDescription))
+        {
+            formError = "Title and description are required.";
+            return;
+        }
+
+        isSaving = true;
+        var icon = string.IsNullOrWhiteSpace(newIcon) ? "🌟" : newIcon.Trim();
+        var created = await DiaryService.AddHighlightAsync(EntryId, new KeyHighlight
+        {
+            Title = newTitle.Trim(),
+            Description = newDescription.Trim(),
+            Icon = icon,
+            Time = newTime.Trim(),
+            DiaryEntryId = EntryId
+        });
+        if (created != null)
+        {
+            highlights.Add(created);
+        }
+        else
+        {
+            formError = "Could not save highlight. Please try again.";
+            isSaving = false;
+            return;
+        }
+
+        newIcon = "🌟";
+        newTitle = "";
+        newDescription = "";
+        newTime = "";
+        isAdding = false;
+        isSaving = false;
+    }
+
+    private void CancelAdd()
+    {
+        isAdding = false;
+        formError = "";
+        newIcon = "🌟";
+        newTitle = "";
+        newDescription = "";
+        newTime = "";
+    }
+}

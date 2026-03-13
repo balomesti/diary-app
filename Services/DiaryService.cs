@@ -70,5 +70,31 @@ namespace diary_app.Services
             var response = await _http.DeleteAsync($"api/Diary/{entry.Id}");
             response.EnsureSuccessStatusCode();
         }
+
+        public async Task<List<KeyHighlight>> GetHighlightsAsync(int entryId)
+        {
+            try
+            {
+                var items = await _http.GetFromJsonAsync<List<KeyHighlight>>($"api/Diary/{entryId}/highlights");
+                return items ?? new List<KeyHighlight>();
+            }
+            catch
+            {
+                return new List<KeyHighlight>();
+            }
+        }
+
+        public async Task<KeyHighlight?> AddHighlightAsync(int entryId, KeyHighlight highlight)
+        {
+            var response = await _http.PostAsJsonAsync($"api/Diary/{entryId}/highlights", new
+            {
+                title = highlight.Title,
+                description = highlight.Description,
+                icon = highlight.Icon,
+                time = highlight.Time
+            });
+            if (!response.IsSuccessStatusCode) return null;
+            return await response.Content.ReadFromJsonAsync<KeyHighlight>();
+        }
     }
 }
