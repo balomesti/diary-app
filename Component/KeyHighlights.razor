@@ -30,11 +30,28 @@
                     <div class="entry-detail-highlight-form-grid">
                         <div class="entry-detail-highlight-field entry-detail-highlight-field-icon">
                             <label class="entry-detail-highlight-label">Icon</label>
-                            <input class="entry-detail-highlight-input" placeholder="🌅" @bind="newIcon" maxlength="2" />
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div style="width:40px; height:40px; display:grid; place-items:center; border:1px solid #e5e7eb; border-radius:10px; background:#f8fafc;">
+                                    @if (!string.IsNullOrWhiteSpace(newIcon) && newIcon.StartsWith("bi-"))
+                                    {
+                                        <i class="bi @newIcon" style="font-size:20px;"></i>
+                                    }
+                                    else
+                                    {
+                                        <span>@newIcon</span>
+                                    }
+                                </div>
+                                <select class="entry-detail-highlight-input" @bind="newIcon">
+                                @foreach (var opt in iconOptions)
+                                {
+                                        <option value="@opt.Value">@opt.Label</option>
+                                }
+                                </select>
+                            </div>
                         </div>
                         <div class="entry-detail-highlight-field entry-detail-highlight-field-time">
                             <label class="entry-detail-highlight-label">Time</label>
-                            <input class="entry-detail-highlight-input" placeholder="5:30 AM" @bind="newTime" />
+                            <input id="highlight-time-input" class="entry-detail-highlight-input" placeholder="5:30 AM" @bind="newTimeText" />
                         </div>
                         <div class="entry-detail-highlight-field entry-detail-highlight-field-title">
                             <label class="entry-detail-highlight-label">Title</label>
@@ -71,7 +88,14 @@
                 {
                     <article class="entry-detail-highlight-card">
                         <div class="entry-detail-highlight-icon">
-                            <span>@highlight.Icon</span>
+                            @if (!string.IsNullOrWhiteSpace(highlight.Icon) && highlight.Icon.StartsWith("bi-"))
+                            {
+                                <i class="bi @highlight.Icon" style="font-size:26px;"></i>
+                            }
+                            else
+                            {
+                                <span>@highlight.Icon</span>
+                            }
                         </div>
                         <h3 class="entry-detail-highlight-title">@highlight.Title</h3>
                         <p class="entry-detail-highlight-desc">@highlight.Description</p>
@@ -95,15 +119,50 @@
     private string newIcon = "🌟";
     private string newTitle = "";
     private string newDescription = "";
-    private string newTime = "";
+    private string newTimeText = "";
+
+    private readonly List<OptionItem> iconOptions = new()
+    {
+        new OptionItem("bi-star-fill", "Star"),
+        new OptionItem("bi-sunrise-fill", "Sunrise"),
+        new OptionItem("bi-cup-hot", "Coffee"),
+        new OptionItem("bi-book", "Reading"),
+        new OptionItem("bi-music-note-beamed", "Music"),
+        new OptionItem("bi-lightbulb-fill", "Idea"),
+        new OptionItem("bi-heart-fill", "Love"),
+        new OptionItem("bi-briefcase-fill", "Work"),
+        new OptionItem("bi-bicycle", "Cycling"),
+        new OptionItem("bi-camera-fill", "Photo"),
+        new OptionItem("bi-map", "Travel"),
+        new OptionItem("bi-emoji-sunglasses", "Cool")
+    };
 
     protected override async Task OnParametersSetAsync()
     {
         isLoading = true;
         highlights.Clear();
-        var items = await DiaryService.GetHighlightsAsync(EntryId);
-        highlights.AddRange(items);
+        try
+        {
+            var items = await DiaryService.GetHighlightsAsync(EntryId);
+            highlights.AddRange(items);
+        }
+        catch (Exception ex)
+        {
+            formError = ex.Message;
+        }
         isLoading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (isAdding)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("initDiaryTimePicker", "#highlight-time-input");
+            }
+            catch { }
+        }
     }
 
     private void ToggleAdd()
@@ -122,30 +181,31 @@
         }
 
         isSaving = true;
-        var icon = string.IsNullOrWhiteSpace(newIcon) ? "🌟" : newIcon.Trim();
-        var created = await DiaryService.AddHighlightAsync(EntryId, new KeyHighlight
+        var icon = string.IsNullOrWhiteSpace(newIcon) ? "bi-star-fill" : newIcon.Trim();
+        var time = string.IsNullOrWhiteSpace(newTimeText) ? "" : newTimeText.Trim();
+        try
         {
-            Title = newTitle.Trim(),
-            Description = newDescription.Trim(),
-            Icon = icon,
-            Time = newTime.Trim(),
-            DiaryEntryId = EntryId
-        });
-        if (created != null)
-        {
+            var created = await DiaryService.AddHighlightAsync(EntryId, new KeyHighlight
+            {
+                Title = newTitle.Trim(),
+                Description = newDescription.Trim(),
+                Icon = icon,
+                Time = time,
+                DiaryEntryId = EntryId
+            });
             highlights.Add(created);
         }
-        else
+        catch (Exception ex)
         {
-            formError = "Could not save highlight. Please try again.";
+            formError = ex.Message;
             isSaving = false;
             return;
         }
 
-        newIcon = "🌟";
+        newIcon = "bi-star-fill";
         newTitle = "";
         newDescription = "";
-        newTime = "";
+        newTimeText = "";
         isAdding = false;
         isSaving = false;
     }
@@ -154,9 +214,13 @@
     {
         isAdding = false;
         formError = "";
-        newIcon = "🌟";
+        newIcon = "bi-star-fill";
         newTitle = "";
         newDescription = "";
-        newTime = "";
+        newTimeText = "";
     }
+
+    [Inject] private Microsoft.JSInterop.IJSRuntime JS { get; set; } = default!;
+
+    private record OptionItem(string Value, string Label);
 }

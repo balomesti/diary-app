@@ -73,18 +73,17 @@ namespace diary_app.Services
 
         public async Task<List<KeyHighlight>> GetHighlightsAsync(int entryId)
         {
-            try
+            var response = await _http.GetAsync($"api/Diary/{entryId}/highlights");
+            if (!response.IsSuccessStatusCode)
             {
-                var items = await _http.GetFromJsonAsync<List<KeyHighlight>>($"api/Diary/{entryId}/highlights");
-                return items ?? new List<KeyHighlight>();
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Load highlights failed ({(int)response.StatusCode}): {body}");
             }
-            catch
-            {
-                return new List<KeyHighlight>();
-            }
+            var items = await response.Content.ReadFromJsonAsync<List<KeyHighlight>>();
+            return items ?? new List<KeyHighlight>();
         }
 
-        public async Task<KeyHighlight?> AddHighlightAsync(int entryId, KeyHighlight highlight)
+        public async Task<KeyHighlight> AddHighlightAsync(int entryId, KeyHighlight highlight)
         {
             var response = await _http.PostAsJsonAsync($"api/Diary/{entryId}/highlights", new
             {
@@ -93,8 +92,17 @@ namespace diary_app.Services
                 icon = highlight.Icon,
                 time = highlight.Time
             });
-            if (!response.IsSuccessStatusCode) return null;
-            return await response.Content.ReadFromJsonAsync<KeyHighlight>();
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Save highlight failed ({(int)response.StatusCode}): {body}");
+            }
+            var created = await response.Content.ReadFromJsonAsync<KeyHighlight>();
+            if (created == null)
+            {
+                throw new HttpRequestException("Save highlight failed: empty response.");
+            }
+            return created;
         }
     }
 }

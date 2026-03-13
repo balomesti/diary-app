@@ -12,6 +12,8 @@
     <link href="css/pages/AuthPage.css" rel="stylesheet" />
     <link href="css/pages/DiaryListPage.css" rel="stylesheet" />
     <link href="css/pages/EntryDetailPage.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet" />
     <link href="diary-app.styles.css" rel="stylesheet" />
 </head>
 
@@ -24,6 +26,18 @@
         <a class="dismiss">🗙</a>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        window.initDiaryTimePicker = function (selector) {
+            if (window.flatpickr) {
+                window.flatpickr(selector, {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "h:i K"
+                });
+            }
+        };
+    </script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 
