@@ -1,0 +1,78 @@
+@page "/diary/edit/{EntryId:int}"
+@inject DiaryService DiaryService
+@inject NavigationManager NavigationManager
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else if (entry == null)
+{
+    <p role="alert">Entry not found.</p>
+}
+else
+{
+    <EntryForm Entry="entry"
+               IsEdit="true"
+               IsSubmitting="isSaving"
+               ErrorMessage="errorMessage"
+               OnSave="HandleSave"
+               OnCancel="Cancel" />
+}
+
+@code {
+    [Parameter] public int EntryId { get; set; }
+
+    private DiaryEntry? entry;
+    private bool isLoading = true;
+    private bool isSaving = false;
+    private string errorMessage = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isLoading = true;
+        try
+        {
+            var entries = await DiaryService.GetEntriesAsync();
+            entry = entries.FirstOrDefault(e => e.Id == EntryId);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task<bool> HandleSave(DiaryEntry updated, IBrowserFile? selectedImage)
+    {
+        if (entry == null) return false;
+        errorMessage = "";
+        isSaving = true;
+        try
+        {
+            var ok = await DiaryService.UpdateEntryAsync(updated, selectedImage);
+            if (ok)
+            {
+                NavigationManager.NavigateTo($"/diary/{EntryId}");
+            }
+            else
+            {
+                errorMessage = "Failed to update the diary entry.";
+            }
+            return ok;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+            return false;
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/diary");
+    }
+}

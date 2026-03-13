@@ -47,6 +47,24 @@ namespace diary_app.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<bool> UpdateEntryAsync(DiaryEntry entry, IBrowserFile? imageFile)
+        {
+            using var content = new MultipartFormDataContent();
+            content.Add(new StringContent(entry.Title), "Title");
+            content.Add(new StringContent(entry.Content), "Content");
+            content.Add(new StringContent(entry.Date.ToString("yyyy-MM-ddTHH:mm:ss")), "Date");
+
+            if (imageFile != null)
+            {
+                var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // 10MB max
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
+                content.Add(fileContent, "Image", imageFile.Name);
+            }
+
+            var response = await _http.PutAsync($"api/Diary/{entry.Id}", content);
+            return response.IsSuccessStatusCode;
+        }
+
         public async Task DeleteEntryAsync(DiaryEntry entry)
         {
             var response = await _http.DeleteAsync($"api/Diary/{entry.Id}");

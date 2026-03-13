@@ -35,7 +35,7 @@ else
                 <button class="entry-detail-btn entry-detail-btn-outline" type="button" @onclick="DeleteEntryAsync" disabled="@isDeleting">
                     @(isDeleting ? "Deleting..." : "Delete Entry")
                 </button>
-                <button class="entry-detail-btn entry-detail-btn-solid" type="button" disabled>
+                <button class="entry-detail-btn entry-detail-btn-solid" type="button" @onclick="EditEntry">
                     Edit Entry
                 </button>
             </div>
@@ -113,6 +113,11 @@ else
         {
             isDeleting = false;
         }
+    }
+
+    private void EditEntry()
+    {
+        NavigationManager.NavigateTo($"/diary/edit/{EntryId}");
     }
 
     private record HighlightCard(string Icon, string Title, string Description, string Time);

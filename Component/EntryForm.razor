@@ -1,0 +1,82 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using diary_app.Models
+@inherits ComponentBase
+
+<div class="add-entry-header">
+    <h2>@(IsEdit ? "Edit Diary Entry" : "New Diary Entry")</h2>
+    <p>@(IsEdit ? "Update your thoughts and experiences" : "Capture your thoughts and experiences here")</p>
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+    <div class="add-entry-actions">
+        <button class="btn-cancel" @onclick="OnCancel">Cancel</button>
+        <button class="btn-save" type="submit" form="entry-form" disabled="@IsSubmitting">
+            @if (IsSubmitting)
+            {
+                <span>@(IsEdit ? "Saving..." : "Saving...")</span>
+            }
+            else
+            {
+                <span>@(IsEdit ? "Save Changes" : "Save Entry")</span>
+            }
+        </button>
+    </div>
+  </div>
+
+<div class="add-entry-container">
+    <EditForm Model="Entry" OnValidSubmit="HandleSubmit" class="entry-form" id="entry-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label>Title</label>
+            <InputText @bind-Value="Entry.Title" placeholder="Enter the title of your entry" />
+        </div>
+
+        <div class="form-group">
+            <label>Comment</label>
+            <InputTextArea @bind-Value="Entry.Content" placeholder="Write your thoughts..." />
+        </div>
+
+        <div class="form-group">
+            <label>Date</label>
+            <InputDate @bind-Value="Entry.Date" />
+            <small>Format: YYYY-MM-DD</small>
+        </div>
+
+        <div class="form-group">
+            <label>Image</label>
+            <InputFile OnChange="HandleFileSelected" />
+            <small>@(IsEdit ? "Optional: select to replace image" : "Optional: Add a related image")</small>
+        </div>
+
+        <div class="form-submit">
+            <button type="submit" class="btn-submit">@((IsEdit ? "Save Changes" : "Submit"))</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public DiaryEntry Entry { get; set; } = new DiaryEntry();
+    [Parameter] public bool IsEdit { get; set; }
+    [Parameter] public bool IsSubmitting { get; set; }
+    [Parameter] public string ErrorMessage { get; set; } = string.Empty;
+    [Parameter] public Func<DiaryEntry, IBrowserFile?, Task<bool>> OnSave { get; set; } = default!;
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private IBrowserFile? _selectedImage;
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        _selectedImage = e.File;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (OnSave != null)
+        {
+            await OnSave.Invoke(Entry, _selectedImage);
+        }
+    }
+}

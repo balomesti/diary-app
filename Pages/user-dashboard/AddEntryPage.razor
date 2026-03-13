@@ -2,85 +2,25 @@
 @inject DiaryService DiaryService
 @inject NavigationManager NavigationManager
 
-<div class="add-entry-header">
-    <h2>New Diary Entry</h2>
-    <p>Capture your thoughts and experiences here</p>
-    @if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <div class="alert alert-danger">@errorMessage</div>
-    }
-    <div class="add-entry-actions">
-        <button class="btn-cancel" @onclick="Cancel">Cancel</button>
-        <button class="btn-save" type="submit" form="entry-form" disabled="@isSaving">
-            @if (isSaving)
-            {
-                <span>Saving...</span>
-            }
-            else
-            {
-                <span>Save Entry</span>
-            }
-        </button>
-    </div>
-</div>
-
-<div class="add-entry-container">
-    <EditForm Model="newEntry" OnValidSubmit="SaveEntry" class="entry-form" id="entry-form">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        <div class="form-group">
-            <label>Title</label>
-            <InputText @bind-Value="newEntry.Title" placeholder="Enter the title of your entry" />
-        </div>
-
-        <div class="form-group">
-            <label>Comment</label>
-            <InputTextArea @bind-Value="newEntry.Content" placeholder="Write your thoughts..." />
-        </div>
-
-        <div class="form-group">
-            <label>Date</label>
-            <InputDate @bind-Value="newEntry.Date" placeholder="Select the date" />
-            <small>Format: YYYY-MM-DD</small>
-        </div>
-
-        <div class="form-group">
-            <label>Image</label>
-            <InputFile OnChange="HandleFileSelected" />
-            <small>Optional: Add a related image</small>
-        </div>
-
-        <div class="form-submit">
-            <button type="submit" class="btn-submit">Submit</button>
-        </div>
-    </EditForm>
-</div>
+<EntryForm Entry="newEntry"
+           IsEdit="false"
+           IsSubmitting="isSaving"
+           ErrorMessage="errorMessage"
+           OnSave="HandleSave"
+           OnCancel="Cancel" />
 
 @code {
     private DiaryEntry newEntry = new DiaryEntry { Date = DateTime.Today };
-    private IBrowserFile? selectedImage;
     private string errorMessage = "";
     private bool isSaving = false;
 
-    private void HandleFileSelected(InputFileChangeEventArgs e)
-    {
-        selectedImage = e.File;
-    }
-
-    private void Cancel()
-    {
-        NavigationManager.NavigateTo("/diary");
-    }
-
-    private async Task SaveEntry()
+    private async Task<bool> HandleSave(DiaryEntry entry, IBrowserFile? selectedImage)
     {
         errorMessage = "";
         isSaving = true;
-
         try
         {
-            var success = await DiaryService.SaveEntryAsync(newEntry, selectedImage);
+            var success = await DiaryService.SaveEntryAsync(entry, selectedImage);
             if (success)
             {
                 NavigationManager.NavigateTo("/diary");
@@ -89,15 +29,21 @@
             {
                 errorMessage = "Failed to save the diary entry. This may be due to a connection issue or missing required information.";
             }
+            return success;
         }
         catch (Exception ex)
         {
             errorMessage = $"An error occurred: {ex.Message}. Please ensure the API is running at http://localhost:5105";
+            return false;
         }
         finally
         {
             isSaving = false;
         }
     }
-}
 
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/diary");
+    }
+}
