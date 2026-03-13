@@ -30,11 +30,11 @@
                     <div class="entry-detail-highlight-form-grid">
                         <div class="entry-detail-highlight-field entry-detail-highlight-field-icon">
                             <label class="entry-detail-highlight-label">Icon</label>
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <div style="width:40px; height:40px; display:grid; place-items:center; border:1px solid #e5e7eb; border-radius:10px; background:#f8fafc;">
+                            <div class="entry-detail-icon-select">
+                                <div class="entry-detail-icon-preview">
                                     @if (!string.IsNullOrWhiteSpace(newIcon) && newIcon.StartsWith("bi-"))
                                     {
-                                        <i class="bi @newIcon" style="font-size:20px;"></i>
+                                        <i class="bi @newIcon entry-detail-icon-preview-i"></i>
                                     }
                                     else
                                     {
@@ -90,7 +90,7 @@
                         <div class="entry-detail-highlight-icon">
                             @if (!string.IsNullOrWhiteSpace(highlight.Icon) && highlight.Icon.StartsWith("bi-"))
                             {
-                                <i class="bi @highlight.Icon" style="font-size:26px;"></i>
+                                <i class="bi @highlight.Icon entry-detail-highlight-icon-i"></i>
                             }
                             else
                             {

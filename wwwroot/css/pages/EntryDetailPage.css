@@ -242,6 +242,30 @@
     margin-top: 12px;
 }
 
+.entry-detail-icon-select {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.entry-detail-icon-preview {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.entry-detail-icon-preview-i {
+    font-size: 20px;
+}
+
+.entry-detail-highlight-icon-i {
+    font-size: 26px;
+}
+
 .entry-detail-btn-outline-dark {
     background: #ffffff;
     color: #0f172a;
