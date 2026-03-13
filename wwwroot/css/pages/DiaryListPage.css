@@ -98,6 +98,8 @@
     text-align: left;
     align-items: start;
     min-height: 280px;
+    text-decoration: none;
+    color: inherit;
 }
 
 .diary-entry-card > * {

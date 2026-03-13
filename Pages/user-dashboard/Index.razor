@@ -47,7 +47,7 @@
         <div class="entries-grid">
             @foreach (var entry in recentEntries)
             {
-                <div class="entry-card-home">
+                <NavLink class="entry-card-home" href="@($"/diary/{entry.Id}")">
                     <div class="entry-img-box">
                         @if (!string.IsNullOrEmpty(entry.ImageUrl))
                         {
@@ -58,7 +58,7 @@
                         <h3>@entry.Title</h3>
                         <p>@entry.Content</p>
                     </div>
-                </div>
+                </NavLink>
             }
         </div>
     }
