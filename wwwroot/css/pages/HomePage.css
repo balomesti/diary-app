@@ -1,0 +1,264 @@
+.home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.home-btn {
+    display: inline-block;
+    padding: 14px;
+    border-radius: 10px;
+    background: #1b6ec2;
+    color: #ffffff;
+    text-decoration: none;
+    border: 1px solid #1861ac;
+    font-weight: 600;
+}
+
+.home-btn:hover {
+    background: #155AA0;
+    border-color: #124d89;
+}
+
+.home-btn.active {
+    background: #0f4a86;
+    border-color: #0f4a86;
+}
+
+.home-hero {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.hero-content {
+    max-width: 520px;
+    flex: 1;
+}
+
+.hero-content h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 12px;
+    color: #000;
+    outline: none;
+}
+
+.hero-content p {
+    font-size: 1.1rem;
+    color: #333;
+    margin: 0 0 24px;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.btn-outline {
+    border: 1.5px solid #000;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #000;
+    background: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+    background: #f5f5f5;
+}
+
+.btn-solid {
+    border: 1.5px solid #000;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #fff;
+    background: #000;
+    font-size: 1rem;
+    font-weight: 600;
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.btn-solid:hover {
+    opacity: 0.8;
+}
+
+.hero-filters {
+    display: flex;
+    gap: 10px;
+}
+
+.chip {
+    background: #ebebeb;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.hero-image {
+    width: 350px;
+    height: 350px;
+    background: #ebebeb;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .home-hero {
+        flex-direction: column-reverse;
+        text-align: center;
+        padding-top: 20px;
+    }
+
+    .hero-actions {
+        justify-content: center;
+    }
+
+    .hero-filters {
+        justify-content: center;
+    }
+
+    .hero-image {
+        width: 100%;
+        max-width: 300px;
+        height: 300px;
+    }
+}
+
+.recent-section {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 0 20px 80px;
+}
+
+.recent-header {
+    text-align: left;
+    margin-bottom: 40px;
+    margin-top: 50px;
+}
+
+.recent-header h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.btn-view-all {
+    display: inline-block;
+    background: #000;
+    color: #fff;
+    padding: 12px 32px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.btn-view-all:hover {
+    opacity: 0.8;
+}
+
+.entries-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.entry-card-home {
+    display: flex;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    gap: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.entry-card-home:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.entry-img-box {
+    width: 120px;
+    height: 120px;
+    background: #f3f4f6;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.entry-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+.entry-info {
+    flex: 1;
+}
+
+.entry-info h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.entry-info p {
+    color: #4b5563;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.entry-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.author-avatar {
+    width: 24px;
+    height: 24px;
+    background: #e5e7eb;
+    border-radius: 50%;
+}
+
+.author-name {
+    font-size: 0.9rem;
+    color: #374151;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .entries-grid {
+        grid-template-columns: 1fr;
+    }
+}
