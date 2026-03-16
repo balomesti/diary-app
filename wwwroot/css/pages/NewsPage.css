@@ -1,0 +1,248 @@
+.news-hero {
+    width: 100%;
+    background: #6b6b6b;
+    padding: 80px 20px;
+}
+
+.news-hero-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.news-hero-inner h1 {
+    margin: 0 0 14px;
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: #fff;
+    outline: none;
+}
+
+.news-hero-inner p {
+    margin: 0 0 26px;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.news-hero-button {
+    border: 1.5px solid #000;
+    padding: 12px 44px;
+    border-radius: 10px;
+    color: #fff;
+    background: #000;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.25);
+}
+
+.news-hero-button:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+.news-hero-button:active {
+    opacity: 0.9;
+    transform: translateY(0);
+}
+
+.news-hero-button:focus {
+    outline: 3px solid rgba(255, 255, 255, 0.28);
+    outline-offset: 4px;
+}
+
+@media (max-width: 768px) {
+    .news-hero {
+        padding: 64px 18px;
+    }
+
+    .news-hero-inner {
+        min-height: 200px;
+    }
+
+    .news-hero-inner h1 {
+        font-size: 2.4rem;
+    }
+
+    .news-hero-inner p {
+        font-size: 1rem;
+    }
+}
+
+.announcements-hero {
+    width: 100%;
+    background: #ffffff;
+    padding: 72px 20px 54px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.announcements-hero-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 14px;
+}
+
+.announcements-hero-inner h1 {
+    margin: 0;
+    font-size: 3rem;
+    font-weight: 800;
+    color: #000;
+    outline: none;
+}
+
+.announcements-hero-inner p {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #333;
+}
+
+.announcements-hero-button {
+    margin-top: 10px;
+    border: 1.5px solid #000;
+    padding: 12px 64px;
+    border-radius: 10px;
+    color: #fff;
+    background: #000;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    box-shadow: 0 14px 26px rgba(0, 0, 0, 0.16);
+}
+
+.announcements-hero-button:hover {
+    opacity: 0.86;
+    transform: translateY(-1px);
+}
+
+.announcements-hero-button:active {
+    opacity: 0.92;
+    transform: translateY(0);
+}
+
+.announcements-section {
+    max-width: 1100px;
+    margin: 54px auto 90px;
+    padding: 0 20px;
+}
+
+.announcements-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+}
+
+.announcement-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.announcement-card-wide {
+    grid-column: 1 / -1;
+}
+
+.announcement-thumb {
+    width: 96px;
+    height: 72px;
+    border-radius: 6px;
+    background: #ececec;
+    flex-shrink: 0;
+}
+
+.announcement-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.announcement-title {
+    margin: 0 0 8px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #000;
+}
+
+.announcement-text {
+    margin: 0 0 12px;
+    color: #333;
+    font-size: 0.98rem;
+    line-height: 1.45;
+}
+
+.announcement-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.announcement-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: #efefef;
+    color: #000;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.announcement-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #000;
+    font-weight: 700;
+}
+
+.announcement-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #d9d9d9;
+    display: inline-block;
+}
+
+.announcement-author {
+    font-size: 0.95rem;
+}
+
+@media (max-width: 900px) {
+    .announcements-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .announcement-card-wide {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .announcements-hero-inner h1 {
+        font-size: 2.2rem;
+    }
+
+    .announcement-card {
+        flex-direction: column;
+    }
+
+    .announcement-thumb {
+        width: 100%;
+        height: 120px;
+    }
+}

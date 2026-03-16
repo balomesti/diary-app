@@ -1,0 +1,34 @@
+@page "/admin/dashboard"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Admin Dashboard</PageTitle>
+
+<section class="admin-hero">
+    <div class="admin-hero-inner">
+        <h1>Admin Dashboard</h1>
+        <p>Manage announcements, users, and diary content.</p>
+    </div>
+</section>
+
+<section class="admin-section">
+    <div class="admin-grid">
+        <article class="admin-card">
+            <h2>Announcements</h2>
+            <p>Create and manage news shown to users.</p>
+            <button class="admin-btn-solid" type="button">Open</button>
+        </article>
+
+        <article class="admin-card">
+            <h2>Users</h2>
+            <p>View and manage registered accounts.</p>
+            <button class="admin-btn-solid" type="button">Open</button>
+        </article>
+
+        <article class="admin-card admin-card-wide">
+            <h2>System</h2>
+            <p>Review system status and recent activity.</p>
+            <button class="admin-btn-solid" type="button">View</button>
+        </article>
+    </div>
+</section>

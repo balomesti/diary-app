@@ -1,50 +1,43 @@
-@page "/"
+@page "/admin"
 @inject NavigationManager NavigationManager
 @inject AuthService AuthService
 
-<div class="auth-page">
-    <div class="auth-header">
-        <h1>Welcome to Diary Me</h1>
-        <p>Please log in to access your diary.</p>
-        <div class="auth-header-actions">
-            <button class="btn-outline-white" @onclick='() => NavigationManager.NavigateTo("/register")'>Sign Up</button>
-        </div>
+<div class="admin-auth-page">
+    <div class="admin-auth-hero">
+        <h1>Admin Sign In</h1>
+        <p>Use your @@office.com email to access the admin dashboard.</p>
     </div>
 
-    <div class="auth-container">
-        <div class="auth-info">
+    <div class="admin-auth-container">
+        <div class="admin-auth-card">
             <h2>Login</h2>
-            <p>Enter your credentials below.</p>
+
             @if (!string.IsNullOrEmpty(errorMessage))
             {
                 <div class="alert alert-danger">@errorMessage</div>
             }
-        </div>
 
-        <div class="auth-form-container">
-            <form class="auth-form" @onsubmit="HandleLogin">
+            <form class="admin-auth-form" @onsubmit="HandleLogin">
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" @bind="loginModel.Email" placeholder="Enter your email" required />
-                    <small>We'll never share your email with anyone.</small>
+                    <input type="email" @bind="loginModel.Email" placeholder="name@office.com" required />
                 </div>
 
                 <div class="form-group">
                     <label>Password</label>
                     <input type="password" @bind="loginModel.Password" placeholder="Enter your password" required />
-                    <small>Make sure it's at least 8 characters long.</small>
                 </div>
 
-                <div class="auth-form-actions">
-                    <button type="button" class="btn-outline-black" @onclick='() => NavigationManager.NavigateTo("/forgot-password")'>Forgot Password</button>
-                    <button type="submit" class="btn-solid-black" disabled="@isSubmitting">
+                <div class="admin-auth-actions">
+                    <button type="button" class="admin-btn-outline" @onclick="GoBack">Back</button>
+                    <button type="submit" class="admin-btn-solid" disabled="@isSubmitting">
                         @if (isSubmitting)
                         {
-                            <span>Logging in...</span>
+                            <span>Signing in...</span>
                         }
                         else
                         {
-                            <span>Login</span>
+                            <span>Sign In</span>
                         }
                     </button>
                 </div>
@@ -54,13 +47,20 @@
 </div>
 
 @code {
-    private LoginRequest loginModel = new LoginRequest();
+    private LoginRequest loginModel = new();
     private string errorMessage = "";
     private bool isSubmitting = false;
 
     private async Task HandleLogin()
     {
         errorMessage = "";
+
+        if (!loginModel.Email.EndsWith("@office.com", StringComparison.OrdinalIgnoreCase))
+        {
+            errorMessage = "This is an admin login. Please use an @office.com email.";
+            return;
+        }
+
         isSubmitting = true;
 
         try
@@ -68,14 +68,7 @@
             var success = await AuthService.Login(loginModel.Email, loginModel.Password);
             if (success)
             {
-                if (loginModel.Email.EndsWith("@office.com", StringComparison.OrdinalIgnoreCase))
-                {
-                    NavigationManager.NavigateTo("/admin/dashboard");
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/home");
-                }
+                NavigationManager.NavigateTo("/admin/dashboard");
             }
             else
             {
@@ -92,7 +85,12 @@
         }
     }
 
-    public class LoginRequest
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    public sealed class LoginRequest
     {
         public string Email { get; set; } = "";
         public string Password { get; set; } = "";

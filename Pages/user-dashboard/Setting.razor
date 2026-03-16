@@ -1,28 +1,138 @@
 @page "/setting"
+@inject NavigationManager NavigationManager
 
 <PageTitle>Setting</PageTitle>
 
-<h1>Setting</h1>
+<section class="settings-hero">
+    <div class="settings-hero-inner">
+        <h1>Customize Your Diary</h1>
+        <p>Manage your diary settings to personalize your experience.</p>
 
-<p style="font-size: 1.2rem;">
-    Font Style Selection
-</p>
+        <div class="settings-hero-actions">
+            <button class="settings-btn-outline" type="button" @onclick="Cancel">Cancel</button>
+            <button class="settings-btn-solid" type="button" @onclick="SaveChanges">Save Changes</button>
+        </div>
 
-<select>
-    <option value="serif">Serif</option>
-    <option value="sans-serif">Sans-serif</option>
-    <option value="monospace">Monospace</option>
-</select>
+        <div class="settings-tabs" role="tablist" aria-label="Settings sections">
+            <button type="button" class="@TabClass(SettingsTab.General)" @onclick="() => SelectTab(SettingsTab.General)">General</button>
+            <button type="button" class="@TabClass(SettingsTab.Privacy)" @onclick="() => SelectTab(SettingsTab.Privacy)">Privacy</button>
+            <button type="button" class="@TabClass(SettingsTab.Notifications)" @onclick="() => SelectTab(SettingsTab.Notifications)">Notifications</button>
+        </div>
+    </div>
+</section>
 
+<section class="settings-section">
+    <div class="settings-section-inner">
+        <h2>@SectionTitle</h2>
+        <p class="settings-section-subtitle">@SectionSubtitle</p>
 
-  <div>
-    <p>
-        Time Format Selection
-    </p>
+        @if (activeTab == SettingsTab.General)
+        {
+            <div class="settings-form-grid">
+                <div class="settings-field">
+                    <label class="settings-label">Diary Title</label>
+                    <input class="settings-input" type="text" placeholder="Enter your diary title" @bind="diaryTitle" />
+                </div>
 
-    <select>
-        <option value="12-hour">12-hour</option>
-        <option value="24-hour">24-hour</option>
-    </select>
-  </div>
+                <div class="settings-field">
+                    <label class="settings-label">Font Size</label>
+                    <div class="settings-segment">
+                        <button type="button" class='@SegmentClass(fontSize == "Small")' @onclick='() => fontSize = "Small"'>Small</button>
+                        <button type="button" class='@SegmentClass(fontSize == "Medium")' @onclick='() => fontSize = "Medium"'>Medium</button>
+                        <button type="button" class='@SegmentClass(fontSize == "Large")' @onclick='() => fontSize = "Large"'>Large</button>
+                    </div>
+                </div>
 
+                <div class="settings-field">
+                    <label class="settings-label">Theme Color</label>
+                    <div class="settings-segment settings-segment-wide">
+                        <button type="button" class='@SegmentClass(theme == "Light")' @onclick='() => theme = "Light"'>Light</button>
+                        <button type="button" class='@SegmentClass(theme == "Dark")' @onclick='() => theme = "Dark"'>Dark</button>
+                    </div>
+                </div>
+
+                <div class="settings-field">
+                    <label class="settings-label">Backup Frequency</label>
+                    <div class="settings-segment">
+                        <button type="button" class='@SegmentClass(backup == "Daily")' @onclick='() => backup = "Daily"'>Daily</button>
+                        <button type="button" class='@SegmentClass(backup == "Weekly")' @onclick='() => backup = "Weekly"'>Weekly</button>
+                        <button type="button" class='@SegmentClass(backup == "Monthly")' @onclick='() => backup = "Monthly"'>Monthly</button>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (activeTab == SettingsTab.Privacy)
+        {
+            <div class="settings-placeholder">
+                <h3>Privacy</h3>
+                <p>Privacy settings will appear here.</p>
+            </div>
+        }
+        else
+        {
+            <div class="settings-placeholder">
+                <h3>Notifications</h3>
+                <p>Notification settings will appear here.</p>
+            </div>
+        }
+
+        <div class="settings-footer">
+            <button class="settings-btn-solid settings-btn-wide" type="button" @onclick="SaveChanges">Update Settings</button>
+        </div>
+    </div>
+</section>
+
+@code {
+    private enum SettingsTab
+    {
+        General,
+        Privacy,
+        Notifications
+    }
+
+    private SettingsTab activeTab = SettingsTab.General;
+    private string diaryTitle = "";
+    private string fontSize = "Medium";
+    private string theme = "Light";
+    private string backup = "Weekly";
+
+    private string SectionTitle => activeTab switch
+    {
+        SettingsTab.General => "General Settings",
+        SettingsTab.Privacy => "Privacy Settings",
+        SettingsTab.Notifications => "Notification Settings",
+        _ => "Settings"
+    };
+
+    private string SectionSubtitle => activeTab switch
+    {
+        SettingsTab.General => "Update basic diary settings.",
+        SettingsTab.Privacy => "Manage privacy and visibility settings.",
+        SettingsTab.Notifications => "Control notifications and reminders.",
+        _ => ""
+    };
+
+    private void SelectTab(SettingsTab tab)
+    {
+        activeTab = tab;
+    }
+
+    private string TabClass(SettingsTab tab)
+    {
+        return tab == activeTab ? "settings-tab settings-tab-active" : "settings-tab";
+    }
+
+    private string SegmentClass(bool isActive)
+    {
+        return isActive ? "settings-segment-btn settings-segment-btn-active" : "settings-segment-btn";
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/home");
+    }
+
+    private void SaveChanges()
+    {
+    }
+}

@@ -20,7 +20,16 @@
     private bool IsMainPage()
     {
         var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        // Only show NavMenu if we're not on the root (SignIn) or Register page
-        return !string.IsNullOrEmpty(relativePath) && relativePath != "register";
+        if (string.IsNullOrEmpty(relativePath))
+        {
+            return false;
+        }
+
+        if (relativePath.StartsWith("admin", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return relativePath != "register";
     }
 }

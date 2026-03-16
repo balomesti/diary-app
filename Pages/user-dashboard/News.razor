@@ -1,0 +1,97 @@
+@page "/news"
+
+<PageTitle>News</PageTitle>
+
+<section class="announcements-hero">
+    <div class="announcements-hero-inner">
+        <h1>Recent Announcements</h1>
+        <p>Important announcements from the admin team.</p>
+        <button class="announcements-hero-button" type="button">Read More</button>
+    </div>
+</section>
+
+<section class="announcements-section">
+    <div class="announcements-grid">
+        @foreach (var item in announcements.Take(2))
+        {
+            <article class="announcement-card">
+                <div class="announcement-thumb"></div>
+                <div class="announcement-body">
+                    <h2 class="announcement-title">@item.Title</h2>
+                    <p class="announcement-text">@item.Description</p>
+
+                    <div class="announcement-tags">
+                        @foreach (var tag in item.Tags)
+                        {
+                            <span class="announcement-tag">@tag</span>
+                        }
+                    </div>
+
+                    <div class="announcement-meta">
+                        <span class="announcement-avatar"></span>
+                        <span class="announcement-author">@item.Author</span>
+                    </div>
+                </div>
+            </article>
+        }
+
+        @if (announcements.Count > 2)
+        {
+            var item = announcements[2];
+            <article class="announcement-card announcement-card-wide">
+                <div class="announcement-thumb"></div>
+                <div class="announcement-body">
+                    <h2 class="announcement-title">@item.Title</h2>
+                    <p class="announcement-text">@item.Description</p>
+
+                    <div class="announcement-tags">
+                        @foreach (var tag in item.Tags)
+                        {
+                            <span class="announcement-tag">@tag</span>
+                        }
+                    </div>
+
+                    <div class="announcement-meta">
+                        <span class="announcement-avatar"></span>
+                        <span class="announcement-author">@item.Author</span>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+@code {
+    private List<AnnouncementItem> announcements = new()
+    {
+        new AnnouncementItem
+        {
+            Title = "System Maintenance",
+            Description = "Scheduled maintenance on March 5th from 12 AM to 4 AM.",
+            Tags = new List<string> { "Important", "Announcement" },
+            Author = "Admin"
+        },
+        new AnnouncementItem
+        {
+            Title = "New Features Released",
+            Description = "We've added new features to improve your diary experience.",
+            Tags = new List<string> { "Update" },
+            Author = "Admin"
+        },
+        new AnnouncementItem
+        {
+            Title = "Weekly Tips",
+            Description = "Check out our tips on how to best utilize your diary!",
+            Tags = new List<string> { "Tips" },
+            Author = "Admin"
+        }
+    };
+
+    private sealed class AnnouncementItem
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public List<string> Tags { get; set; } = new();
+        public string Author { get; set; } = string.Empty;
+    }
+}

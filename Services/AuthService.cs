@@ -28,7 +28,7 @@ public class AuthService
         if (result == null) return false;
 
         await _localStorage.SetItemAsync("authToken", result.Token);
-        ((CustomAuthStateProvider)_authStateProvider).MarkUserAsAuthenticated(email);
+        ((CustomAuthStateProvider)_authStateProvider).MarkUserAsAuthenticatedWithToken(result.Token);
         
         return true;
     }
