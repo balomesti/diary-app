@@ -1,0 +1,39 @@
+@inject NavigationManager NavigationManager
+
+<header class="navmenu">
+    <div class="navmenu-inner">
+        <NavLink class="navmenu-brand" href="/admin/dashboard" Match="NavLinkMatch.All">
+            <span class="navmenu-brand-text">Admin</span>
+            <svg class="navmenu-brand-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3L20 7V17L12 21L4 17V7L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                <path d="M12 12V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M20 7L12 12L4 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </NavLink>
+
+        <button class="navmenu-toggle" type="button" @onclick="ToggleNavMenu">
+            Menu
+        </button>
+
+        <nav class="navmenu-links @NavMenuCssClass" @onclick="ToggleNavMenu">
+            <div class="nav-links-main">
+                <NavLink class="navmenu-link" href="/admin/dashboard" Match="NavLinkMatch.All">Home</NavLink>
+                <NavLink class="navmenu-link" href="/admin/generate">Generate</NavLink>
+                <NavLink class="navmenu-link" href="/admin/posts">Post</NavLink>
+            </div>
+            <NavLink class="navmenu-link navmenu-link-logout" href="/logout">Logout</NavLink>
+        </nav>
+    </div>
+</header>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : string.Empty;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
+

@@ -1,34 +1,60 @@
 @page "/admin/dashboard"
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
+@inject NavigationManager NavigationManager
 
 <PageTitle>Admin Dashboard</PageTitle>
 
-<section class="admin-hero">
-    <div class="admin-hero-inner">
-        <h1>Admin Dashboard</h1>
-        <p>Manage announcements, users, and diary content.</p>
+<section class="admin-dashboard-hero">
+    <div class="admin-dashboard-hero-inner">
+        <h1>Welcome to the Admin<br />Dashboard</h1>
+        <p>Manage your diary entries, news posts, and announcements all in one place.</p>
+
+        <div class="admin-dashboard-hero-actions">
+            <button class="admin-btn-outline admin-btn-wide" type="button" @onclick="GoToEntries">View All Post</button>
+            <button class="admin-btn-solid admin-btn-wide" type="button" @onclick="GoToGenerate">Create New Post</button>
+        </div>
     </div>
 </section>
 
-<section class="admin-section">
-    <div class="admin-grid">
-        <article class="admin-card">
-            <h2>Announcements</h2>
-            <p>Create and manage news shown to users.</p>
-            <button class="admin-btn-solid" type="button">Open</button>
-        </article>
+<section class="admin-dashboard-main" id="news">
+    <div class="admin-dashboard-main-inner">
+        <div class="admin-dashboard-preview"></div>
 
-        <article class="admin-card">
-            <h2>Users</h2>
-            <p>View and manage registered accounts.</p>
-            <button class="admin-btn-solid" type="button">Open</button>
-        </article>
+        <div class="admin-dashboard-content">
+            <h2 class="admin-dashboard-title">News Post</h2>
+            <p class="admin-dashboard-subtitle">Published news posts will be visible to all users.</p>
 
-        <article class="admin-card admin-card-wide">
-            <h2>System</h2>
-            <p>Review system status and recent activity.</p>
-            <button class="admin-btn-solid" type="button">View</button>
-        </article>
+            <article class="admin-dashboard-formcard">
+                <div class="admin-dashboard-formthumb"></div>
+                <div class="admin-dashboard-formbody">
+                    <h3 class="admin-dashboard-formtitle">News Post Form</h3>
+                    <p class="admin-dashboard-formtext">Fill in the details below to generate a news post.</p>
+
+                    <div class="admin-dashboard-chips">
+                        <span class="admin-dashboard-chip">Title</span>
+                        <span class="admin-dashboard-chip">Content</span>
+                        <span class="admin-dashboard-chip">Image</span>
+                    </div>
+
+                    <div class="admin-dashboard-meta">
+                        <span class="admin-dashboard-avatar"></span>
+                        <span class="admin-dashboard-author">Admin</span>
+                    </div>
+                </div>
+            </article>
+        </div>
     </div>
 </section>
+
+@code {
+    private void GoToEntries()
+    {
+        NavigationManager.NavigateTo("/diary");
+    }
+
+    private void GoToGenerate()
+    {
+        NavigationManager.NavigateTo("/admin/generate");
+    }
+}

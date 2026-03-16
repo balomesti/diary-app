@@ -4,19 +4,31 @@
 <PageTitle>Diary App</PageTitle>
 
 <div class="page">
-    @if (IsMainPage())
+    @if (IsAdminPage())
+    {
+        <AdminNavMenu />
+    }
+    else if (IsMainPage())
     {
         <NavMenu />
     }
 
     <main class="main">
-        <article class="content px-4">
+        <article class="@ContentCssClass">
             @Body
         </article>
     </main>
 </div>
 
 @code {
+    private string ContentCssClass
+    {
+        get
+        {
+            return IsAdminPage() ? "admin-content" : "content px-4";
+        }
+    }
+
     private bool IsMainPage()
     {
         var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
@@ -25,11 +37,12 @@
             return false;
         }
 
-        if (relativePath.StartsWith("admin", StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
         return relativePath != "register";
+    }
+
+    private bool IsAdminPage()
+    {
+        var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        return !string.IsNullOrEmpty(relativePath) && relativePath.StartsWith("admin", StringComparison.OrdinalIgnoreCase);
     }
 }

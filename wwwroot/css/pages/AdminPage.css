@@ -99,76 +99,202 @@
     transform: translateY(0);
 }
 
-.admin-hero {
+.admin-btn-wide {
+    min-width: 240px;
+}
+
+.admin-dashboard-hero {
     width: 100%;
     background: #ffffff;
-    padding: 72px 20px 54px;
+    padding: 78px 20px 64px;
     border-bottom: 1px solid #f0f0f0;
 }
 
-.admin-hero-inner {
+.admin-dashboard-hero-inner {
     max-width: 1100px;
     margin: 0 auto;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
 }
 
-.admin-hero-inner h1 {
-    margin: 0 0 12px;
-    font-size: 3rem;
+.admin-dashboard-hero-inner h1 {
+    margin: 0;
+    font-size: 3.1rem;
+    font-weight: 800;
+    color: #000;
+    line-height: 1.05;
+    outline: none;
+}
+
+.admin-dashboard-hero-inner p {
+    margin: 0;
+    max-width: 640px;
+    color: #333;
+}
+
+.admin-dashboard-hero-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 16px;
+}
+
+.admin-dashboard-main {
+    width: 100%;
+    padding: 70px 20px 96px;
+}
+
+.admin-dashboard-main-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+}
+
+.admin-dashboard-preview {
+    width: 100%;
+    min-height: 520px;
+    background: #e9e9e9;
+    border-radius: 12px;
+}
+
+.admin-dashboard-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.admin-dashboard-title {
+    margin: 0;
+    font-size: 2.6rem;
     font-weight: 800;
     color: #000;
     outline: none;
 }
 
-.admin-hero-inner p {
-    margin: 0;
+.admin-dashboard-subtitle {
+    margin: 0 0 12px;
     color: #333;
 }
 
-.admin-section {
-    max-width: 1100px;
-    margin: 54px auto 90px;
-    padding: 0 20px;
+.admin-dashboard-publish {
+    width: 240px;
+    padding: 12px 24px;
+    border-radius: 10px;
 }
 
-.admin-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-}
-
-.admin-card {
+.admin-dashboard-formcard {
+    margin-top: 18px;
     border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 22px;
+    border-radius: 12px;
+    padding: 18px;
     background: #fff;
     display: flex;
-    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.admin-dashboard-formthumb {
+    width: 90px;
+    height: 72px;
+    border-radius: 6px;
+    background: #ececec;
+    flex-shrink: 0;
+}
+
+.admin-dashboard-formbody {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-dashboard-formtitle {
+    margin: 0 0 6px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #000;
+}
+
+.admin-dashboard-formtext {
+    margin: 0 0 10px;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.admin-dashboard-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.admin-dashboard-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: #efefef;
+    color: #000;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.admin-dashboard-meta {
+    display: flex;
+    align-items: center;
     gap: 10px;
 }
 
-.admin-card-wide {
-    grid-column: 1 / -1;
+.admin-dashboard-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #d9d9d9;
+    display: inline-block;
 }
 
-.admin-card h2 {
-    margin: 0;
-    font-size: 1.4rem;
+.admin-dashboard-author {
     font-weight: 800;
-}
-
-.admin-card p {
-    margin: 0 0 6px;
-    color: #333;
+    color: #000;
+    font-size: 0.95rem;
 }
 
 @media (max-width: 900px) {
-    .admin-grid {
+    .admin-dashboard-main-inner {
         grid-template-columns: 1fr;
+        gap: 28px;
     }
 
-    .admin-card-wide {
-        grid-column: auto;
+    .admin-dashboard-preview {
+        min-height: 320px;
     }
 }
 
+@media (max-width: 600px) {
+    .admin-dashboard-hero-inner h1 {
+        font-size: 2.3rem;
+    }
+
+    .admin-dashboard-hero-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .admin-btn-wide,
+    .admin-dashboard-publish {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .admin-dashboard-formcard {
+        flex-direction: column;
+    }
+
+    .admin-dashboard-formthumb {
+        width: 100%;
+        height: 120px;
+    }
+}
