@@ -7,7 +7,172 @@
 <section class="admin-dashboard-hero">
     <div class="admin-dashboard-hero-inner">
         <h1>Post List</h1>
-        <p>Create and manage posts for users.</p>
+        <p>Manage news posts and announcements for users.</p>
+
+        <div class="admin-create-toggle" role="tablist" aria-label="View mode">
+            <button type="button" class="@ModeButtonClass(ViewMode.News)" @onclick="() => SelectMode(ViewMode.News)">News List</button>
+            <button type="button" class="@ModeButtonClass(ViewMode.Announcement)" @onclick="() => SelectMode(ViewMode.Announcement)">Announcement List</button>
+        </div>
     </div>
 </section>
+
+<section class="admin-create">
+    <div class="admin-create-inner">
+        <div class="admin-create-left">
+            @if (mode == ViewMode.News)
+            {
+                <h2 class="admin-create-title">News Post List</h2>
+            }
+            else
+            {
+                <h2 class="admin-create-title">Announcement List</h2>
+            }
+        </div>
+
+        <div class="admin-create-right">
+            @if (mode == ViewMode.News)
+            {
+                <div class="admin-posts-list">
+                    @if (newsPosts.Count == 0)
+                    {
+                        <p>No news posts found.</p>
+                    }
+                    else
+                    {
+                        @foreach (var news in newsPosts)
+                        {
+                            <div class="admin-dashboard-formcard" style="margin-top: 18px;">
+                                @if (!string.IsNullOrEmpty(news.ImageUrl))
+                                {
+                                    <img src="@news.ImageUrl" alt="Post thumbnail" class="admin-dashboard-formthumb" style="object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <div class="admin-dashboard-formthumb"></div>
+                                }
+                                <div class="admin-dashboard-formbody">
+                                    <h3 class="admin-dashboard-formtitle">@news.Title</h3>
+                                    <p class="admin-dashboard-formtext">@news.Content</p>
+                                    <div class="admin-dashboard-meta">
+                                        <span class="admin-dashboard-avatar"></span>
+                                        <span class="admin-dashboard-author">@news.Author</span>
+                                        <span class="admin-dashboard-date" style="font-size: 0.85rem; color: #666; margin-left: auto;">@news.Date.ToShortDateString()</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="admin-posts-list">
+                    @if (announcements.Count == 0)
+                    {
+                        <p>No announcements found.</p>
+                    }
+                    else
+                    {
+                        @foreach (var item in announcements)
+                        {
+                            <div class="admin-dashboard-formcard" style="margin-top: 18px;">
+                                <div class="admin-dashboard-formbody">
+                                    <h3 class="admin-dashboard-formtitle">@item.Title</h3>
+                                    <p class="admin-dashboard-formtext">@item.Message</p>
+                                    <div class="admin-dashboard-meta">
+                                        <span class="admin-dashboard-avatar"></span>
+                                        <span class="admin-dashboard-author">@item.Author</span>
+                                        <span class="admin-dashboard-date" style="font-size: 0.85rem; color: #666; margin-left: auto;">@item.Date.ToShortDateString()</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    private ViewMode mode = ViewMode.News;
+    private List<NewsPostItem> newsPosts = new();
+    private List<AnnouncementItem> announcements = new();
+
+    protected override void OnInitialized()
+    {
+        // Initializing with some dummy data for display
+        newsPosts = new List<NewsPostItem>
+        {
+            new NewsPostItem
+            {
+                Title = "New Office in London",
+                Content = "We are excited to announce our new office opening in the heart of London. This expansion will allow us to better serve our UK clients.",
+                ImageUrl = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop",
+                Author = "Admin Team",
+                Date = DateTime.Now.AddDays(-2)
+            },
+            new NewsPostItem
+            {
+                Title = "Product Update v2.5",
+                Content = "The latest update brings several new features including dark mode and improved search capabilities. Update your app today!",
+                Author = "Product Manager",
+                Date = DateTime.Now.AddDays(-5)
+            }
+        };
+
+        announcements = new List<AnnouncementItem>
+        {
+            new AnnouncementItem
+            {
+                Title = "System Maintenance",
+                Message = "Scheduled maintenance will occur this Sunday from 2 AM to 6 AM UTC. Some services may be intermittent.",
+                Author = "IT Dept",
+                Date = DateTime.Now.AddDays(-1)
+            },
+            new AnnouncementItem
+            {
+                Title = "Holiday Notice",
+                Message = "The office will be closed on Friday for the public holiday. Support will be available for urgent matters only.",
+                Author = "HR",
+                Date = DateTime.Now.AddDays(-3)
+            }
+        };
+    }
+
+    private void SelectMode(ViewMode nextMode)
+    {
+        mode = nextMode;
+    }
+
+    private string ModeButtonClass(ViewMode buttonMode)
+    {
+        return mode == buttonMode
+            ? "admin-create-toggle-btn admin-create-toggle-btn-active"
+            : "admin-create-toggle-btn";
+    }
+
+    private enum ViewMode
+    {
+        News,
+        Announcement
+    }
+
+    private sealed class NewsPostItem
+    {
+        public string Title { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string ImageUrl { get; set; } = "";
+        public string Author { get; set; } = "";
+        public DateTime Date { get; set; }
+    }
+
+    private sealed class AnnouncementItem
+    {
+        public string Title { get; set; } = "";
+        public string Message { get; set; } = "";
+        public string Author { get; set; } = "";
+        public DateTime Date { get; set; }
+    }
+}
 
