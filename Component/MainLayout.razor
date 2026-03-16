@@ -18,6 +18,11 @@
             @Body
         </article>
     </main>
+
+    @if (ShowFooter())
+    {
+        <AppFooter />
+    }
 </div>
 
 @code {
@@ -44,5 +49,27 @@
     {
         var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         return !string.IsNullOrEmpty(relativePath) && relativePath.StartsWith("admin", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool ShowFooter()
+    {
+        var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        if (string.IsNullOrEmpty(relativePath))
+        {
+            return false;
+        }
+
+        if (relativePath.Equals("register", StringComparison.OrdinalIgnoreCase) ||
+            relativePath.Equals("logout", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (relativePath.Equals("admin", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return true;
     }
 }

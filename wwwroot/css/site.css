@@ -43,6 +43,75 @@ a, .btn-link {
     padding: 0;
 }
 
+.app-footer {
+    width: 100%;
+    background: #1e1c18;
+    color: #ffffff;
+    margin-top: auto;
+    position: relative;
+}
+
+.app-footer::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #c9a96e 30%, #e8c98a 55%, #c9a96e 75%, transparent 100%);
+    opacity: 0.6;
+}
+
+.app-footer-inner {
+    height: 86px;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto;
+    gap: 24px;
+}
+
+.app-footer-copy {
+    color: #5a5749;
+    font-size: 11.5px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+}
+
+.app-footer-link {
+    color: #7a7568;
+    font-size: 12.5px;
+    font-weight: 400;
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+}
+
+.app-footer-link:hover {
+    color: #c9a96e;
+}
+
+@media (max-width: 900px) {
+    .app-footer-inner {
+        padding: 0 20px;
+        font-size: 1rem;
+        max-width: 720px;
+    }
+}
+
+@media (max-width: 600px) {
+    .app-footer-inner {
+        height: auto;
+        padding: 26px 20px;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        gap: 18px;
+    }
+}
+
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }
