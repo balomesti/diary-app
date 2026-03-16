@@ -12,7 +12,7 @@
 
         <div class="admin-dashboard-hero-actions">
             <button class="admin-btn-outline admin-btn-wide" type="button" @onclick="GoToEntries">View All Post</button>
-            <button class="admin-btn-solid admin-btn-wide" type="button" @onclick="GoToGenerate">Create New Post</button>
+            <button class="admin-btn-solid admin-btn-wide" type="button" @onclick="GoToCreate">Create New Post</button>
         </div>
     </div>
 </section>
@@ -53,8 +53,8 @@
         NavigationManager.NavigateTo("/diary");
     }
 
-    private void GoToGenerate()
+    private void GoToCreate()
     {
-        NavigationManager.NavigateTo("/admin/generate");
+        NavigationManager.NavigateTo("/admin/create");
     }
 }

@@ -4,3 +4,37 @@
 
 <PageTitle>Admin Create</PageTitle>
 
+<section class="admin-dashboard-hero">
+    <div class="admin-dashboard-hero-inner">
+        <h1>Create Content</h1>
+        <p>Generate news posts and announcements for users.</p>
+
+        <div class="admin-create-toggle" role="tablist" aria-label="Create mode">
+            <button type="button" class="@ModeButtonClass(CreateMode.News)" @onclick="() => SelectMode(CreateMode.News)">Generate News</button>
+            <button type="button" class="@ModeButtonClass(CreateMode.Announcement)" @onclick="() => SelectMode(CreateMode.Announcement)">Generate Announcement</button>
+        </div>
+    </div>
+</section>
+
+
+@code {
+    private CreateMode mode = CreateMode.News;
+
+    private void SelectMode(CreateMode nextMode)
+    {
+        mode = nextMode;
+    }
+
+    private string ModeButtonClass(CreateMode buttonMode)
+    {
+        return mode == buttonMode
+            ? "admin-create-toggle-btn admin-create-toggle-btn-active"
+            : "admin-create-toggle-btn";
+    }
+
+    private enum CreateMode
+    {
+        News,
+        Announcement
+    }
+}
