@@ -10,8 +10,71 @@
         <p>Generate news posts and announcements for users.</p>
 
         <div class="admin-create-toggle" role="tablist" aria-label="Create mode">
-            <button type="button" class="@ModeButtonClass(CreateMode.News)" @onclick="() => SelectMode(CreateMode.News)">Generate News</button>
-            <button type="button" class="@ModeButtonClass(CreateMode.Announcement)" @onclick="() => SelectMode(CreateMode.Announcement)">Generate Announcement</button>
+            <button type="button" class="@ModeButtonClass(CreateMode.News)" @onclick="() => SelectMode(CreateMode.News)">Create News</button>
+            <button type="button" class="@ModeButtonClass(CreateMode.Announcement)" @onclick="() => SelectMode(CreateMode.Announcement)">Create Announcement</button>
+        </div>
+    </div>
+</section>
+
+<section class="admin-create">
+    <div class="admin-create-inner">
+        <div class="admin-create-left">
+            @if (mode == CreateMode.News)
+            {
+                <h2 class="admin-create-title">Create News Post</h2>
+            }
+            else
+            {
+                <h2 class="admin-create-title">Create Announcement</h2>
+            }
+        </div>
+
+        <div class="admin-create-right">
+            @if (mode == CreateMode.News)
+            {
+                <EditForm Model="@newsModel" OnValidSubmit="PublishNewsAsync">
+                    <div class="admin-create-form">
+                        <div class="admin-create-field">
+                            <label class="admin-create-label">Post Title</label>
+                            <InputText class="admin-create-input" @bind-Value="newsModel.Title" placeholder="Enter the title of the news post" />
+                        </div>
+
+                        <div class="admin-create-field">
+                            <label class="admin-create-label">Post Content</label>
+                            <InputTextArea class="admin-create-input admin-create-textarea" @bind-Value="newsModel.Content" placeholder="Write the content of the news post" />
+                        </div>
+
+                        <div class="admin-create-field">
+                            <label class="admin-create-label">Image URL</label>
+                            <InputText class="admin-create-input" @bind-Value="newsModel.ImageUrl" placeholder="Enter image URL for the post" />
+                        </div>
+
+                        <button type="submit" class="admin-create-submit" disabled="@isSubmitting">
+                            @(isSubmitting ? "Publishing..." : "Publish Post")
+                        </button>
+                    </div>
+                </EditForm>
+            }
+            else
+            {
+                <EditForm Model="@announcementModel" OnValidSubmit="PublishAnnouncementAsync">
+                    <div class="admin-create-form">
+                        <div class="admin-create-field">
+                            <label class="admin-create-label">Title</label>
+                            <InputText class="admin-create-input" @bind-Value="announcementModel.Title" placeholder="Enter the announcement title" />
+                        </div>
+
+                        <div class="admin-create-field">
+                            <label class="admin-create-label">Message</label>
+                            <InputTextArea class="admin-create-input admin-create-textarea" @bind-Value="announcementModel.Message" placeholder="Write the announcement message" />
+                        </div>
+
+                        <button type="submit" class="admin-create-submit" disabled="@isSubmitting">
+                            @(isSubmitting ? "Publishing..." : "Publish Announcement")
+                        </button>
+                    </div>
+                </EditForm>
+            }
         </div>
     </div>
 </section>
@@ -19,6 +82,9 @@
 
 @code {
     private CreateMode mode = CreateMode.News;
+    private bool isSubmitting;
+    private NewsPostModel newsModel = new();
+    private AnnouncementModel announcementModel = new();
 
     private void SelectMode(CreateMode nextMode)
     {
@@ -36,5 +102,44 @@
     {
         News,
         Announcement
+    }
+
+    private async Task PublishNewsAsync()
+    {
+        isSubmitting = true;
+        try
+        {
+            await Task.Yield();
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private async Task PublishAnnouncementAsync()
+    {
+        isSubmitting = true;
+        try
+        {
+            await Task.Yield();
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private sealed class NewsPostModel
+    {
+        public string Title { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string ImageUrl { get; set; } = "";
+    }
+
+    private sealed class AnnouncementModel
+    {
+        public string Title { get; set; } = "";
+        public string Message { get; set; } = "";
     }
 }
