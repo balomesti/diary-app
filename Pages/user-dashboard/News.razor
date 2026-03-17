@@ -1,97 +1,139 @@
 @page "/news"
+@inject DiaryService DiaryService
 
 <PageTitle>News</PageTitle>
 
 <section class="announcements-hero">
     <div class="announcements-hero-inner">
-        <h1>Recent Announcements</h1>
-        <p>Important announcements from the admin team.</p>
+        <h1>Recent Updates</h1>
+        <p>News posts and announcements from the admin team.</p>
         <button class="announcements-hero-button" type="button">Read More</button>
     </div>
 </section>
 
 <section class="announcements-section">
     <div class="announcements-grid">
-        @foreach (var item in announcements.Take(2))
+        @if (!string.IsNullOrEmpty(loadError))
         {
-            <article class="announcement-card">
-                <div class="announcement-thumb"></div>
-                <div class="announcement-body">
-                    <h2 class="announcement-title">@item.Title</h2>
-                    <p class="announcement-text">@item.Description</p>
-
-                    <div class="announcement-tags">
-                        @foreach (var tag in item.Tags)
-                        {
-                            <span class="announcement-tag">@tag</span>
-                        }
-                    </div>
-
-                    <div class="announcement-meta">
-                        <span class="announcement-avatar"></span>
-                        <span class="announcement-author">@item.Author</span>
-                    </div>
-                </div>
-            </article>
+            <p role="alert">@loadError</p>
         }
-
-        @if (announcements.Count > 2)
+        else if (isLoading)
         {
-            var item = announcements[2];
-            <article class="announcement-card announcement-card-wide">
-                <div class="announcement-thumb"></div>
-                <div class="announcement-body">
-                    <h2 class="announcement-title">@item.Title</h2>
-                    <p class="announcement-text">@item.Description</p>
+            <p>Loading...</p>
+        }
+        else if (updates.Count == 0)
+        {
+            <p>No updates found.</p>
+        }
+        else
+        {
+            @foreach (var item in updates)
+            {
+                <article class="announcement-card">
+                    <div class="announcement-thumb" style="@ThumbStyle(item)"></div>
+                    <div class="announcement-body">
+                        <h2 class="announcement-title">@item.Title</h2>
+                        <p class="announcement-text">@item.Description</p>
 
-                    <div class="announcement-tags">
-                        @foreach (var tag in item.Tags)
-                        {
-                            <span class="announcement-tag">@tag</span>
-                        }
-                    </div>
+                        <div class="announcement-tags">
+                            <span class="announcement-tag">@item.Kind</span>
+                        </div>
 
-                    <div class="announcement-meta">
-                        <span class="announcement-avatar"></span>
-                        <span class="announcement-author">@item.Author</span>
+                        <div class="announcement-meta">
+                            <span class="announcement-avatar"></span>
+                            <span class="announcement-author">@item.Author</span>
+                        </div>
                     </div>
-                </div>
-            </article>
+                </article>
+            }
         }
     </div>
 </section>
 
 @code {
-    private List<AnnouncementItem> announcements = new()
-    {
-        new AnnouncementItem
-        {
-            Title = "System Maintenance",
-            Description = "Scheduled maintenance on March 5th from 12 AM to 4 AM.",
-            Tags = new List<string> { "Important", "Announcement" },
-            Author = "Admin"
-        },
-        new AnnouncementItem
-        {
-            Title = "New Features Released",
-            Description = "We've added new features to improve your diary experience.",
-            Tags = new List<string> { "Update" },
-            Author = "Admin"
-        },
-        new AnnouncementItem
-        {
-            Title = "Weekly Tips",
-            Description = "Check out our tips on how to best utilize your diary!",
-            Tags = new List<string> { "Tips" },
-            Author = "Admin"
-        }
-    };
+    private bool isLoading;
+    private string loadError = "";
+    private List<UpdateItem> updates = new();
 
-    private sealed class AnnouncementItem
+    protected override async Task OnInitializedAsync()
     {
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public List<string> Tags { get; set; } = new();
-        public string Author { get; set; } = string.Empty;
+        isLoading = true;
+        loadError = "";
+        try
+        {
+            var newsTask = DiaryService.GetAdminListAsync<NewsPostDto>("api/Admin/news");
+            var announcementsTask = DiaryService.GetAdminListAsync<AnnouncementDto>("api/Admin/announcements");
+            await Task.WhenAll(newsTask, announcementsTask);
+
+            updates = newsTask.Result
+                .Select(n => new UpdateItem
+                {
+                    Kind = "News",
+                    Title = n.Title,
+                    Description = n.Content,
+                    Author = n.Author,
+                    CreatedAt = n.CreatedAt,
+                    ImageUrl = n.ImageUrl
+                })
+                .Concat(announcementsTask.Result.Select(a => new UpdateItem
+                {
+                    Kind = "Announcement",
+                    Title = a.Title,
+                    Description = a.Message,
+                    Author = a.Author,
+                    CreatedAt = a.CreatedAt
+                }))
+                .OrderByDescending(x => x.CreatedAt)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            loadError = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private string ThumbStyle(UpdateItem item)
+    {
+        if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+        {
+            return $"background-image: url('{item.ImageUrl}'); background-size: cover; background-position: center;";
+        }
+
+        return item.Kind == "News"
+            ? "background: #e5e7eb;"
+            : "background: #ececec;";
+    }
+
+    private sealed class UpdateItem
+    {
+        public string Kind { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Author { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+        public string ImageUrl { get; set; } = "";
+    }
+
+    private sealed class NewsPostDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string ImageUrl { get; set; } = "";
+        public string Author { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+    }
+
+    private sealed class AnnouncementDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = "";
+        public string Message { get; set; } = "";
+        public string Author { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
     }
 }
