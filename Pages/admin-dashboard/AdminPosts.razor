@@ -1,6 +1,7 @@
 @page "/admin/posts"
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
+@inject DiaryService DiaryService
 
 <PageTitle>Admin Posts</PageTitle>
 
@@ -27,13 +28,24 @@
             {
                 <h2 class="admin-create-title">Announcement List</h2>
             }
+
+            @if (!string.IsNullOrEmpty(loadError))
+            {
+                <div class="admin-create-status error" style="margin-top: 20px; padding: 15px; border-radius: 8px; background: #fee2e2; color: #991b1b;">
+                    @loadError
+                </div>
+            }
         </div>
 
         <div class="admin-create-right">
             @if (mode == ViewMode.News)
             {
                 <div class="admin-posts-list">
-                    @if (newsPosts.Count == 0)
+                    @if (isLoading)
+                    {
+                        <p>Loading...</p>
+                    }
+                    else if (newsPosts.Count == 0)
                     {
                         <p>No news posts found.</p>
                     }
@@ -53,11 +65,6 @@
                                 <div class="admin-dashboard-formbody">
                                     <h3 class="admin-dashboard-formtitle">@news.Title</h3>
                                     <p class="admin-dashboard-formtext">@news.Content</p>
-                                    <div class="admin-dashboard-meta">
-                                        <span class="admin-dashboard-avatar"></span>
-                                        <span class="admin-dashboard-author">@news.Author</span>
-                                        <span class="admin-dashboard-date" style="font-size: 0.85rem; color: #666; margin-left: auto;">@news.Date.ToShortDateString()</span>
-                                    </div>
                                 </div>
                             </div>
                         }
@@ -67,7 +74,11 @@
             else
             {
                 <div class="admin-posts-list">
-                    @if (announcements.Count == 0)
+                    @if (isLoading)
+                    {
+                        <p>Loading...</p>
+                    }
+                    else if (announcements.Count == 0)
                     {
                         <p>No announcements found.</p>
                     }
@@ -79,11 +90,6 @@
                                 <div class="admin-dashboard-formbody">
                                     <h3 class="admin-dashboard-formtitle">@item.Title</h3>
                                     <p class="admin-dashboard-formtext">@item.Message</p>
-                                    <div class="admin-dashboard-meta">
-                                        <span class="admin-dashboard-avatar"></span>
-                                        <span class="admin-dashboard-author">@item.Author</span>
-                                        <span class="admin-dashboard-date" style="font-size: 0.85rem; color: #666; margin-left: auto;">@item.Date.ToShortDateString()</span>
-                                    </div>
                                 </div>
                             </div>
                         }
@@ -96,48 +102,31 @@
 
 @code {
     private ViewMode mode = ViewMode.News;
+    private bool isLoading;
+    private string loadError = "";
     private List<NewsPostItem> newsPosts = new();
     private List<AnnouncementItem> announcements = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        // Initializing with some dummy data for display
-        newsPosts = new List<NewsPostItem>
+        isLoading = true;
+        loadError = "";
+        try
         {
-            new NewsPostItem
-            {
-                Title = "New Office in London",
-                Content = "We are excited to announce our new office opening in the heart of London. This expansion will allow us to better serve our UK clients.",
-                ImageUrl = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop",
-                Author = "Admin Team",
-                Date = DateTime.Now.AddDays(-2)
-            },
-            new NewsPostItem
-            {
-                Title = "Product Update v2.5",
-                Content = "The latest update brings several new features including dark mode and improved search capabilities. Update your app today!",
-                Author = "Product Manager",
-                Date = DateTime.Now.AddDays(-5)
-            }
-        };
-
-        announcements = new List<AnnouncementItem>
+            var newsTask = DiaryService.GetAdminListAsync<NewsPostItem>("api/Admin/news");
+            var announcementsTask = DiaryService.GetAdminListAsync<AnnouncementItem>("api/Admin/announcements");
+            await Task.WhenAll(newsTask, announcementsTask);
+            newsPosts = newsTask.Result;
+            announcements = announcementsTask.Result;
+        }
+        catch (Exception ex)
         {
-            new AnnouncementItem
-            {
-                Title = "System Maintenance",
-                Message = "Scheduled maintenance will occur this Sunday from 2 AM to 6 AM UTC. Some services may be intermittent.",
-                Author = "IT Dept",
-                Date = DateTime.Now.AddDays(-1)
-            },
-            new AnnouncementItem
-            {
-                Title = "Holiday Notice",
-                Message = "The office will be closed on Friday for the public holiday. Support will be available for urgent matters only.",
-                Author = "HR",
-                Date = DateTime.Now.AddDays(-3)
-            }
-        };
+            loadError = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
     private void SelectMode(ViewMode nextMode)
@@ -160,19 +149,20 @@
 
     private sealed class NewsPostItem
     {
+        public int Id { get; set; }
         public string Title { get; set; } = "";
         public string Content { get; set; } = "";
         public string ImageUrl { get; set; } = "";
         public string Author { get; set; } = "";
-        public DateTime Date { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 
     private sealed class AnnouncementItem
     {
+        public int Id { get; set; }
         public string Title { get; set; } = "";
         public string Message { get; set; } = "";
         public string Author { get; set; } = "";
-        public DateTime Date { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
-

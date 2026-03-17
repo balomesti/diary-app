@@ -106,9 +106,20 @@ namespace diary_app.Services
         }
 
         // Admin News and Announcements
-        public async Task<bool> CreateNewsAsync(object news)
+        public async Task<bool> CreateNewsAsync(string title, string content, IBrowserFile? imageFile)
         {
-            var response = await _http.PostAsJsonAsync("api/Admin/news", news);
+            using var form = new MultipartFormDataContent();
+            form.Add(new StringContent(title ?? string.Empty), "Title");
+            form.Add(new StringContent(content ?? string.Empty), "Content");
+
+            if (imageFile != null)
+            {
+                var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10));
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
+                form.Add(fileContent, "Image", imageFile.Name);
+            }
+
+            var response = await _http.PostAsync("api/Admin/news", form);
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response.Content.ReadAsStringAsync();
@@ -126,6 +137,18 @@ namespace diary_app.Services
                 throw new HttpRequestException($"Create announcement failed ({(int)response.StatusCode}): {body}");
             }
             return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<T>> GetAdminListAsync<T>(string url)
+        {
+            var response = await _http.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Load failed ({(int)response.StatusCode}): {body}");
+            }
+            var items = await response.Content.ReadFromJsonAsync<List<T>>();
+            return items ?? new List<T>();
         }
     }
 }

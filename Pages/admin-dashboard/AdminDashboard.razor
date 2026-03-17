@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager NavigationManager
+@inject DiaryService DiaryService
 
 <PageTitle>Admin Dashboard</PageTitle>
 
@@ -30,29 +31,68 @@
             <h2 class="admin-dashboard-title">News Post</h2>
             <p class="admin-dashboard-subtitle">Published news posts will be visible to all users.</p>
 
-            <article class="admin-dashboard-formcard">
-                <div class="admin-dashboard-formthumb"></div>
-                <div class="admin-dashboard-formbody">
-                    <h3 class="admin-dashboard-formtitle">"Latest Posts"</h3>
-                    <p class="admin-dashboard-formtext">Fill in the details below to generate a news post.</p>
-
-                    <div class="admin-dashboard-chips">
-                        <span class="admin-dashboard-chip">Title</span>
-                        <span class="admin-dashboard-chip">Content</span>
-                        <span class="admin-dashboard-chip">Image</span>
-                    </div>
-
-                    <div class="admin-dashboard-meta">
-                        <span class="admin-dashboard-avatar"></span>
-                        <span class="admin-dashboard-author">Admin</span>
-                    </div>
+            @if (!string.IsNullOrEmpty(loadError))
+            {
+                <div class="admin-create-status error" style="margin-top: 20px; padding: 15px; border-radius: 8px; background: #fee2e2; color: #991b1b;">
+                    @loadError
                 </div>
-            </article>
+            }
+            else if (isLoading)
+            {
+                <p>Loading...</p>
+            }
+            else if (latestNews.Count == 0)
+            {
+                <p>No news posts found.</p>
+            }
+            else
+            {
+                @foreach (var news in latestNews)
+                {
+                    <article class="admin-dashboard-formcard">
+                        @if (!string.IsNullOrEmpty(news.ImageUrl))
+                        {
+                            <img src="@news.ImageUrl" alt="Post thumbnail" class="admin-dashboard-formthumb" style="object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="admin-dashboard-formthumb"></div>
+                        }
+                        <div class="admin-dashboard-formbody">
+                            <h3 class="admin-dashboard-formtitle">@news.Title</h3>
+                            <p class="admin-dashboard-formtext">@news.Content</p>
+                        </div>
+                    </article>
+                }
+            }
         </div>
     </div>
 </section>
 
 @code {
+    private bool isLoading;
+    private string loadError = "";
+    private List<NewsPostItem> latestNews = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        loadError = "";
+        try
+        {
+            var items = await DiaryService.GetAdminListAsync<NewsPostItem>("api/Admin/news");
+            latestNews = items.Take(3).ToList();
+        }
+        catch (Exception ex)
+        {
+            loadError = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
     private void GoToPosts()
     {
         NavigationManager.NavigateTo("/admin/posts");
@@ -61,5 +101,15 @@
     private void GoToCreate()
     {
         NavigationManager.NavigateTo("/admin/create");
+    }
+
+    private sealed class NewsPostItem
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string ImageUrl { get; set; } = "";
+        public string Author { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
     }
 }

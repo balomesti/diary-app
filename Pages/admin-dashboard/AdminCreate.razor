@@ -56,8 +56,8 @@
                         </div>
 
                         <div class="admin-create-field">
-                            <label class="admin-create-label">Image URL</label>
-                            <InputText class="admin-create-input" @bind-Value="newsModel.ImageUrl" placeholder="Enter image URL for the post" />
+                            <label class="admin-create-label">Image</label>
+                            <InputFile class="admin-create-input" OnChange="HandleNewsImageSelected" accept="image/*" />
                         </div>
 
                         <button type="submit" class="admin-create-submit" disabled="@isSubmitting">
@@ -126,16 +126,12 @@
         statusMessage = "";
         try
         {
-            await DiaryService.CreateNewsAsync(new
-            {
-                title = newsModel.Title,
-                content = newsModel.Content,
-                imageUrl = newsModel.ImageUrl
-            });
+            await DiaryService.CreateNewsAsync(newsModel.Title, newsModel.Content, newsImageFile);
 
             statusMessage = "News post published successfully!";
             isError = false;
             newsModel = new();
+            newsImageFile = null;
         }
         catch (Exception ex)
         {
@@ -181,7 +177,6 @@
         public string Title { get; set; } = "";
         [Required]
         public string Content { get; set; } = "";
-        public string ImageUrl { get; set; } = "";
     }
 
     private sealed class AnnouncementModel
@@ -190,5 +185,12 @@
         public string Title { get; set; } = "";
         [Required]
         public string Message { get; set; } = "";
+    }
+
+    private IBrowserFile? newsImageFile;
+
+    private void HandleNewsImageSelected(InputFileChangeEventArgs args)
+    {
+        newsImageFile = args.File;
     }
 }
