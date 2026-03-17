@@ -65,6 +65,11 @@
                                 <div class="admin-dashboard-formbody">
                                     <h3 class="admin-dashboard-formtitle">@news.Title</h3>
                                     <p class="admin-dashboard-formtext">@news.Content</p>
+                                    <div style="margin-top: 12px; display: flex; justify-content: flex-end;">
+                                        <button type="button" class="admin-btn-outline" style="border-color: #ef4444; color: #ef4444;" disabled="@(isDeleting && deletingNewsId == news.Id)" @onclick="() => DeleteNewsAsync(news.Id)">
+                                            @(isDeleting && deletingNewsId == news.Id ? "Deleting..." : "Delete")
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         }
@@ -90,6 +95,11 @@
                                 <div class="admin-dashboard-formbody">
                                     <h3 class="admin-dashboard-formtitle">@item.Title</h3>
                                     <p class="admin-dashboard-formtext">@item.Message</p>
+                                    <div style="margin-top: 12px; display: flex; justify-content: flex-end;">
+                                        <button type="button" class="admin-btn-outline" style="border-color: #ef4444; color: #ef4444;" disabled="@(isDeleting && deletingAnnouncementId == item.Id)" @onclick="() => DeleteAnnouncementAsync(item.Id)">
+                                            @(isDeleting && deletingAnnouncementId == item.Id ? "Deleting..." : "Delete")
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         }
@@ -104,6 +114,9 @@
     private ViewMode mode = ViewMode.News;
     private bool isLoading;
     private string loadError = "";
+    private bool isDeleting;
+    private int? deletingNewsId;
+    private int? deletingAnnouncementId;
     private List<NewsPostItem> newsPosts = new();
     private List<AnnouncementItem> announcements = new();
 
@@ -126,6 +139,48 @@
         finally
         {
             isLoading = false;
+        }
+    }
+
+    private async Task DeleteNewsAsync(int id)
+    {
+        isDeleting = true;
+        deletingNewsId = id;
+        loadError = "";
+        try
+        {
+            await DiaryService.DeleteNewsAsync(id);
+            newsPosts = newsPosts.Where(x => x.Id != id).ToList();
+        }
+        catch (Exception ex)
+        {
+            loadError = ex.Message;
+        }
+        finally
+        {
+            deletingNewsId = null;
+            isDeleting = false;
+        }
+    }
+
+    private async Task DeleteAnnouncementAsync(int id)
+    {
+        isDeleting = true;
+        deletingAnnouncementId = id;
+        loadError = "";
+        try
+        {
+            await DiaryService.DeleteAnnouncementAsync(id);
+            announcements = announcements.Where(x => x.Id != id).ToList();
+        }
+        catch (Exception ex)
+        {
+            loadError = ex.Message;
+        }
+        finally
+        {
+            deletingAnnouncementId = null;
+            isDeleting = false;
         }
     }
 

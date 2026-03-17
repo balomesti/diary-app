@@ -139,6 +139,26 @@ namespace diary_app.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task DeleteNewsAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/Admin/news/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Delete news failed ({(int)response.StatusCode}): {body}");
+            }
+        }
+
+        public async Task DeleteAnnouncementAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/Admin/announcements/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Delete announcement failed ({(int)response.StatusCode}): {body}");
+            }
+        }
+
         public async Task<List<T>> GetAdminListAsync<T>(string url)
         {
             var response = await _http.GetAsync(url);
