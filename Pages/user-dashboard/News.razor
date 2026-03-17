@@ -6,7 +6,7 @@
 <section class="announcements-hero">
     <div class="announcements-hero-inner">
         <h1>Updates</h1>
-        <p>News posts and announcements from the admin team.</p>
+        <p>News posts from the admin team.</p>
     </div>
 </section>
 
@@ -29,19 +29,21 @@
             @foreach (var item in updates)
             {
                 <article class="announcement-card">
-                    <div class="announcement-thumb" style="@ThumbStyle(item)"></div>
-                    <div class="announcement-body">
-                        <h2 class="announcement-title">@item.Title</h2>
-                        <p class="announcement-text">@item.Description</p>
+                    <div class="announcement-card-row">
+                        <div class="announcement-thumb" style="@ThumbStyle(item)"></div>
+                        <div class="announcement-body">
+                            <h2 class="announcement-title">@item.Title</h2>
+                            <p class="announcement-text">@item.Description</p>  
 
-                        <div class="announcement-tags">
-                            <span class="announcement-tag">@item.Kind</span>
+                            <div class="announcement-tags">
+                                <span class="announcement-tag">@item.Kind</span>
+                            </div>
                         </div>
+                    </div>
 
-                        <div class="announcement-meta">
-                            <span class="announcement-avatar"></span>
-                            <span class="announcement-author">@item.Author</span>
-                        </div>
+                    <div class="announcement-meta">
+                        <span class="announcement-avatar"></span>
+                        <span class="announcement-author">@item.Author</span>
                     </div>
                 </article>
             }
@@ -60,11 +62,9 @@
         loadError = "";
         try
         {
-            var newsTask = DiaryService.GetAdminListAsync<NewsPostDto>("api/Admin/news");
-            var announcementsTask = DiaryService.GetAdminListAsync<AnnouncementDto>("api/Admin/announcements");
-            await Task.WhenAll(newsTask, announcementsTask);
+            var items = await DiaryService.GetAdminListAsync<NewsPostDto>("api/Admin/news");
 
-            updates = newsTask.Result
+            updates = items
                 .Select(n => new UpdateItem
                 {
                     Kind = "News",
@@ -74,14 +74,6 @@
                     CreatedAt = n.CreatedAt,
                     ImageUrl = n.ImageUrl
                 })
-                .Concat(announcementsTask.Result.Select(a => new UpdateItem
-                {
-                    Kind = "Announcement",
-                    Title = a.Title,
-                    Description = a.Message,
-                    Author = a.Author,
-                    CreatedAt = a.CreatedAt
-                }))
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
         }
@@ -102,9 +94,7 @@
             return $"background-image: url('{item.ImageUrl}'); background-size: cover; background-position: center;";
         }
 
-        return item.Kind == "News"
-            ? "background: #e5e7eb;"
-            : "background: #ececec;";
+        return "background: #e5e7eb;";
     }
 
     private sealed class UpdateItem
@@ -123,15 +113,6 @@
         public string Title { get; set; } = "";
         public string Content { get; set; } = "";
         public string ImageUrl { get; set; } = "";
-        public string Author { get; set; } = "";
-        public DateTime CreatedAt { get; set; }
-    }
-
-    private sealed class AnnouncementDto
-    {
-        public int Id { get; set; }
-        public string Title { get; set; } = "";
-        public string Message { get; set; } = "";
         public string Author { get; set; } = "";
         public DateTime CreatedAt { get; set; }
     }

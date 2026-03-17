@@ -149,12 +149,20 @@
     border-radius: 12px;
     padding: 18px;
     display: flex;
+    flex-direction: column;
     gap: 16px;
     align-items: flex-start;
 }
 
 .announcement-card-wide {
     grid-column: 1 / -1;
+}
+
+.announcement-card-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    width: 100%;
 }
 
 .announcement-thumb {
@@ -237,7 +245,7 @@
         font-size: 2.2rem;
     }
 
-    .announcement-card {
+    .announcement-card-row {
         flex-direction: column;
     }
 
