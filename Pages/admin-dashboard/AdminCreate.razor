@@ -1,6 +1,8 @@
 @page "/admin/create"
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
+@inject DiaryService DiaryService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Admin Create</PageTitle>
 
@@ -27,12 +29,21 @@
             {
                 <h2 class="admin-create-title">Create Announcement</h2>
             }
+            
+            @if (!string.IsNullOrEmpty(statusMessage))
+            {
+                <div class="admin-create-status @(isError ? "error" : "success")" style="margin-top: 20px; padding: 15px; border-radius: 8px; @(isError ? "background: #fee2e2; color: #991b1b;" : "background: #dcfce7; color: #166534;")">
+                    @statusMessage
+                </div>
+            }
         </div>
 
         <div class="admin-create-right">
             @if (mode == CreateMode.News)
             {
                 <EditForm Model="@newsModel" OnValidSubmit="PublishNewsAsync">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
                     <div class="admin-create-form">
                         <div class="admin-create-field">
                             <label class="admin-create-label">Post Title</label>
@@ -58,6 +69,8 @@
             else
             {
                 <EditForm Model="@announcementModel" OnValidSubmit="PublishAnnouncementAsync">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
                     <div class="admin-create-form">
                         <div class="admin-create-field">
                             <label class="admin-create-label">Title</label>
@@ -83,12 +96,15 @@
 @code {
     private CreateMode mode = CreateMode.News;
     private bool isSubmitting;
+    private string statusMessage = "";
+    private bool isError = false;
     private NewsPostModel newsModel = new();
     private AnnouncementModel announcementModel = new();
 
     private void SelectMode(CreateMode nextMode)
     {
         mode = nextMode;
+        statusMessage = "";
     }
 
     private string ModeButtonClass(CreateMode buttonMode)
@@ -107,9 +123,24 @@
     private async Task PublishNewsAsync()
     {
         isSubmitting = true;
+        statusMessage = "";
         try
         {
-            await Task.Yield();
+            await DiaryService.CreateNewsAsync(new
+            {
+                title = newsModel.Title,
+                content = newsModel.Content,
+                imageUrl = newsModel.ImageUrl
+            });
+
+            statusMessage = "News post published successfully!";
+            isError = false;
+            newsModel = new();
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"An error occurred: {ex.Message}";
+            isError = true;
         }
         finally
         {
@@ -120,9 +151,23 @@
     private async Task PublishAnnouncementAsync()
     {
         isSubmitting = true;
+        statusMessage = "";
         try
         {
-            await Task.Yield();
+            await DiaryService.CreateAnnouncementAsync(new
+            {
+                title = announcementModel.Title,
+                message = announcementModel.Message
+            });
+
+            statusMessage = "Announcement published successfully!";
+            isError = false;
+            announcementModel = new();
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"An error occurred: {ex.Message}";
+            isError = true;
         }
         finally
         {
@@ -132,14 +177,18 @@
 
     private sealed class NewsPostModel
     {
+        [Required]
         public string Title { get; set; } = "";
+        [Required]
         public string Content { get; set; } = "";
         public string ImageUrl { get; set; } = "";
     }
 
     private sealed class AnnouncementModel
     {
+        [Required]
         public string Title { get; set; } = "";
+        [Required]
         public string Message { get; set; } = "";
     }
 }

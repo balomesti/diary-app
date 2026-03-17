@@ -104,5 +104,28 @@ namespace diary_app.Services
             }
             return created;
         }
+
+        // Admin News and Announcements
+        public async Task<bool> CreateNewsAsync(object news)
+        {
+            var response = await _http.PostAsJsonAsync("api/Admin/news", news);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Create news failed ({(int)response.StatusCode}): {body}");
+            }
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> CreateAnnouncementAsync(object announcement)
+        {
+            var response = await _http.PostAsJsonAsync("api/Admin/announcements", announcement);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Create announcement failed ({(int)response.StatusCode}): {body}");
+            }
+            return response.IsSuccessStatusCode;
+        }
     }
 }
