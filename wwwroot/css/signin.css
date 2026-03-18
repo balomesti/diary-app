@@ -14,7 +14,10 @@
 /* Auth Page specific reset/body background */
 .auth-content {
     background-color: #E2D9CC;
-    background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+    background-image: url('../images/bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     font-family: 'Nunito', sans-serif;
     color: var(--text-main);
     min-height: 100vh;
@@ -90,7 +93,7 @@
 
 .welcome-section p {
     margin-bottom: 20px;
-    color: var(--text-light);
+    color: rgb(84, 84, 84);
     font-size: 1.05rem;
 }
 
