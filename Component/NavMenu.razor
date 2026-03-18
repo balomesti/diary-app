@@ -2,9 +2,9 @@
 
 <header class="navmenu">
     <div class="navmenu-inner">
+        <!-- Logo Section (Left) -->
         <div class="nav-left">
             <NavLink class="navmenu-brand" href="/home" Match="NavLinkMatch.All">
-                <!-- Simple inline SVG Book Icon -->
                 <svg class="navmenu-brand-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
@@ -17,25 +17,19 @@
             Menu
         </button>
 
-        <nav class="navmenu-links @NavMenuCssClass" @onclick="ToggleNavMenu">
-            <div class="nav-links-main">
-                <NavLink class="navmenu-link" href="/home" Match="NavLinkMatch.All">Home</NavLink>
-                <NavLink class="navmenu-link" href="/diary">My Diary</NavLink>
-                <NavLink class="navmenu-link" href="/explore">Explore</NavLink>
-                <NavLink class="navmenu-link" href="/setting">Setting</NavLink>
-            </div>
-            <div style="display: flex; align-items: center; gap: 20px;">
-                <NoticesPopup />
-                <button class="icon-btn" aria-label="Notifications">
-                    <!-- Simple inline SVG Bell Icon -->
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                </button>
-                <NavLink class="navmenu-link navmenu-link-logout" href="/logout">Logout</NavLink>
-            </div>
-        </nav>
+        <!-- Links Section (Center) -->
+        <div class="nav-center @NavMenuCssClass">
+            <NavLink class="navmenu-link" href="/home" Match="NavLinkMatch.All">Home</NavLink>
+            <NavLink class="navmenu-link" href="/diary">My Diary</NavLink>
+            <NavLink class="navmenu-link" href="/explore">Explore</NavLink>
+            <NavLink class="navmenu-link" href="/setting">Setting</NavLink>
+        </div>
+
+        <!-- Actions Section (Right) -->
+        <div class="nav-right @NavMenuCssClass">
+            <NoticesPopup />
+            <NavLink class="navmenu-link navmenu-link-logout" href="/logout">Logout</NavLink>
+        </div>
     </div>
 </header>
 

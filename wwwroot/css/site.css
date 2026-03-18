@@ -189,10 +189,29 @@ a, .btn-link {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 15px 50px;
+    padding: 15px 32px;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1300px;
     margin: 0 auto;
+}
+
+.nav-left {
+    flex: 0 0 auto;
+}
+
+.nav-center {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex: 1;
+    justify-content: center;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 0 0 auto;
 }
 
 .navmenu-brand {
@@ -216,6 +235,7 @@ a, .btn-link {
 }
 
 .navmenu-toggle {
+    display: none;
     background: transparent;
     border: 1px solid rgba(212, 201, 189, 0.6);
     color: #2C231F;
@@ -225,27 +245,17 @@ a, .btn-link {
     font-weight: 600;
 }
 
-.navmenu-links {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-}
-
-.nav-links-main {
-    display: flex;
-    gap: 10px;
-}
-
 .navmenu-link {
     text-decoration: none;
     color: #2C231F;
     font-weight: 600;
     font-size: 0.95rem;
-    padding: 8px 16px;
+    padding: 8px 18px;
     border-radius: 20px;
     transition: all 0.3s ease;
     border: none;
     background: transparent;
+    white-space: nowrap;
 }
 
 .navmenu-link:hover:not(.active) {
@@ -254,7 +264,7 @@ a, .btn-link {
 
 .navmenu-link.active {
     background-color: #556B55;
-    color: white;
+    color: white !important;
 }
 
 .navmenu-link-logout {
@@ -289,6 +299,22 @@ a, .btn-link {
 
 .icon-btn:hover {
     background: rgba(44, 35, 31, 0.05);
+}
+
+@media (max-width: 992px) {
+    .navmenu-inner {
+        padding: 15px 20px;
+    }
+    .navmenu-toggle {
+        display: block;
+    }
+    .nav-center, .nav-right {
+        display: none;
+    }
+    .nav-center.show, .nav-right.show {
+        display: flex;
+    }
+    /* Add logic for mobile menu if needed */
 }
 
 .collapse {
