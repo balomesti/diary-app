@@ -56,8 +56,13 @@
                         </div>
 
                         <div class="admin-create-field">
-                            <label class="admin-create-label">Image</label>
+                            <label class="admin-create-label">Image (Optional)</label>
                             <InputFile class="admin-create-input" OnChange="HandleExploreImageSelected" accept="image/*" />
+                        </div>
+
+                        <div class="admin-create-field">
+                            <label class="admin-create-label">Video (Optional)</label>
+                            <InputFile class="admin-create-input" OnChange="HandleExploreVideoSelected" accept="video/*" />
                         </div>
 
                         <button type="submit" class="admin-create-submit" disabled="@isSubmitting">
@@ -126,12 +131,13 @@
         statusMessage = "";
         try
         {
-            await DiaryService.CreateNewsAsync(exploreModel.Title, exploreModel.Content, exploreImageFile);
+            await DiaryService.CreateNewsAsync(exploreModel.Title, exploreModel.Content, exploreImageFile, exploreVideoFile);
 
             statusMessage = "Explore post published successfully!";
             isError = false;
             exploreModel = new();
             exploreImageFile = null;
+            exploreVideoFile = null;
         }
         catch (Exception ex)
         {
@@ -188,9 +194,15 @@
     }
 
     private IBrowserFile? exploreImageFile;
+    private IBrowserFile? exploreVideoFile;
 
     private void HandleExploreImageSelected(InputFileChangeEventArgs args)
     {
         exploreImageFile = args.File;
+    }
+
+    private void HandleExploreVideoSelected(InputFileChangeEventArgs args)
+    {
+        exploreVideoFile = args.File;
     }
 }

@@ -62,7 +62,11 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
         if (keyValuePairs != null)
         {
-            keyValuePairs.TryGetValue(ClaimTypes.Role, out object? roles);
+            // Try "role" (short name) first, then ClaimTypes.Role (long URI)
+            if (!keyValuePairs.TryGetValue("role", out object? roles))
+            {
+                keyValuePairs.TryGetValue(ClaimTypes.Role, out roles);
+            }
 
             if (roles != null)
             {
@@ -80,6 +84,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                     claims.Add(new Claim(ClaimTypes.Role, roles.ToString()!));
                 }
 
+                keyValuePairs.Remove("role");
                 keyValuePairs.Remove(ClaimTypes.Role);
             }
 

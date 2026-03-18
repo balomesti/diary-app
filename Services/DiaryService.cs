@@ -106,7 +106,7 @@ namespace diary_app.Services
         }
 
         // Admin News and Announcements
-        public async Task<bool> CreateNewsAsync(string title, string content, IBrowserFile? imageFile)
+        public async Task<bool> CreateNewsAsync(string title, string content, IBrowserFile? imageFile, IBrowserFile? videoFile = null)
         {
             using var form = new MultipartFormDataContent();
             form.Add(new StringContent(title ?? string.Empty), "Title");
@@ -114,9 +114,16 @@ namespace diary_app.Services
 
             if (imageFile != null)
             {
-                var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10));
+                var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // 10MB max
                 fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
                 form.Add(fileContent, "Image", imageFile.Name);
+            }
+
+            if (videoFile != null)
+            {
+                var fileContent = new StreamContent(videoFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 100)); // 100MB max for video
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(videoFile.ContentType);
+                form.Add(fileContent, "Video", videoFile.Name);
             }
 
             var response = await _http.PostAsync("api/Admin/news", form);

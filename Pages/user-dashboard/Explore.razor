@@ -30,7 +30,17 @@
             {
                 <article class="explore-card">
                     <div class="explore-card-row">
-                        <div class="explore-thumb" style="@ThumbStyle(item)"></div>
+                        @if (!string.IsNullOrWhiteSpace(item.VideoUrl))
+                        {
+                            <video class="explore-thumb" controls style="object-fit: cover;">
+                                <source src="@item.VideoUrl" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        }
+                        else
+                        {
+                            <div class="explore-thumb" style="@ThumbStyle(item)"></div>
+                        }
                         <div class="explore-body">
                             <h2 class="explore-title">@item.Title</h2>
                             <p class="explore-text">@item.Description</p>  
@@ -72,7 +82,8 @@
                     Description = n.Content,
                     Author = n.Author,
                     CreatedAt = n.CreatedAt,
-                    ImageUrl = n.ImageUrl
+                    ImageUrl = n.ImageUrl,
+                    VideoUrl = n.VideoUrl
                 })
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
@@ -105,6 +116,7 @@
         public string Author { get; set; } = "";
         public DateTime CreatedAt { get; set; }
         public string ImageUrl { get; set; } = "";
+        public string VideoUrl { get; set; } = "";
     }
 
     private sealed class NewsPostDto
@@ -113,6 +125,7 @@
         public string Title { get; set; } = "";
         public string Content { get; set; } = "";
         public string ImageUrl { get; set; } = "";
+        public string VideoUrl { get; set; } = "";
         public string Author { get; set; } = "";
         public DateTime CreatedAt { get; set; }
     }

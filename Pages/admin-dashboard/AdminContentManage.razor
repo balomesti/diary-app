@@ -54,7 +54,13 @@
                         @foreach (var news in explorePosts)
                         {
                             <div class="admin-dashboard-formcard" style="margin-top: 18px;">
-                                @if (!string.IsNullOrEmpty(news.ImageUrl))
+                                @if (!string.IsNullOrEmpty(news.VideoUrl))
+                                {
+                                    <video class="admin-dashboard-formthumb" controls style="object-fit: cover;">
+                                        <source src="@news.VideoUrl" type="video/mp4">
+                                    </video>
+                                }
+                                else if (!string.IsNullOrEmpty(news.ImageUrl))
                                 {
                                     <img src="@news.ImageUrl" alt="Post thumbnail" class="admin-dashboard-formthumb" style="object-fit: cover;" />
                                 }
@@ -208,6 +214,7 @@
         public string Title { get; set; } = "";
         public string Content { get; set; } = "";
         public string ImageUrl { get; set; } = "";
+        public string VideoUrl { get; set; } = "";
         public string Author { get; set; } = "";
         public DateTime CreatedAt { get; set; }
     }
