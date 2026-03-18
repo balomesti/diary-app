@@ -9,7 +9,7 @@
 <section class="admin-dashboard-hero">
     <div class="admin-dashboard-hero-inner">
         <h1>Welcome to the Admin<br />Dashboard</h1>
-        <p>Manage your diary entries, news posts, and announcements all in one place.</p>
+        <p>Manage your diary entries, explore posts, and notices all in one place.</p>
 
         <div class="admin-dashboard-hero-actions">
             <button class="admin-btn-outline admin-btn-wide" type="button" @onclick="GoToPosts">View All Post</button>
@@ -28,8 +28,8 @@
         </div>
 
         <div class="admin-dashboard-content">
-            <h2 class="admin-dashboard-title">News Post</h2>
-            <p class="admin-dashboard-subtitle">Published news posts will be visible to all users.</p>
+            <h2 class="admin-dashboard-title">Explore Post</h2>
+            <p class="admin-dashboard-subtitle">Published explore posts will be visible to all users.</p>
 
             @if (!string.IsNullOrEmpty(loadError))
             {
@@ -43,7 +43,7 @@
             }
             else if (latestNews.Count == 0)
             {
-                <p>No news posts found.</p>
+                <p>No explore posts found.</p>
             }
             else
             {

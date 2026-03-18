@@ -9,11 +9,11 @@
 <section class="admin-dashboard-hero">
     <div class="admin-dashboard-hero-inner">
         <h1>Create Content</h1>
-        <p>Generate news posts and announcements for users.</p>
+        <p>Generate explore posts and notices for users.</p>
 
         <div class="admin-create-toggle" role="tablist" aria-label="Create mode">
-            <button type="button" class="@ModeButtonClass(CreateMode.News)" @onclick="() => SelectMode(CreateMode.News)">Create News</button>
-            <button type="button" class="@ModeButtonClass(CreateMode.Announcement)" @onclick="() => SelectMode(CreateMode.Announcement)">Create Announcement</button>
+            <button type="button" class="@ModeButtonClass(CreateMode.News)" @onclick="() => SelectMode(CreateMode.News)">Create Explore</button>
+            <button type="button" class="@ModeButtonClass(CreateMode.Announcement)" @onclick="() => SelectMode(CreateMode.Announcement)">Create Notice</button>
         </div>
     </div>
 </section>
@@ -23,11 +23,11 @@
         <div class="admin-create-left">
             @if (mode == CreateMode.News)
             {
-                <h2 class="admin-create-title">Create News Post</h2>
+                <h2 class="admin-create-title">Create Explore Post</h2>
             }
             else
             {
-                <h2 class="admin-create-title">Create Announcement</h2>
+                <h2 class="admin-create-title">Create Notice</h2>
             }
             
             @if (!string.IsNullOrEmpty(statusMessage))
@@ -47,12 +47,12 @@
                     <div class="admin-create-form">
                         <div class="admin-create-field">
                             <label class="admin-create-label">Post Title</label>
-                            <InputText class="admin-create-input" @bind-Value="newsModel.Title" placeholder="Enter the title of the news post" />
+                            <InputText class="admin-create-input" @bind-Value="newsModel.Title" placeholder="Enter the title of the explore post" />
                         </div>
 
                         <div class="admin-create-field">
                             <label class="admin-create-label">Post Content</label>
-                            <InputTextArea class="admin-create-input admin-create-textarea" @bind-Value="newsModel.Content" placeholder="Write the content of the news post" />
+                            <InputTextArea class="admin-create-input admin-create-textarea" @bind-Value="newsModel.Content" placeholder="Write the content of the explore post" />
                         </div>
 
                         <div class="admin-create-field">
@@ -74,16 +74,16 @@
                     <div class="admin-create-form">
                         <div class="admin-create-field">
                             <label class="admin-create-label">Title</label>
-                            <InputText class="admin-create-input" @bind-Value="announcementModel.Title" placeholder="Enter the announcement title" />
+                            <InputText class="admin-create-input" @bind-Value="announcementModel.Title" placeholder="Enter the notice title" />
                         </div>
 
                         <div class="admin-create-field">
                             <label class="admin-create-label">Message</label>
-                            <InputTextArea class="admin-create-input admin-create-textarea" @bind-Value="announcementModel.Message" placeholder="Write the announcement message" />
+                            <InputTextArea class="admin-create-input admin-create-textarea" @bind-Value="announcementModel.Message" placeholder="Write the notice message" />
                         </div>
 
                         <button type="submit" class="admin-create-submit" disabled="@isSubmitting">
-                            @(isSubmitting ? "Publishing..." : "Publish Announcement")
+                            @(isSubmitting ? "Publishing..." : "Publish Notice")
                         </button>
                     </div>
                 </EditForm>

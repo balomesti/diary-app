@@ -8,11 +8,11 @@
 <section class="admin-dashboard-hero">
     <div class="admin-dashboard-hero-inner">
         <h1>Post List</h1>
-        <p>Manage news posts and announcements for users.</p>
+        <p>Manage explore posts and notices for users.</p>
 
         <div class="admin-create-toggle" role="tablist" aria-label="View mode">
-            <button type="button" class="@ModeButtonClass(ViewMode.News)" @onclick="() => SelectMode(ViewMode.News)">News List</button>
-            <button type="button" class="@ModeButtonClass(ViewMode.Announcement)" @onclick="() => SelectMode(ViewMode.Announcement)">Announcement List</button>
+            <button type="button" class="@ModeButtonClass(ViewMode.News)" @onclick="() => SelectMode(ViewMode.News)">Explore List</button>
+            <button type="button" class="@ModeButtonClass(ViewMode.Announcement)" @onclick="() => SelectMode(ViewMode.Announcement)">Notice List</button>
         </div>
     </div>
 </section>
@@ -22,11 +22,11 @@
         <div class="admin-create-left">
             @if (mode == ViewMode.News)
             {
-                <h2 class="admin-create-title">News Post List</h2>
+                <h2 class="admin-create-title">Explore Post List</h2>
             }
             else
             {
-                <h2 class="admin-create-title">Announcement List</h2>
+                <h2 class="admin-create-title">Notice List</h2>
             }
 
             @if (!string.IsNullOrEmpty(loadError))
@@ -47,7 +47,7 @@
                     }
                     else if (newsPosts.Count == 0)
                     {
-                        <p>No news posts found.</p>
+                        <p>No explore posts found.</p>
                     }
                     else
                     {
@@ -85,7 +85,7 @@
                     }
                     else if (announcements.Count == 0)
                     {
-                        <p>No announcements found.</p>
+                        <p>No notices found.</p>
                     }
                     else
                     {

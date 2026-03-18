@@ -15,7 +15,7 @@
         <div style="position: fixed; inset: 0; z-index: 2000;" @onclick="Close">
             <div style="position: absolute; top: 64px; right: 18px; width: min(420px, calc(100vw - 36px)); max-height: min(520px, calc(100vh - 96px)); overflow: auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 14px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18); padding: 14px;" @onclick:stopPropagation="true">
                 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px;">
-                    <div style="font-weight: 800; font-size: 1.05rem; color: #0f172a;">Announcements</div>
+                    <div style="font-weight: 800; font-size: 1.05rem; color: #0f172a;">Notices</div>
                     <button type="button" class="navmenu-link" style="padding: 8px 12px; border: 1px solid #e5e7eb;" @onclick="Close">Close</button>
                 </div>
 
@@ -31,15 +31,15 @@
                         Loading...
                     </div>
                 }
-                else if (announcements.Count == 0)
+                else if (notices.Count == 0)
                 {
                     <div style="padding: 12px; color: #334155; font-weight: 700;">
-                        No announcements.
+                        No notices.
                     </div>
                 }
                 else
                 {
-                    @foreach (var item in announcements)
+                    @foreach (var item in notices)
                     {
                         <div style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; margin-bottom: 10px;">
                             <div style="font-weight: 900; color: #0f172a; margin-bottom: 6px;">@item.Title</div>
@@ -56,7 +56,7 @@
     private bool isOpen;
     private bool isLoading;
     private string loadError = "";
-    private List<AnnouncementDto> announcements = new();
+    private List<NoticeDto> notices = new();
 
     private async Task ToggleAsync()
     {
@@ -81,7 +81,7 @@
         loadError = "";
         try
         {
-            announcements = await DiaryService.GetAdminListAsync<AnnouncementDto>("api/Admin/announcements");
+            notices = await DiaryService.GetAdminListAsync<NoticeDto>("api/Admin/announcements");
         }
         catch (Exception ex)
         {
@@ -93,7 +93,7 @@
         }
     }
 
-    private sealed class AnnouncementDto
+    private sealed class NoticeDto
     {
         public int Id { get; set; }
         public string Title { get; set; } = "";
