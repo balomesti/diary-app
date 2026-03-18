@@ -4,7 +4,7 @@
 @inject DiaryService DiaryService
 @inject NavigationManager NavigationManager
 
-<PageTitle>Admin Create</PageTitle>
+<PageTitle>Admin Content Create</PageTitle>
 
 <section class="admin-dashboard-hero">
     <div class="admin-dashboard-hero-inner">
@@ -12,8 +12,8 @@
         <p>Generate explore posts and notices for users.</p>
 
         <div class="admin-create-toggle" role="tablist" aria-label="Create mode">
-            <button type="button" class="@ModeButtonClass(CreateMode.News)" @onclick="() => SelectMode(CreateMode.News)">Create Explore</button>
-            <button type="button" class="@ModeButtonClass(CreateMode.Announcement)" @onclick="() => SelectMode(CreateMode.Announcement)">Create Notice</button>
+            <button type="button" class="@ModeButtonClass(CreateMode.Explore)" @onclick="() => SelectMode(CreateMode.Explore)">Create Explore</button>
+            <button type="button" class="@ModeButtonClass(CreateMode.Notice)" @onclick="() => SelectMode(CreateMode.Notice)">Create Notice</button>
         </div>
     </div>
 </section>
@@ -21,7 +21,7 @@
 <section class="admin-create">
     <div class="admin-create-inner">
         <div class="admin-create-left">
-            @if (mode == CreateMode.News)
+            @if (mode == CreateMode.Explore)
             {
                 <h2 class="admin-create-title">Create Explore Post</h2>
             }
@@ -39,25 +39,25 @@
         </div>
 
         <div class="admin-create-right">
-            @if (mode == CreateMode.News)
+            @if (mode == CreateMode.Explore)
             {
-                <EditForm Model="@newsModel" OnValidSubmit="PublishNewsAsync">
+                <EditForm Model="@exploreModel" OnValidSubmit="PublishExploreAsync">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
                     <div class="admin-create-form">
                         <div class="admin-create-field">
                             <label class="admin-create-label">Post Title</label>
-                            <InputText class="admin-create-input" @bind-Value="newsModel.Title" placeholder="Enter the title of the explore post" />
+                            <InputText class="admin-create-input" @bind-Value="exploreModel.Title" placeholder="Enter the title of the explore post" />
                         </div>
 
                         <div class="admin-create-field">
                             <label class="admin-create-label">Post Content</label>
-                            <InputTextArea class="admin-create-input admin-create-textarea" @bind-Value="newsModel.Content" placeholder="Write the content of the explore post" />
+                            <InputTextArea class="admin-create-input admin-create-textarea" @bind-Value="exploreModel.Content" placeholder="Write the content of the explore post" />
                         </div>
 
                         <div class="admin-create-field">
                             <label class="admin-create-label">Image</label>
-                            <InputFile class="admin-create-input" OnChange="HandleNewsImageSelected" accept="image/*" />
+                            <InputFile class="admin-create-input" OnChange="HandleExploreImageSelected" accept="image/*" />
                         </div>
 
                         <button type="submit" class="admin-create-submit" disabled="@isSubmitting">
@@ -68,18 +68,18 @@
             }
             else
             {
-                <EditForm Model="@announcementModel" OnValidSubmit="PublishAnnouncementAsync">
+                <EditForm Model="@noticeModel" OnValidSubmit="PublishNoticeAsync">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
                     <div class="admin-create-form">
                         <div class="admin-create-field">
                             <label class="admin-create-label">Title</label>
-                            <InputText class="admin-create-input" @bind-Value="announcementModel.Title" placeholder="Enter the notice title" />
+                            <InputText class="admin-create-input" @bind-Value="noticeModel.Title" placeholder="Enter the notice title" />
                         </div>
 
                         <div class="admin-create-field">
                             <label class="admin-create-label">Message</label>
-                            <InputTextArea class="admin-create-input admin-create-textarea" @bind-Value="announcementModel.Message" placeholder="Write the notice message" />
+                            <InputTextArea class="admin-create-input admin-create-textarea" @bind-Value="noticeModel.Message" placeholder="Write the notice message" />
                         </div>
 
                         <button type="submit" class="admin-create-submit" disabled="@isSubmitting">
@@ -94,12 +94,12 @@
 
 
 @code {
-    private CreateMode mode = CreateMode.News;
+    private CreateMode mode = CreateMode.Explore;
     private bool isSubmitting;
     private string statusMessage = "";
     private bool isError = false;
-    private NewsPostModel newsModel = new();
-    private AnnouncementModel announcementModel = new();
+    private ExplorePostModel exploreModel = new();
+    private NoticeModel noticeModel = new();
 
     private void SelectMode(CreateMode nextMode)
     {
@@ -116,22 +116,22 @@
 
     private enum CreateMode
     {
-        News,
-        Announcement
+        Explore,
+        Notice
     }
 
-    private async Task PublishNewsAsync()
+    private async Task PublishExploreAsync()
     {
         isSubmitting = true;
         statusMessage = "";
         try
         {
-            await DiaryService.CreateNewsAsync(newsModel.Title, newsModel.Content, newsImageFile);
+            await DiaryService.CreateNewsAsync(exploreModel.Title, exploreModel.Content, exploreImageFile);
 
-            statusMessage = "News post published successfully!";
+            statusMessage = "Explore post published successfully!";
             isError = false;
-            newsModel = new();
-            newsImageFile = null;
+            exploreModel = new();
+            exploreImageFile = null;
         }
         catch (Exception ex)
         {
@@ -144,7 +144,7 @@
         }
     }
 
-    private async Task PublishAnnouncementAsync()
+    private async Task PublishNoticeAsync()
     {
         isSubmitting = true;
         statusMessage = "";
@@ -152,13 +152,13 @@
         {
             await DiaryService.CreateAnnouncementAsync(new
             {
-                title = announcementModel.Title,
-                message = announcementModel.Message
+                title = noticeModel.Title,
+                message = noticeModel.Message
             });
 
-            statusMessage = "Announcement published successfully!";
+            statusMessage = "Notice published successfully!";
             isError = false;
-            announcementModel = new();
+            noticeModel = new();
         }
         catch (Exception ex)
         {
@@ -171,7 +171,7 @@
         }
     }
 
-    private sealed class NewsPostModel
+    private sealed class ExplorePostModel
     {
         [Required]
         public string Title { get; set; } = "";
@@ -179,7 +179,7 @@
         public string Content { get; set; } = "";
     }
 
-    private sealed class AnnouncementModel
+    private sealed class NoticeModel
     {
         [Required]
         public string Title { get; set; } = "";
@@ -187,10 +187,10 @@
         public string Message { get; set; } = "";
     }
 
-    private IBrowserFile? newsImageFile;
+    private IBrowserFile? exploreImageFile;
 
-    private void HandleNewsImageSelected(InputFileChangeEventArgs args)
+    private void HandleExploreImageSelected(InputFileChangeEventArgs args)
     {
-        newsImageFile = args.File;
+        exploreImageFile = args.File;
     }
 }

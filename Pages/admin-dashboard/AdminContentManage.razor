@@ -1,18 +1,18 @@
-@page "/admin/posts"
+@page "/admin/manage"
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
 @inject DiaryService DiaryService
 
-<PageTitle>Admin Posts</PageTitle>
+<PageTitle>Admin Content Manager</PageTitle>
 
 <section class="admin-dashboard-hero">
     <div class="admin-dashboard-hero-inner">
-        <h1>Post List</h1>
+        <h1>Content Manager</h1>
         <p>Manage explore posts and notices for users.</p>
 
         <div class="admin-create-toggle" role="tablist" aria-label="View mode">
-            <button type="button" class="@ModeButtonClass(ViewMode.News)" @onclick="() => SelectMode(ViewMode.News)">Explore List</button>
-            <button type="button" class="@ModeButtonClass(ViewMode.Announcement)" @onclick="() => SelectMode(ViewMode.Announcement)">Notice List</button>
+            <button type="button" class="@ModeButtonClass(ViewMode.Explore)" @onclick="() => SelectMode(ViewMode.Explore)">Explore</button>
+            <button type="button" class="@ModeButtonClass(ViewMode.Notice)" @onclick="() => SelectMode(ViewMode.Notice)">Notice</button>
         </div>
     </div>
 </section>
@@ -20,7 +20,7 @@
 <section class="admin-create">
     <div class="admin-create-inner">
         <div class="admin-create-left">
-            @if (mode == ViewMode.News)
+            @if (mode == ViewMode.Explore)
             {
                 <h2 class="admin-create-title">Explore Post List</h2>
             }
@@ -38,20 +38,20 @@
         </div>
 
         <div class="admin-create-right">
-            @if (mode == ViewMode.News)
+            @if (mode == ViewMode.Explore)
             {
                 <div class="admin-posts-list">
                     @if (isLoading)
                     {
                         <p>Loading...</p>
                     }
-                    else if (newsPosts.Count == 0)
+                    else if (explorePosts.Count == 0)
                     {
                         <p>No explore posts found.</p>
                     }
                     else
                     {
-                        @foreach (var news in newsPosts)
+                        @foreach (var news in explorePosts)
                         {
                             <div class="admin-dashboard-formcard" style="margin-top: 18px;">
                                 @if (!string.IsNullOrEmpty(news.ImageUrl))
@@ -66,8 +66,8 @@
                                     <h3 class="admin-dashboard-formtitle">@news.Title</h3>
                                     <p class="admin-dashboard-formtext">@news.Content</p>
                                     <div style="margin-top: 12px; display: flex; justify-content: flex-end;">
-                                        <button type="button" class="admin-btn-outline" style="border-color: #ef4444; color: #ef4444;" disabled="@(isDeleting && deletingNewsId == news.Id)" @onclick="() => DeleteNewsAsync(news.Id)">
-                                            @(isDeleting && deletingNewsId == news.Id ? "Deleting..." : "Delete")
+                                        <button type="button" class="admin-btn-outline" style="border-color: #ef4444; color: #ef4444;" disabled="@(isDeleting && deletingExploreId == news.Id)" @onclick="() => DeleteExploreAsync(news.Id)">
+                                            @(isDeleting && deletingExploreId == news.Id ? "Deleting..." : "Delete")
                                         </button>
                                     </div>
                                 </div>
@@ -83,21 +83,21 @@
                     {
                         <p>Loading...</p>
                     }
-                    else if (announcements.Count == 0)
+                    else if (notices.Count == 0)
                     {
                         <p>No notices found.</p>
                     }
                     else
                     {
-                        @foreach (var item in announcements)
+                        @foreach (var item in notices)
                         {
                             <div class="admin-dashboard-formcard" style="margin-top: 18px;">
                                 <div class="admin-dashboard-formbody">
                                     <h3 class="admin-dashboard-formtitle">@item.Title</h3>
                                     <p class="admin-dashboard-formtext">@item.Message</p>
                                     <div style="margin-top: 12px; display: flex; justify-content: flex-end;">
-                                        <button type="button" class="admin-btn-outline" style="border-color: #ef4444; color: #ef4444;" disabled="@(isDeleting && deletingAnnouncementId == item.Id)" @onclick="() => DeleteAnnouncementAsync(item.Id)">
-                                            @(isDeleting && deletingAnnouncementId == item.Id ? "Deleting..." : "Delete")
+                                        <button type="button" class="admin-btn-outline" style="border-color: #ef4444; color: #ef4444;" disabled="@(isDeleting && deletingNoticeId == item.Id)" @onclick="() => DeleteNoticeAsync(item.Id)">
+                                            @(isDeleting && deletingNoticeId == item.Id ? "Deleting..." : "Delete")
                                         </button>
                                     </div>
                                 </div>
@@ -111,14 +111,14 @@
 </section>
 
 @code {
-    private ViewMode mode = ViewMode.News;
+    private ViewMode mode = ViewMode.Explore;
     private bool isLoading;
     private string loadError = "";
     private bool isDeleting;
-    private int? deletingNewsId;
-    private int? deletingAnnouncementId;
-    private List<NewsPostItem> newsPosts = new();
-    private List<AnnouncementItem> announcements = new();
+    private int? deletingExploreId;
+    private int? deletingNoticeId;
+    private List<ExplorePostItem> explorePosts = new();
+    private List<NoticeItem> notices = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -126,11 +126,11 @@
         loadError = "";
         try
         {
-            var newsTask = DiaryService.GetAdminListAsync<NewsPostItem>("api/Admin/news");
-            var announcementsTask = DiaryService.GetAdminListAsync<AnnouncementItem>("api/Admin/announcements");
-            await Task.WhenAll(newsTask, announcementsTask);
-            newsPosts = newsTask.Result;
-            announcements = announcementsTask.Result;
+            var exploreTask = DiaryService.GetAdminListAsync<ExplorePostItem>("api/Admin/news");
+            var noticesTask = DiaryService.GetAdminListAsync<NoticeItem>("api/Admin/announcements");
+            await Task.WhenAll(exploreTask, noticesTask);
+            explorePosts = exploreTask.Result;
+            notices = noticesTask.Result;
         }
         catch (Exception ex)
         {
@@ -142,15 +142,15 @@
         }
     }
 
-    private async Task DeleteNewsAsync(int id)
+    private async Task DeleteExploreAsync(int id)
     {
         isDeleting = true;
-        deletingNewsId = id;
+        deletingExploreId = id;
         loadError = "";
         try
         {
             await DiaryService.DeleteNewsAsync(id);
-            newsPosts = newsPosts.Where(x => x.Id != id).ToList();
+            explorePosts = explorePosts.Where(x => x.Id != id).ToList();
         }
         catch (Exception ex)
         {
@@ -158,20 +158,20 @@
         }
         finally
         {
-            deletingNewsId = null;
+            deletingExploreId = null;
             isDeleting = false;
         }
     }
 
-    private async Task DeleteAnnouncementAsync(int id)
+    private async Task DeleteNoticeAsync(int id)
     {
         isDeleting = true;
-        deletingAnnouncementId = id;
+        deletingNoticeId = id;
         loadError = "";
         try
         {
             await DiaryService.DeleteAnnouncementAsync(id);
-            announcements = announcements.Where(x => x.Id != id).ToList();
+            notices = notices.Where(x => x.Id != id).ToList();
         }
         catch (Exception ex)
         {
@@ -179,7 +179,7 @@
         }
         finally
         {
-            deletingAnnouncementId = null;
+            deletingNoticeId = null;
             isDeleting = false;
         }
     }
@@ -198,11 +198,11 @@
 
     private enum ViewMode
     {
-        News,
-        Announcement
+        Explore,
+        Notice
     }
 
-    private sealed class NewsPostItem
+    private sealed class ExplorePostItem
     {
         public int Id { get; set; }
         public string Title { get; set; } = "";
@@ -212,7 +212,7 @@
         public DateTime CreatedAt { get; set; }
     }
 
-    private sealed class AnnouncementItem
+    private sealed class NoticeItem
     {
         public int Id { get; set; }
         public string Title { get; set; } = "";

@@ -12,7 +12,7 @@
         <p>Manage your diary entries, explore posts, and notices all in one place.</p>
 
         <div class="admin-dashboard-hero-actions">
-            <button class="admin-btn-outline admin-btn-wide" type="button" @onclick="GoToPosts">View All Post</button>
+            <button class="admin-btn-outline admin-btn-wide" type="button" @onclick="GoToManage">Manage Content</button>
             <button class="admin-btn-solid admin-btn-wide" type="button" @onclick="GoToCreate">Create New Post</button>
         </div>
     </div>
@@ -93,9 +93,9 @@
         }
     }
 
-    private void GoToPosts()
+    private void GoToManage()
     {
-        NavigationManager.NavigateTo("/admin/posts");
+        NavigationManager.NavigateTo("/admin/manage");
     }
 
     private void GoToCreate()
