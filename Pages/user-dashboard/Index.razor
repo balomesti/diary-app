@@ -1,68 +1,80 @@
 @page "/home"
 @inject DiaryService DiaryService
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Diary Me - Home</PageTitle>
 
-<section class="home-hero">
-    <div class="hero-content">
-        <h1>Welcome to Diary Me</h1>
-        <p>Capture your thoughts, memories, and experiences.</p>
+<link href="css/pages/HomePage.css" rel="stylesheet" />
 
-        <div class="hero-actions">
-            <NavLink class="btn-outline" href="/diary">View Previous Entries</NavLink>
-            <NavLink class="btn-solid" href="/diary/add">Start a New Entry</NavLink>
+<div class="home-page-container">
+    <!-- TOP SECTION: Welcome & Actions -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>Welcome to Diary Me</h1>
+            <p>Capture your thoughts, memories, and experiences.</p>
+            
+            <div class="hero-buttons">
+                <NavLink class="btn-outline" href="/diary">View Previous Entries</NavLink>
+                <NavLink class="btn-solid" href="/diary/add">Start a New Entry</NavLink>
+            </div>
+
+            <div class="time-filters">
+                <button class="filter-pill active">Today</button>
+                <button class="filter-pill">This Week</button>
+                <button class="filter-pill">This Month</button>
+            </div>
         </div>
 
-        <div class="hero-filters">
-            <button class="chip">Today</button>
-            <button class="chip">This Week</button>
-            <button class="chip">This Month</button>
+        <div class="hero-image-wrapper">
+            <!-- High quality image to match the journal aesthetic -->
+            <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=800&auto=format&fit=crop" alt="Vintage Open Journal">
         </div>
-    </div>
+    </section>
 
-    <div class="hero-image">
-        <img src="/images/pic1.jpg" alt="Beautiful Mountains" />
-    </div>
-</section>
-
-<section class="recent-section">
-    <div class="recent-header">
+    <!-- BOTTOM SECTION: Recent Entries -->
+    <section class="recent-entries">
         <h2>Recent Entries</h2>
-        <NavLink class="btn-view-all" href="/diary">View All Entries</NavLink>
-    </div>
+        <NavLink class="btn-solid" href="/diary">View All Entries</NavLink>
 
-    @if (recentEntries == null)
-    {
-        <p>Loading...</p>
-    }
-    else if (!recentEntries.Any())
-    {
-        <div class="empty-state">
-            <p class="empty-title">No entries yet.</p>
-            <NavLink class="btn-solid-diary" href="/diary/add">Create your first entry</NavLink>
-        </div>
-    }
-    else
-    {
-        <div class="entries-grid">
-            @foreach (var entry in recentEntries)
+        <div class="entries-container">
+            @if (recentEntries == null)
             {
-                <NavLink class="entry-card-home" href="@($"/diary/{entry.Id}")">
-                    <div class="entry-img-box">
-                        @if (!string.IsNullOrEmpty(entry.ImageUrl))
-                        {
-                            <img src="@($"http://localhost:5105{entry.ImageUrl}")" alt="@entry.Title" />
-                        }
-                    </div>
-                    <div class="entry-info">
-                        <h3>@entry.Title</h3>
-                        <p>@entry.Content</p>
-                    </div>
-                </NavLink>
+                <div class="empty-state">
+                    <p>Loading your recent thoughts...</p>
+                </div>
+            }
+            else if (!recentEntries.Any())
+            {
+                <div class="empty-state">
+                    <p>No entries yet. Start your journey today!</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var entry in recentEntries)
+                {
+                    <NavLink class="entry-card" href="@($"/diary/{entry.Id}")">
+                        <div class="entry-image-container">
+                            @if (!string.IsNullOrEmpty(entry.ImageUrl))
+                            {
+                                <img src="@($"http://localhost:5105{entry.ImageUrl}")" alt="@entry.Title" class="entry-image">
+                            }
+                            else
+                            {
+                                <!-- Textured placeholder if no image exists -->
+                                <img src="https://images.unsplash.com/photo-1586075010923-2dd4570fb338?q=80&w=400&auto=format&fit=crop" alt="Entry Texture" class="entry-image">
+                            }
+                        </div>
+                        
+                        <div class="entry-text">
+                            <h3>@entry.Title</h3>
+                            <p>@entry.Content</p>
+                        </div>
+                    </NavLink>
+                }
             }
         </div>
-    }
-</section>
+    </section>
+</div>
 
 @code {
     private List<DiaryEntry>? recentEntries;
@@ -76,4 +88,3 @@
             .ToList();
     }
 }
-
