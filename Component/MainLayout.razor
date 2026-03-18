@@ -3,7 +3,7 @@
 
 <PageTitle>Diary App</PageTitle>
 
-<div class="page">
+<div class="@PageCssClass">
     @if (IsAdminPage())
     {
         <AdminNavMenu />
@@ -26,6 +26,20 @@
 </div>
 
 @code {
+    private string PageCssClass
+    {
+        get
+        {
+            var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+            if (IsAdminPage()) return "page admin-layout";
+            if (string.IsNullOrEmpty(relativePath) || relativePath.Equals("register", StringComparison.OrdinalIgnoreCase))
+            {
+                return "page auth-layout";
+            }
+            return "page main-layout";
+        }
+    }
+
     private string ContentCssClass
     {
         get
@@ -38,7 +52,7 @@
                 return "auth-content";
             }
             
-            return "content px-4";
+            return "content"; // Removed px-4 to let page-specific CSS handle padding if needed
         }
     }
 

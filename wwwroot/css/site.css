@@ -1,9 +1,29 @@
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Nunito', sans-serif;
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
+    color: #2C231F;
+}
+
+.main-layout {
+    background-color: #E2D9CC;
+    background-image: url('../images/bg.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.auth-layout {
+    background: none;
+}
+
+.admin-layout {
+    background-color: #f8fafc;
 }
 
 *, *::before, *::after {
@@ -156,106 +176,119 @@ a, .btn-link {
 
 .navmenu {
     width: 100%;
-    background: #ffffff;
-    color: #0f172a;
+    background: rgba(253, 251, 247, 0.85);
+    backdrop-filter: blur(10px);
+    color: #2C231F;
     position: sticky;
     top: 0;
-    z-index: 10;
-    border-bottom: 1px solid #e5e7eb;
+    z-index: 100;
+    border-bottom: 1px solid rgba(212, 201, 189, 0.6);
 }
 
 .navmenu-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    flex-wrap: nowrap;
-    padding: 14px 20px;
+    padding: 15px 50px;
     width: 100%;
-    max-width: none;
-    margin: 0;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .navmenu-brand {
-    color: #e2e8f0;
+    color: #2C231F;
     text-decoration: none;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
     font-weight: 700;
-    letter-spacing: 0.2px;
     display: flex;
     align-items: center;
     gap: 10px;
     white-space: nowrap;
-    margin-right: 10px;
 }
 
 .navmenu-brand-text {
-    font-size: 1.5rem;
     line-height: 1;
-    color: #000000;
-    white-space: nowrap;
 }
 
 .navmenu-brand-icon {
-    color: #000000;
-    margin-right: 50px;
+    color: #556B55;
 }
 
 .navmenu-toggle {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    color: #0f172a;
-    padding: 10px 12px;
-    border-radius: 10px;
+    background: transparent;
+    border: 1px solid rgba(212, 201, 189, 0.6);
+    color: #2C231F;
+    padding: 8px 16px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
 }
 
 .navmenu-links {
     display: flex;
-    flex-direction: column;
-    padding: 10px 0 0 0;
-    gap: 10px;
-    justify-content: space-between;
-    width: 100%;
+    align-items: center;
+    gap: 30px;
 }
 
 .nav-links-main {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
 }
 
 .navmenu-link {
-    color: #0f172a;
     text-decoration: none;
-    padding: 10px 14px;
-    border-radius: 999px;
-    border: 1px solid transparent;
+    color: #2C231F;
     font-weight: 600;
+    font-size: 0.95rem;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    border: none;
     background: transparent;
 }
 
-.navmenu-link:hover {
-    background: #f5f5f5;
-    border-color: #e5e7eb;
-    color: #0f172a;
+.navmenu-link:hover:not(.active) {
+    background-color: rgba(85, 107, 85, 0.1);
 }
 
 .navmenu-link.active {
-    background: #000000;
-    color: #ffffff;
-    border-color: #000000;
+    background-color: #556B55;
+    color: white;
 }
 
 .navmenu-link-logout {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+    background: transparent;
+    border: 1px solid rgba(212, 201, 189, 0.6);
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    color: #2C231F;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
 .navmenu-link-logout:hover {
-    background: #fee2e2;
-    border-color: #fecaca;
-    color: #b91c1c;
+    background: rgba(44, 35, 31, 0.05);
+}
+
+.icon-btn {
+    background: transparent;
+    border: 1px solid rgba(212, 201, 189, 0.6);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: #2C231F;
+    transition: 0.3s;
+}
+
+.icon-btn:hover {
+    background: rgba(44, 35, 31, 0.05);
 }
 
 .collapse {

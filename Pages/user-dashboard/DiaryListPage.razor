@@ -3,69 +3,84 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
-<div class="diary-page">
-    <div class="diary-header">
+<PageTitle>Diary Me - My Diary</PageTitle>
+
+<link href="css/pages/DiaryListPage.css" rel="stylesheet" />
+
+<div class="diary-list-page">
+    <!-- Hero Section -->
+    <section class="hero">
         <h1>My Diary</h1>
         <p>Capture your moments and reflections.</p>
-        <div class="diary-header-actions">
-            <NavLink class="btn-outline-diary" href="/diary">View All Entries</NavLink>
-            <NavLink class="btn-solid-diary" href="/diary/add">New Entry</NavLink>
+        <div class="hero-buttons">
+            <NavLink class="btn-outline" href="/diary">View All Entries</NavLink>
+            <NavLink class="btn-solid" href="/diary/add">New Entry</NavLink>
         </div>
-    </div>
+    </section>
 
-    <div class="diary-container">
-        <div class="diary-info-section">
+    <!-- Entries List Section -->
+    <section class="entries-section">
+        <div class="entries-header">
             <h2>List of Entries</h2>
             <p>View all your diary entries.</p>
         </div>
 
-        <div class="diary-grid-section">
+        <div class="entries-grid">
             @if (entries == null)
             {
-                <p>Loading...</p>
+                <div class="empty-state">
+                    <p>Loading your precious memories...</p>
+                </div>
             }
             else if (!entries.Any())
             {
                 <div class="empty-state">
-                    <p class="empty-title">No entries yet.</p>
-                    <NavLink class="btn-solid-diary" href="/diary/add">Add your first entry</NavLink>
+                    <h2 class="empty-title">No entries yet.</h2>
+                    <p>Every journey starts with a single word.</p>
+                    <NavLink class="btn-solid" href="/diary/add" style="margin-top: 20px;">Add your first entry</NavLink>
                 </div>
             }
             else
             {
-                <div class="diary-entries-grid">
-                    @foreach (var entry in entries.OrderByDescending(e => e.Date))
-                    {
-                        <NavLink class="diary-entry-card" href="@($"/diary/{entry.Id}")">
-                            <div class="entry-icon-container">
-                                <div class="entry-icon-bg">
-                                    @if (!string.IsNullOrEmpty(entry.ImageUrl))
-                                    {
-                                        <img src="@($"http://localhost:5105{entry.ImageUrl}")" alt="@entry.Title" />
-                                    }
-                                    else
-                                    {
-                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M11 4H4C2.89543 4 2 4.89543 2 6V20C2 21.1046 2.89543 22 4 22H18C19.1046 22 20 21.1046 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M18.5 2.50001C19.3284 1.67158 20.6716 1.67158 21.5 2.50001C22.3284 3.32844 22.3284 4.67158 21.5 5.50001L12 15L8 16L9 12L18.5 2.50001Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                    }
+                @foreach (var entry in entries.OrderByDescending(e => e.Date))
+                {
+                    <NavLink class="diary-card" href="@($"/diary/{entry.Id}")">
+                        <!-- Card Image Section -->
+                        <div class="card-image-container">
+                            @if (!string.IsNullOrEmpty(entry.ImageUrl))
+                            {
+                                <img src="@($"http://localhost:5105{entry.ImageUrl}")" alt="@entry.Title" class="card-image" />
+                            }
+                            else
+                            {
+                                <div class="card-icon-fallback">
+                                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    </svg>
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="card-content">
+                            <h3>@entry.Title</h3>
+                            <p>@entry.Content</p>
+                            
+                            <hr class="card-divider">
+                            
+                            <div class="card-footer">
+                                <span class="card-date">@entry.Date.ToString("MMMM d, yyyy")</span>
+                                <div class="card-actions">
+                                    <button class="action-btn btn-edit" type="button" @onclick="() => EditEntry(entry)" @onclick:stopPropagation="true" @onclick:preventDefault="true">Edit</button>
+                                    <button class="action-btn btn-delete" type="button" @onclick="() => DeleteEntry(entry)" @onclick:stopPropagation="true" @onclick:preventDefault="true">Delete</button>
                                 </div>
                             </div>
-                            <h3 class="diary-entry-title">@entry.Title</h3>
-                            <p class="diary-entry-excerpt">@entry.Content</p>
-                            <div class="diary-entry-date">@entry.Date.ToString("MMMM d, yyyy")</div>
-                            
-                            <div class="diary-entry-actions">
-                                <button class="btn-edit-small" type="button" @onclick="() => EditEntry(entry)" @onclick:stopPropagation="true" @onclick:preventDefault="true">Edit</button>
-                                <button class="btn-delete-small" type="button" @onclick="() => DeleteEntry(entry)" @onclick:stopPropagation="true" @onclick:preventDefault="true">Delete</button>
-                            </div>
-                        </NavLink>
-                    }
-                </div>
+                        </div>
+                    </NavLink>
+                }
             }
         </div>
-    </div>
+    </section>
 </div>
 
 @code {
