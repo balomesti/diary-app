@@ -44,7 +44,7 @@
             {
                 @foreach (var entry in entries.OrderByDescending(e => e.Date))
                 {
-                    <NavLink class="diary-card" href="@($"/diary/{entry.Id}")">
+                    <div class="diary-card">
                         <!-- Card Image Section -->
                         <div class="card-image-container">
                             @if (!string.IsNullOrEmpty(entry.ImageUrl))
@@ -71,12 +71,12 @@
                             <div class="card-footer">
                                 <span class="card-date">@entry.Date.ToString("MMMM d, yyyy")</span>
                                 <div class="card-actions">
-                                    <button class="action-btn btn-edit" type="button" @onclick="() => EditEntry(entry)" @onclick:stopPropagation="true" @onclick:preventDefault="true">Edit</button>
-                                    <button class="action-btn btn-delete" type="button" @onclick="() => DeleteEntry(entry)" @onclick:stopPropagation="true" @onclick:preventDefault="true">Delete</button>
+                                    <button class="action-btn btn-edit" type="button" @onclick="() => EditEntry(entry)">Edit</button>
+                                    <button class="action-btn btn-delete" type="button" @onclick="() => DeleteEntry(entry)">Delete</button>
                                 </div>
                             </div>
                         </div>
-                    </NavLink>
+                    </div>
                 }
             }
         </div>
