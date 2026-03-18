@@ -2,45 +2,54 @@
 @inject NavigationManager NavigationManager
 @inject AuthService AuthService
 
-<div class="auth-page">
-    <div class="auth-header">
-        <h1>Create an Account</h1>
-        <p>Start your digital diary today.</p>
-        <div class="auth-header-actions">
-            <button class="btn-solid-black" @onclick='() => NavigationManager.NavigateTo("/register")'>Sign Up</button>
-            <button class="btn-outline-white" @onclick='() => NavigationManager.NavigateTo("/")'>Login</button>
-        </div>
-    </div>
+<PageTitle>Diary Me - Register</PageTitle>
 
-    <div class="auth-container">
-        <div class="auth-info">
+<link href="css/signin.css" rel="stylesheet" />
+
+<div class="signin-container">
+    <div class="login-wrapper">
+        <!-- Left Side: Welcome Panel -->
+        <div class="welcome-section">
+            <video autoplay muted loop playsinline class="welcome-video">
+                <source src="images/signin.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="welcome-content">
+                <h1>Create an Account</h1>
+                <p>Start your digital diary today.</p>
+                <button class="btn-outline" @onclick='() => NavigationManager.NavigateTo("/")'>Login</button>
+            </div>
+        </div>
+
+        <!-- Right Side: Form Panel -->
+        <div class="form-section">
             <h2>Register</h2>
             <p>Enter your details below to create an account.</p>
+
             @if (!string.IsNullOrEmpty(errorMessage))
             {
                 <div class="alert alert-danger">@errorMessage</div>
             }
-        </div>
-
-        <div class="auth-form-container">
-            <form class="auth-form" @onsubmit="HandleRegister">
-                <div class="form-group">
+            
+            <form @onsubmit="HandleRegister">
+                <div class="input-group">
                     <label>Full Name</label>
                     <input type="text" @bind="registerModel.Username" placeholder="Enter your full name" required />
                 </div>
 
-                <div class="form-group">
+                <div class="input-group">
                     <label>Email</label>
                     <input type="email" @bind="registerModel.Email" placeholder="Enter your email" required />
                 </div>
-
-                <div class="form-group">
+                
+                <div class="input-group">
                     <label>Password</label>
                     <input type="password" @bind="registerModel.Password" placeholder="Create a password" required />
+                    <small>Make sure it's at least 8 characters long.</small>
                 </div>
-
-                <div class="auth-form-actions">
-                    <button type="submit" class="btn-solid-black" disabled="@isSubmitting">
+                
+                <div class="button-group">
+                    <button type="submit" class="btn-solid" disabled="@isSubmitting">
                         @if (isSubmitting)
                         {
                             <span>Registering...</span>
