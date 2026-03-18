@@ -43,7 +43,7 @@
 }
 
 .hero p {
-    color: #000000; 
+    color: #b8ab9e; /* Soft taupe/beige */
     font-size: 1.2rem;
     margin-bottom: 35px;
 }
@@ -53,41 +53,6 @@
     justify-content: center;
     gap: 15px;
 }
-
-.btn-solid {
-    background-color: var(--accent-color);
-    color: white !important;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.3s;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.btn-solid:hover { background-color: var(--accent-hover); }
-
-.btn-outline {
-    background-color: transparent;
-    color: var(--text-main) !important;
-    border: 1px solid var(--border-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.3s;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.btn-outline:hover { background-color: rgba(44, 35, 31, 0.05); }
-
 
 /* --- ENTRIES SECTION --- */
 .entries-header {

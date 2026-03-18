@@ -56,6 +56,45 @@ app {
     flex: 1;
 }
 
+/* Global Button Styles */
+.btn-solid {
+    background-color: #556B55;
+    color: white !important;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-solid:hover {
+    background-color: #435543;
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: #2C231F !important;
+    border: 1px solid rgba(212, 201, 189, 0.6);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-outline:hover {
+    background-color: rgba(44, 35, 31, 0.05);
+}
+
 a, .btn-link {
     color: #0366d6;
 }
