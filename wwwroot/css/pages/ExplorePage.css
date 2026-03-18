@@ -1,13 +1,13 @@
 .explore-hero {
     width: 100%;
     background: #6b6b6b;
-    padding: 80px 20px;
+    padding: 50px 20px;
 }
 
 .explore-hero-inner {
     max-width: 1100px;
     margin: 0 auto;
-    min-height: 240px;
+    min-height: 80px;
     display: flex;
     flex-direction: column;
     align-items: center;
