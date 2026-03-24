@@ -8,96 +8,87 @@
 
 <link href="css/pages/AdminContentCreate.css" rel="stylesheet" />
 
-<section class="admin-dashboard-hero">
-    <div class="admin-dashboard-hero-inner">
-        <h1>Create Content</h1>
-        <p>Generate explore posts and notices for users.</p>
+<link href="css/pages/AdminContentCreate.css" rel="stylesheet" />
+
+<div class="admin-create-container">
+    <div class="entry-container">
+        <div class="entry-header">
+            <h1>@(mode == CreateMode.Explore ? "Create Explore Post" : "Create Notice")</h1>
+            <p>Generate explore posts and notices for users.</p>
+        </div>
 
         <div class="admin-create-toggle" role="tablist" aria-label="Create mode">
             <button type="button" class="@ModeButtonClass(CreateMode.Explore)" @onclick="() => SelectMode(CreateMode.Explore)">Create Explore</button>
             <button type="button" class="@ModeButtonClass(CreateMode.Notice)" @onclick="() => SelectMode(CreateMode.Notice)">Create Notice</button>
         </div>
-    </div>
-</section>
 
-<section class="admin-create">
-    <div class="admin-create-inner">
-        <div class="admin-create-left">
-            @if (mode == CreateMode.Explore)
-            {
-                <h2 class="admin-create-title">Create Explore Post</h2>
-            }
-            else
-            {
-                <h2 class="admin-create-title">Create Notice</h2>
-            }
-            
-            @if (!string.IsNullOrEmpty(statusMessage))
-            {
-                <div class="admin-create-status @(isError ? "error" : "success")" style="margin-top: 20px; padding: 15px; border-radius: 8px; @(isError ? "background: #fee2e2; color: #991b1b;" : "background: #dcfce7; color: #166534;")">
-                    @statusMessage
+        @if (!string.IsNullOrEmpty(statusMessage))
+        {
+            <div class="admin-create-status @(isError ? "error" : "success")">
+                @statusMessage
+            </div>
+        }
+
+        @if (mode == CreateMode.Explore)
+        {
+            <EditForm Model="@exploreModel" OnValidSubmit="PublishExploreAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-group">
+                    <label>Post Title</label>
+                    <InputText class="form-control" @bind-Value="exploreModel.Title" placeholder="Enter the title of the explore post" />
                 </div>
-            }
-        </div>
 
-        <div class="admin-create-right">
-            @if (mode == CreateMode.Explore)
-            {
-                <EditForm Model="@exploreModel" OnValidSubmit="PublishExploreAsync">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
-                    <div class="admin-create-form">
-                        <div class="admin-create-field">
-                            <label class="admin-create-label">Post Title</label>
-                            <InputText class="admin-create-input" @bind-Value="exploreModel.Title" placeholder="Enter the title of the explore post" />
-                        </div>
+                <div class="form-group">
+                    <label>Post Content</label>
+                    <InputTextArea class="form-control" @bind-Value="exploreModel.Content" placeholder="Write the content of the explore post" />
+                </div>
 
-                        <div class="admin-create-field">
-                            <label class="admin-create-label">Post Content</label>
-                            <InputTextArea class="admin-create-input admin-create-textarea" @bind-Value="exploreModel.Content" placeholder="Write the content of the explore post" />
-                        </div>
+                <div class="form-group">
+                    <label>Image (Optional)</label>
+                    <InputFile class="form-control" OnChange="HandleExploreImageSelected" accept="image/*" />
+                    <div class="help-text">JPG/PNG up to a reasonable size.</div>
+                </div>
 
-                        <div class="admin-create-field">
-                            <label class="admin-create-label">Image (Optional)</label>
-                            <InputFile class="admin-create-input" OnChange="HandleExploreImageSelected" accept="image/*" />
-                        </div>
+                <div class="form-group">
+                    <label>Video (Optional)</label>
+                    <InputFile class="form-control" OnChange="HandleExploreVideoSelected" accept="video/*" />
+                    <div class="help-text">MP4 recommended; short loops look best.</div>
+                </div>
 
-                        <div class="admin-create-field">
-                            <label class="admin-create-label">Video (Optional)</label>
-                            <InputFile class="admin-create-input" OnChange="HandleExploreVideoSelected" accept="video/*" />
-                        </div>
+                <div class="submit-section">
+                    <button type="submit" class="btn-solid" disabled="@isSubmitting">
+                        @(isSubmitting ? "Publishing..." : "Publish Post")
+                    </button>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <EditForm Model="@noticeModel" OnValidSubmit="PublishNoticeAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-                        <button type="submit" class="admin-create-submit" disabled="@isSubmitting">
-                            @(isSubmitting ? "Publishing..." : "Publish Post")
-                        </button>
-                    </div>
-                </EditForm>
-            }
-            else
-            {
-                <EditForm Model="@noticeModel" OnValidSubmit="PublishNoticeAsync">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
-                    <div class="admin-create-form">
-                        <div class="admin-create-field">
-                            <label class="admin-create-label">Title</label>
-                            <InputText class="admin-create-input" @bind-Value="noticeModel.Title" placeholder="Enter the notice title" />
-                        </div>
+                <div class="form-group">
+                    <label>Title</label>
+                    <InputText class="form-control" @bind-Value="noticeModel.Title" placeholder="Enter the notice title" />
+                </div>
 
-                        <div class="admin-create-field">
-                            <label class="admin-create-label">Message</label>
-                            <InputTextArea class="admin-create-input admin-create-textarea" @bind-Value="noticeModel.Message" placeholder="Write the notice message" />
-                        </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <InputTextArea class="form-control" @bind-Value="noticeModel.Message" placeholder="Write the notice message" />
+                </div>
 
-                        <button type="submit" class="admin-create-submit" disabled="@isSubmitting">
-                            @(isSubmitting ? "Publishing..." : "Publish Notice")
-                        </button>
-                    </div>
-                </EditForm>
-            }
-        </div>
+                <div class="submit-section">
+                    <button type="submit" class="btn-solid" disabled="@isSubmitting">
+                        @(isSubmitting ? "Publishing..." : "Publish Notice")
+                    </button>
+                </div>
+            </EditForm>
+        }
     </div>
-</section>
+</div>
 
 
 @code {
