@@ -2,57 +2,79 @@
 @using diary_app.Models
 @inherits ComponentBase
 
-<div class="add-entry-header">
-    <h2>@(IsEdit ? "Edit Diary Entry" : "New Diary Entry")</h2>
-    <p>@(IsEdit ? "Update your thoughts and experiences" : "Capture your thoughts and experiences here")</p>
-    @if (!string.IsNullOrEmpty(ErrorMessage))
-    {
-        <div class="alert alert-danger">@ErrorMessage</div>
-    }
-    <div class="add-entry-actions">
-        <button class="btn-cancel" @onclick="OnCancel">Cancel</button>
-        <button class="btn-save" type="submit" form="entry-form" disabled="@IsSubmitting">
-            @if (IsSubmitting)
-            {
-                <span>@(IsEdit ? "Saving..." : "Saving...")</span>
-            }
-            else
-            {
-                <span>@(IsEdit ? "Save Changes" : "Save Entry")</span>
-            }
-        </button>
-    </div>
-  </div>
+<div class="entry-container">
+    <!-- TOP HEADER -->
+    <div class="entry-header">
+        <h1>@(IsEdit ? "Edit Diary Entry" : "New Diary Entry")</h1>
+        <p>@(IsEdit ? "Update your thoughts and experiences" : "Capture your thoughts and experiences here")</p>
+        
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger">@ErrorMessage</div>
+        }
 
-<div class="add-entry-container">
-    <EditForm Model="Entry" OnValidSubmit="HandleSubmit" class="entry-form" id="entry-form">
+        <div class="header-buttons">
+            <button class="btn-outline" type="button" @onclick="OnCancel">Cancel</button>
+            <button class="btn-solid" type="submit" form="entry-form" disabled="@IsSubmitting">
+                @if (IsSubmitting)
+                {
+                    <span>Saving...</span>
+                }
+                else
+                {
+                    <span>@(IsEdit ? "Save Changes" : "Save Entry")</span>
+                }
+            </button>
+        </div>
+    </div>
+
+    <!-- FORM SECTION -->
+    <EditForm Model="Entry" OnValidSubmit="HandleSubmit" id="entry-form">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
         <div class="form-group">
             <label>Title</label>
-            <InputText @bind-Value="Entry.Title" placeholder="Enter the title of your entry" />
+            <InputText @bind-Value="Entry.Title" class="form-control" placeholder="Enter the title of your entry" />
         </div>
 
         <div class="form-group">
             <label>Comment</label>
-            <InputTextArea @bind-Value="Entry.Content" placeholder="Write your thoughts..." />
+            <InputTextArea @bind-Value="Entry.Content" class="form-control" placeholder="Write your thoughts..." />
         </div>
 
         <div class="form-group">
             <label>Date</label>
-            <InputDate @bind-Value="Entry.Date" />
-            <small>Format: YYYY-MM-DD</small>
+            <InputDate @bind-Value="Entry.Date" class="form-control" />
+            <div class="help-text">Format: YYYY-MM-DD</div>
         </div>
 
         <div class="form-group">
             <label>Image</label>
-            <InputFile OnChange="HandleFileSelected" />
-            <small>@(IsEdit ? "Optional: select to replace image" : "Optional: Add a related image")</small>
+            <InputFile OnChange="HandleFileSelected" accept="image/*" />
+            <div class="help-text">@(IsEdit ? "Optional: select to replace image" : "Optional: Add a related image")</div>
+            
+            @if (!string.IsNullOrEmpty(imagePreviewUrl))
+            {
+                <div class="image-preview-container">
+                    <img src="@imagePreviewUrl" alt="Image Preview" class="image-preview" />
+                    <button type="button" class="btn-remove-image" @onclick="RemoveImage">Remove</button>
+                </div>
+            }
+            else if (IsEdit && !string.IsNullOrEmpty(Entry.ImageUrl))
+            {
+                <div class="image-preview-container">
+                    <img src="@($"http://localhost:5105{Entry.ImageUrl}")" alt="Current Image" class="image-preview" />
+                    <div class="help-text" style="text-align: center;">Current Image</div>
+                </div>
+            }
         </div>
 
-        <div class="form-submit">
-            <button type="submit" class="btn-submit">@((IsEdit ? "Save Changes" : "Submit"))</button>
+        <!-- BOTTOM ACTIONS -->
+        <div class="submit-section">
+            <button type="submit" class="btn-solid" disabled="@IsSubmitting">
+                @(IsSubmitting ? "Submitting..." : "Submit")
+            </button>
         </div>
     </EditForm>
 </div>
@@ -66,10 +88,42 @@
     [Parameter] public EventCallback OnCancel { get; set; }
 
     private IBrowserFile? _selectedImage;
+    private string? imagePreviewUrl;
 
-    private void HandleFileSelected(InputFileChangeEventArgs e)
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
         _selectedImage = e.File;
+        
+        if (_selectedImage != null)
+        {
+            // Read the file and convert it to a base64 string for preview
+            var format = _selectedImage.ContentType;
+            var maxAllowedSize = 5120000; // 5MB limit for preview
+            
+            try
+            {
+                var buffer = new byte[_selectedImage.Size];
+                await _selectedImage.OpenReadStream(maxAllowedSize).ReadAsync(buffer);
+                imagePreviewUrl = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading file: {ex.Message}");
+                imagePreviewUrl = null;
+            }
+        }
+        else
+        {
+            imagePreviewUrl = null;
+        }
+    }
+
+    private void RemoveImage()
+    {
+        _selectedImage = null;
+        imagePreviewUrl = null;
+        // Note: Clearing the actual <input type="file"> value is tricky in Blazor without JS interop, 
+        // but setting _selectedImage to null prevents it from being sent on save.
     }
 
     private async Task HandleSubmit()
