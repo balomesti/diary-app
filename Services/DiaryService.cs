@@ -29,6 +29,18 @@ namespace diary_app.Services
             }
         }
 
+        public async Task<DiaryEntry?> GetEntryByIdAsync(int id)
+        {
+            try
+            {
+                return await _http.GetFromJsonAsync<DiaryEntry>($"api/Diary/{id}");
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task<bool> SaveEntryAsync(DiaryEntry entry, List<IBrowserFile>? imageFiles)
         {
             using var content = new MultipartFormDataContent();

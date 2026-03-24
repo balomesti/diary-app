@@ -44,7 +44,7 @@
             {
                 @foreach (var entry in entries.OrderByDescending(e => e.Date))
                 {
-                    <div class="diary-card">
+                    <div class="diary-card" @onclick="() => ViewDetail(entry.Id)">
                         <!-- Card Image Section -->
                         <div class="card-image-container">
                             @if (!string.IsNullOrEmpty(entry.ImageUrls))
@@ -90,8 +90,8 @@
                             <div class="card-footer">
                                 <span class="card-date">@entry.Date.ToString("MMMM d, yyyy")</span>
                                 <div class="card-actions">
-                                    <button class="action-btn btn-edit" type="button" @onclick="() => EditEntry(entry)">Edit</button>
-                                    <button class="action-btn btn-delete" type="button" @onclick="() => DeleteEntry(entry)">Delete</button>
+                                    <button class="action-btn btn-edit" type="button" @onclick:stopPropagation="true" @onclick="() => EditEntry(entry)">Edit</button>
+                                    <button class="action-btn btn-delete" type="button" @onclick:stopPropagation="true" @onclick="() => DeleteEntry(entry)">Delete</button>
                                 </div>
                             </div>
                         </div>
@@ -125,5 +125,10 @@
     private void EditEntry(DiaryEntry entry)
     {
         NavigationManager.NavigateTo($"/diary/edit/{entry.Id}");
+    }
+
+    private void ViewDetail(int id)
+    {
+        NavigationManager.NavigateTo($"/diary/detail/{id}");
     }
 }

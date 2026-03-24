@@ -1,0 +1,107 @@
+@page "/diary/detail/{Id:int}"
+@inject DiaryService DiaryService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@(entry?.Title ?? "Loading...") - Diary Me</PageTitle>
+
+<link href="css/pages/DiaryDetailPage.css" rel="stylesheet" />
+
+<div class="diary-detail-page">
+    <div class="detail-container">
+        @if (entry == null)
+        {
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Retrieving your memory...</p>
+            </div>
+        }
+        else
+        {
+            <div class="detail-header">
+                <button class="back-btn" @onclick="GoBack">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back to List
+                </button>
+                <div class="header-actions">
+                    <button class="action-btn btn-edit" @onclick="EditEntry">Edit Entry</button>
+                    <button class="action-btn btn-delete" @onclick="DeleteEntry">Delete</button>
+                </div>
+            </div>
+
+            <article class="detail-card">
+                <div class="detail-meta">
+                    <span class="detail-date">@entry.Date.ToString("MMMM d, yyyy")</span>
+                    <span class="detail-time">@entry.Date.ToString("h:mm tt")</span>
+                </div>
+
+                <h1 class="detail-title">@entry.Title</h1>
+
+                @if (!string.IsNullOrEmpty(entry.ImageUrls))
+                {
+                    <div class="image-gallery">
+                        @foreach (var url in entry.ImageUrls.Split(';', StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            <div class="gallery-item">
+                                <img src="@($"http://localhost:5105{url}")" alt="@entry.Title" @onclick="() => OpenImage(url)" />
+                            </div>
+                        }
+                    </div>
+                }
+
+                <div class="detail-content">
+                    @foreach (var paragraph in entry.Content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None))
+                    {
+                        <p>@paragraph</p>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private DiaryEntry? entry;
+
+    protected override async Task OnInitializedAsync()
+    {
+        entry = await DiaryService.GetEntryByIdAsync(Id);
+        if (entry == null)
+        {
+            // Handle not found - maybe redirect or show error
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/diary");
+    }
+
+    private void EditEntry()
+    {
+        NavigationManager.NavigateTo($"/diary/edit/{Id}");
+    }
+
+    private async Task DeleteEntry()
+    {
+        if (entry == null) return;
+
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete \"{entry.Title}\"?");
+        if (confirmed)
+        {
+            await DiaryService.DeleteEntryAsync(entry);
+            NavigationManager.NavigateTo("/diary");
+        }
+    }
+
+    private async Task OpenImage(string url)
+    {
+        await JSRuntime.InvokeVoidAsync("open", $"http://localhost:5105{url}", "_blank");
+    }
+}

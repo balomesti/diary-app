@@ -1,0 +1,222 @@
+/* Importing fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+/* Color Palette */
+:root {
+    --text-main: #2C231F;      
+    --text-light: #7A6F66;     
+    --accent-color: #556B55;   
+    --accent-hover: #435543; 
+    --card-bg: rgba(253, 251, 247, 0.85); /* Frosted glass */
+    --border-color: rgba(212, 201, 189, 0.8); 
+    --delete-text: #A75D50; 
+    --delete-bg: #F7EBE9; 
+    --edit-text: #3E5A4E; 
+    --edit-bg: #E8EFEA; 
+}
+
+/* --- MAIN CONTAINER --- */
+.diary-detail-page {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    font-family: 'Nunito', sans-serif;
+    color: var(--text-main);
+    min-height: 100vh;
+}
+
+/* --- HEADER SECTION --- */
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 0;
+}
+
+.back-btn:hover {
+    color: var(--accent-color);
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.action-btn {
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-edit {
+    background-color: var(--edit-bg);
+    color: var(--edit-text);
+}
+.btn-edit:hover { 
+    background-color: #d1dfd4; 
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background-color: var(--delete-bg);
+    color: var(--delete-text);
+}
+.btn-delete:hover { 
+    background-color: #e8d5d2; 
+    transform: translateY(-1px);
+}
+
+/* --- DETAIL CARD --- */
+.detail-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px); 
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 60px;
+    box-shadow: 0 20px 40px rgba(44, 35, 31, 0.08);
+    position: relative;
+    /* Paper texture background */
+    background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+}
+
+.detail-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.detail-date {
+    position: relative;
+}
+
+.detail-date::after {
+    content: "•";
+    margin-left: 15px;
+    opacity: 0.4;
+}
+
+.detail-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.2rem;
+    margin-bottom: 40px;
+    color: var(--text-main);
+    line-height: 1.2;
+}
+
+/* --- IMAGE GALLERY --- */
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.gallery-item {
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: scale(1.03);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- CONTENT SECTION --- */
+.detail-content {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: #3D3530;
+}
+
+.detail-content p {
+    margin-bottom: 25px;
+    white-space: pre-wrap; /* Preserve spaces if not manually split */
+}
+
+/* --- LOADING STATE --- */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 0;
+    color: var(--text-light);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(85, 107, 85, 0.1);
+    border-top: 3px solid var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .diary-detail-page {
+        padding: 30px 15px;
+    }
+    .detail-card {
+        padding: 30px 20px;
+    }
+    .detail-title {
+        font-size: 2.2rem;
+        margin-bottom: 25px;
+    }
+    .image-gallery {
+        grid-template-columns: 1fr;
+    }
+    .detail-header {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+    }
+    .header-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    .action-btn {
+        text-align: center;
+    }
+}
