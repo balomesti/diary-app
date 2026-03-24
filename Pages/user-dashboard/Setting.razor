@@ -3,84 +3,96 @@
 
 <PageTitle>Setting</PageTitle>
 
-<section class="settings-hero">
-    <div class="settings-hero-inner">
-        <h1>Customize Your Diary</h1>
-        <p>Manage your diary settings to personalize your experience.</p>
+<div class="settings-page-container">
+    <div class="settings-wrapper">
+        <!-- TOP LEVEL ACTIONS -->
+        <div class="page-header">
+            <h1>Customize Your Diary</h1>
+            <p>Manage your diary settings to personalize your experience.</p>
 
-        <div class="settings-hero-actions">
-            <button class="settings-btn-outline" type="button" @onclick="Cancel">Cancel</button>
-            <button class="settings-btn-solid" type="button" @onclick="SaveChanges">Save Changes</button>
+            <div class="global-actions">
+                <button class="btn-outline" type="button" @onclick="Cancel">Cancel</button>
+                <button class="btn-solid" type="button" @onclick="SaveChanges">Save Changes</button>
+            </div>
         </div>
 
-        <div class="settings-tabs" role="tablist" aria-label="Settings sections">
+        <!-- TABS -->
+        <div class="tabs-container" role="tablist" aria-label="Settings sections">
             <button type="button" class="@TabClass(SettingsTab.General)" @onclick="() => SelectTab(SettingsTab.General)">General</button>
             <button type="button" class="@TabClass(SettingsTab.Privacy)" @onclick="() => SelectTab(SettingsTab.Privacy)">Privacy</button>
             <button type="button" class="@TabClass(SettingsTab.Notifications)" @onclick="() => SelectTab(SettingsTab.Notifications)">Notifications</button>
         </div>
-    </div>
-</section>
 
-<section class="settings-section">
-    <div class="settings-section-inner">
-        <h2>@SectionTitle</h2>
-        <p class="settings-section-subtitle">@SectionSubtitle</p>
-
-        @if (activeTab == SettingsTab.General)
-        {
-            <div class="settings-form-grid">
-                <div class="settings-field">
-                    <label class="settings-label">Diary Title</label>
-                    <input class="settings-input" type="text" placeholder="Enter your diary title" @bind="diaryTitle" />
-                </div>
-
-                <div class="settings-field">
-                    <label class="settings-label">Font Size</label>
-                    <div class="settings-segment">
-                        <button type="button" class='@SegmentClass(fontSize == "Small")' @onclick='() => fontSize = "Small"'>Small</button>
-                        <button type="button" class='@SegmentClass(fontSize == "Medium")' @onclick='() => fontSize = "Medium"'>Medium</button>
-                        <button type="button" class='@SegmentClass(fontSize == "Large")' @onclick='() => fontSize = "Large"'>Large</button>
-                    </div>
-                </div>
-
-                <div class="settings-field">
-                    <label class="settings-label">Theme Color</label>
-                    <div class="settings-segment settings-segment-wide">
-                        <button type="button" class='@SegmentClass(theme == "Light")' @onclick='() => theme = "Light"'>Light</button>
-                        <button type="button" class='@SegmentClass(theme == "Dark")' @onclick='() => theme = "Dark"'>Dark</button>
-                    </div>
-                </div>
-
-                <div class="settings-field">
-                    <label class="settings-label">Backup Frequency</label>
-                    <div class="settings-segment">
-                        <button type="button" class='@SegmentClass(backup == "Daily")' @onclick='() => backup = "Daily"'>Daily</button>
-                        <button type="button" class='@SegmentClass(backup == "Weekly")' @onclick='() => backup = "Weekly"'>Weekly</button>
-                        <button type="button" class='@SegmentClass(backup == "Monthly")' @onclick='() => backup = "Monthly"'>Monthly</button>
-                    </div>
-                </div>
+        <!-- SETTINGS CARD -->
+        <div class="settings-card">
+            <div class="card-header">
+                <h2>@SectionTitle</h2>
+                <p>@SectionSubtitle</p>
             </div>
-        }
-        else if (activeTab == SettingsTab.Privacy)
-        {
-            <div class="settings-placeholder">
-                <h3>Privacy</h3>
-                <p>Privacy settings will appear here.</p>
-            </div>
-        }
-        else
-        {
-            <div class="settings-placeholder">
-                <h3>Notifications</h3>
-                <p>Notification settings will appear here.</p>
-            </div>
-        }
 
-        <div class="settings-footer">
-            <button class="settings-btn-solid settings-btn-wide" type="button" @onclick="SaveChanges">Update Settings</button>
+            @if (activeTab == SettingsTab.General)
+            {
+                <form action="#">
+                    <div class="form-grid">
+                        <!-- Left Column -->
+                        <div class="form-group">
+                            <label>Diary Title</label>
+                            <input type="text" class="form-control" placeholder="Enter your diary title" @bind="diaryTitle">
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="form-group">
+                            <label>Font Size</label>
+                            <div class="segmented-control">
+                                <button type="button" class="@SegmentClass(fontSize == "Small")" @onclick='() => fontSize = "Small"'>Small</button>
+                                <button type="button" class="@SegmentClass(fontSize == "Medium")" @onclick='() => fontSize = "Medium"'>Medium</button>
+                                <button type="button" class="@SegmentClass(fontSize == "Large")" @onclick='() => fontSize = "Large"'>Large</button>
+                            </div>
+                        </div>
+
+                        <!-- Left Column Bottom -->
+                        <div class="form-group">
+                            <label>Theme Color</label>
+                            <div class="segmented-control">
+                                <button type="button" class="@SegmentClass(theme == "Light")" @onclick='() => theme = "Light"'>Light</button>
+                                <button type="button" class="@SegmentClass(theme == "Dark")" @onclick='() => theme = "Dark"'>Dark</button>
+                            </div>
+                        </div>
+
+                        <!-- Right Column Bottom -->
+                        <div class="form-group">
+                            <label>Backup Frequency</label>
+                            <div class="segmented-control">
+                                <button type="button" class="@SegmentClass(backup == "Daily")" @onclick='() => backup = "Daily"'>Daily</button>
+                                <button type="button" class="@SegmentClass(backup == "Weekly")" @onclick='() => backup = "Weekly"'>Weekly</button>
+                                <button type="button" class="@SegmentClass(backup == "Monthly")" @onclick='() => backup = "Monthly"'>Monthly</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOTTOM SUBMIT -->
+                    <div class="submit-section">
+                        <button type="button" class="btn-solid" @onclick="SaveChanges">Update Settings</button>
+                    </div>
+                </form>
+            }
+            else if (activeTab == SettingsTab.Privacy)
+            {
+                <div class="settings-placeholder" style="text-align: center; padding: 40px;">
+                    <h3>Privacy</h3>
+                    <p>Privacy settings will appear here.</p>
+                </div>
+            }
+            else
+            {
+                <div class="settings-placeholder" style="text-align: center; padding: 40px;">
+                    <h3>Notifications</h3>
+                    <p>Notification settings will appear here.</p>
+                </div>
+            }
         </div>
     </div>
-</section>
+</div>
 
 @code {
     private enum SettingsTab
@@ -119,12 +131,12 @@
 
     private string TabClass(SettingsTab tab)
     {
-        return tab == activeTab ? "settings-tab settings-tab-active" : "settings-tab";
+        return tab == activeTab ? "tab-btn active" : "tab-btn";
     }
 
     private string SegmentClass(bool isActive)
     {
-        return isActive ? "settings-segment-btn settings-segment-btn-active" : "settings-segment-btn";
+        return isActive ? "segment-btn active" : "segment-btn";
     }
 
     private void Cancel()
@@ -134,5 +146,7 @@
 
     private void SaveChanges()
     {
+        // Logic to save changes
     }
 }
+
