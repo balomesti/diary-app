@@ -2,27 +2,33 @@
 
 <header class="navmenu">
     <div class="navmenu-inner">
-        <NavLink class="navmenu-brand" href="/admin/dashboard" Match="NavLinkMatch.All">
-            <span class="navmenu-brand-text">Admin</span>
-            <svg class="navmenu-brand-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 3L20 7V17L12 21L4 17V7L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
-                <path d="M12 12V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                <path d="M20 7L12 12L4 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-        </NavLink>
+        <!-- Logo Section (Left) -->
+        <div class="nav-left">
+            <NavLink class="navmenu-brand" href="/admin/dashboard" Match="NavLinkMatch.All">
+                <svg class="navmenu-brand-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3L20 7V17L12 21L4 17V7L12 3Z" />
+                    <path d="M12 12V21" />
+                    <path d="M20 7L12 12L4 7" />
+                </svg>
+                <span class="navmenu-brand-text">Admin Me</span>
+            </NavLink>
+        </div>
 
         <button class="navmenu-toggle" type="button" @onclick="ToggleNavMenu">
             Menu
         </button>
 
-        <nav class="navmenu-links @NavMenuCssClass" @onclick="ToggleNavMenu">
-            <div class="nav-links-main">
-                <NavLink class="navmenu-link" href="/admin/dashboard" Match="NavLinkMatch.All">Home</NavLink>
-                <NavLink class="navmenu-link" href="/admin/create">Create</NavLink>
-                <NavLink class="navmenu-link" href="/admin/manage">Content Manager</NavLink>
-            </div>
+        <!-- Links Section (Center) -->
+        <div class="nav-center @NavMenuCssClass">
+            <NavLink class="navmenu-link" href="/admin/dashboard" Match="NavLinkMatch.All">Home</NavLink>
+            <NavLink class="navmenu-link" href="/admin/create">Create</NavLink>
+            <NavLink class="navmenu-link" href="/admin/manage">Content Manager</NavLink>
+        </div>
+
+        <!-- Actions Section (Right) -->
+        <div class="nav-right @NavMenuCssClass">
             <NavLink class="navmenu-link navmenu-link-logout" href="/logout">Logout</NavLink>
-        </nav>
+        </div>
     </div>
 </header>
 

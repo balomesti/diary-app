@@ -1,0 +1,100 @@
+.admin-auth-page {
+    min-height: calc(100vh - 1px);
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-auth-hero {
+    background: #000;
+    color: #fff;
+    padding: 64px 20px;
+    text-align: center;
+}
+
+.admin-auth-hero h1 {
+    margin: 0 0 10px;
+    font-size: 2.8rem;
+    font-weight: 800;
+    outline: none;
+}
+
+.admin-auth-hero p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.admin-auth-container {
+    max-width: 900px;
+    margin: 48px auto 80px;
+    padding: 0 20px;
+    width: 100%;
+}
+
+.admin-auth-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 22px;
+    background: #fff;
+}
+
+.admin-auth-card h2 {
+    margin: 0 0 16px;
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+
+.admin-auth-form .form-group {
+    margin-bottom: 18px;
+}
+
+.admin-auth-form label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.admin-auth-form input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+
+.admin-auth-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.admin-btn-outline {
+    border: 1.5px solid #000;
+    padding: 12px 24px;
+    border-radius: 10px;
+    background: #fff;
+    color: #000;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.admin-btn-solid {
+    border: 1.5px solid #000;
+    padding: 12px 24px;
+    border-radius: 10px;
+    background: #000;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.admin-btn-solid:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+}
+
+.admin-btn-solid:active {
+    opacity: 0.94;
+    transform: translateY(0);
+}

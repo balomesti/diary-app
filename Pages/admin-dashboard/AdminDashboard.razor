@@ -6,31 +6,28 @@
 
 <PageTitle>Admin Dashboard</PageTitle>
 
-<section class="admin-dashboard-hero">
-    <div class="admin-dashboard-hero-inner">
-        <h1>Welcome to the Admin<br />Dashboard</h1>
-        <p>Manage your diary entries, explore posts, and notices all in one place.</p>
+<link href="css/pages/AdminPage.css" rel="stylesheet" />
 
-        <div class="admin-dashboard-hero-actions">
-            <button class="admin-btn-outline admin-btn-wide" type="button" @onclick="GoToManage">Manage Content</button>
-            <button class="admin-btn-solid admin-btn-wide" type="button" @onclick="GoToCreate">Create New Post</button>
+<div class="admin-dashboard-container">
+    <main class="admin-hero-wrapper">
+        <!-- LEFT SIDE: ADMIN TEXT & ACTIONS -->
+        <div class="admin-content-hero">
+            <h1>Welcome to the<br />Admin Dashboard</h1>
+            <p>Manage your diary entries, explore posts, and notices all in one place.</p>
+
+            <div class="admin-hero-buttons">
+                <button class="btn-outline" type="button" @onclick="GoToManage">Manage Content</button>
+                <button class="btn-solid" type="button" @onclick="GoToCreate">Create New Post</button>
+            </div>
         </div>
-    </div>
-</section>
 
-<section class="admin-dashboard-main" id="preview" style="padding: 60px 20px;">
-    <div class="admin-dashboard-main-inner" style="max-width: 1100px; margin: 0 auto;">
-        <div class="admin-dashboard-preview" style="margin-bottom: 0;">
-            <video autoplay loop muted playsinline style="width: 100%; height: 500px; object-fit: cover; border-radius: 16px; display: block; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);">
-                <source src="images/Diary-gif.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-            </video>
+        <!-- RIGHT SIDE: ADMIN IMAGE -->
+        <div class="admin-image-wrapper">
+            <img src="https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=800&auto=format&fit=crop" alt="Person writing in a diary">
         </div>
-    </div>
-</section>
+    </main>
 
-
-<section class="admin-dashboard-explore" style="background: #f8fafc; padding: 60px 20px;">
+    <section class="admin-dashboard-explore" style="background: transparent; padding: 20px 0;">
     <div style="max-width: 1100px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 40px;">
             <h2 style="font-size: 2.5rem; font-weight: 800; color: #0f172a; margin-bottom: 12px;">Latest Explore Posts</h2>
@@ -104,6 +101,7 @@
         }
     </div>
 </section>
+</div>
 
 @code {
     private bool isLoading;
