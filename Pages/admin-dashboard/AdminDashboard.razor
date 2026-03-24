@@ -27,7 +27,7 @@
         </div>
     </main>
 
-    <section class="admin-dashboard-explore" style="background: transparent; padding: 20px 0;">
+<section class="admin-dashboard-explore" style="background: transparent; padding: 20px 0;">
     <div style="max-width: 1100px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 40px;">
             <h2 style="font-size: 2.5rem; font-weight: 800; color: #0f172a; margin-bottom: 12px;">Latest Explore Posts</h2>
@@ -51,11 +51,11 @@
         else
         {
             <div class="admin-carousel-container" style="position: relative; width: 100%;">
-                <div class="admin-carousel-track" style="overflow: hidden; border-radius: 16px; background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);">
+                <div class="admin-carousel-track" style="overflow: hidden; border-radius: 16px; background: #fff; border: 1px solid var(--border-color); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);">
                     @foreach (var (news, index) in latestNews.Select((v, i) => (v, i)))
                     {
                         <div class="admin-carousel-item" style="display: @(index == currentSlide ? "block" : "none");">
-                            <div class="admin-carousel-media" style="width: 100%; height: 500px; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            <div class="admin-carousel-media" style="width: 100%; height: 380px; background: #fdfbf7; display: flex; align-items: center; justify-content: center; overflow: hidden;">
                                 @if (!string.IsNullOrEmpty(news.VideoUrl))
                                 {
                                     <video style="width: 100%; height: 100%; object-fit: cover;" autoplay loop muted playsinline>
@@ -73,9 +73,9 @@
                                     </div>
                                 }
                             </div>
-                            <div class="admin-carousel-content" style="padding: 32px; border-top: 1px solid #f1f5f9; text-align: center;">
-                                <h3 style="margin: 0 0 16px; font-size: 1.8rem; font-weight: 800; color: #0f172a;">@news.Title</h3>
-                                <p style="margin: 0 auto; color: #475569; font-size: 1.1rem; line-height: 1.7; max-width: 800px;">@news.Content</p>
+                            <div class="admin-carousel-content" style="padding: 24px; border-top: 1px solid var(--border-color); text-align: center;">
+                                <h3 style="margin: 0 0 12px; font-size: 1.6rem; font-weight: 800; color: var(--text-main); font-family: 'Playfair Display', serif;">@news.Title</h3>
+                                <p style="margin: 0 auto; color: var(--text-light); font-size: 1.05rem; line-height: 1.6; max-width: 800px;">@news.Content</p>
                             </div>
                         </div>
                     }
@@ -83,11 +83,11 @@
 
                 @if (latestNews.Count > 1)
                 {
-                    <button type="button" @onclick="PrevSlide" style="position: absolute; top: 250px; left: -22px; width: 50px; height: 50px; border-radius: 50%; background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 8px 16px rgba(0,0,0,0.12); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.12)'">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    <button type="button" @onclick="PrevSlide" style="position: absolute; top: 190px; left: -25px; width: 50px; height: 50px; border-radius: 50%; background: #fff; border: 1px solid var(--border-color); box-shadow: 0 8px 16px rgba(44, 35, 31, 0.12); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-50%) scale(1.1)'; this.style.boxShadow='0 10px 20px rgba(44, 35, 31, 0.15)'" onmouseout="this.style.transform='translateY(-50%) scale(1)'; this.style.boxShadow='0 8px 16px rgba(44, 35, 31, 0.12)'">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-main)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
-                    <button type="button" @onclick="NextSlide" style="position: absolute; top: 250px; right: -22px; width: 50px; height: 50px; border-radius: 50%; background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 8px 16px rgba(0,0,0,0.12); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: all 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.12)'">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    <button type="button" @onclick="NextSlide" style="position: absolute; top: 190px; right: -25px; width: 50px; height: 50px; border-radius: 50%; background: #fff; border: 1px solid var(--border-color); box-shadow: 0 8px 16px rgba(44, 35, 31, 0.12); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-50%) scale(1.1)'; this.style.boxShadow='0 10px 20px rgba(44, 35, 31, 0.15)'" onmouseout="this.style.transform='translateY(-50%) scale(1)'; this.style.boxShadow='0 8px 16px rgba(44, 35, 31, 0.12)'">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-main)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
 
                     <div class="admin-carousel-dots" style="display: flex; justify-content: center; gap: 10px; margin-top: 24px;">
