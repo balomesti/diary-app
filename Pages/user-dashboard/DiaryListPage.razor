@@ -47,9 +47,28 @@
                     <div class="diary-card">
                         <!-- Card Image Section -->
                         <div class="card-image-container">
-                            @if (!string.IsNullOrEmpty(entry.ImageUrl))
+                            @if (!string.IsNullOrEmpty(entry.ImageUrls))
                             {
-                                <img src="@($"http://localhost:5105{entry.ImageUrl}")" alt="@entry.Title" class="card-image" />
+                                var firstImageUrl = entry.ImageUrls.Split(';', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+                                if (!string.IsNullOrEmpty(firstImageUrl))
+                                {
+                                    <img src="@($"http://localhost:5105{firstImageUrl}")" alt="@entry.Title" class="card-image" />
+                                    if (entry.ImageUrls.Split(';', StringSplitOptions.RemoveEmptyEntries).Length > 1)
+                                    {
+                                        <div class="image-count-badge">
+                                            +@(entry.ImageUrls.Split(';', StringSplitOptions.RemoveEmptyEntries).Length - 1)
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="card-icon-fallback">
+                                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                        </svg>
+                                    </div>
+                                }
                             }
                             else
                             {

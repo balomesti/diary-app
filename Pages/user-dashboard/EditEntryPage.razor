@@ -44,14 +44,14 @@ else
         }
     }
 
-    private async Task<bool> HandleSave(DiaryEntry updated, IBrowserFile? selectedImage)
+    private async Task<bool> HandleSave(DiaryEntry updated, List<IBrowserFile>? selectedImages)
     {
         if (entry == null) return false;
         errorMessage = "";
         isSaving = true;
         try
         {
-            var ok = await DiaryService.UpdateEntryAsync(updated, selectedImage);
+            var ok = await DiaryService.UpdateEntryAsync(updated, selectedImages);
             if (ok)
             {
                 NavigationManager.NavigateTo($"/diary/{EntryId}");

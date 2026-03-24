@@ -29,36 +29,42 @@ namespace diary_app.Services
             }
         }
 
-        public async Task<bool> SaveEntryAsync(DiaryEntry entry, IBrowserFile? imageFile)
+        public async Task<bool> SaveEntryAsync(DiaryEntry entry, List<IBrowserFile>? imageFiles)
         {
             using var content = new MultipartFormDataContent();
             content.Add(new StringContent(entry.Title), "Title");
             content.Add(new StringContent(entry.Content), "Content");
             content.Add(new StringContent(entry.Date.ToString("yyyy-MM-ddTHH:mm:ss")), "Date");
 
-            if (imageFile != null)
+            if (imageFiles != null && imageFiles.Count > 0)
             {
-                var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // 10MB max
-                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
-                content.Add(fileContent, "Image", imageFile.Name);
+                foreach (var imageFile in imageFiles)
+                {
+                    var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // 10MB max
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
+                    content.Add(fileContent, "Images", imageFile.Name);
+                }
             }
 
             var response = await _http.PostAsync("api/Diary", content);
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UpdateEntryAsync(DiaryEntry entry, IBrowserFile? imageFile)
+        public async Task<bool> UpdateEntryAsync(DiaryEntry entry, List<IBrowserFile>? imageFiles)
         {
             using var content = new MultipartFormDataContent();
             content.Add(new StringContent(entry.Title), "Title");
             content.Add(new StringContent(entry.Content), "Content");
             content.Add(new StringContent(entry.Date.ToString("yyyy-MM-ddTHH:mm:ss")), "Date");
 
-            if (imageFile != null)
+            if (imageFiles != null && imageFiles.Count > 0)
             {
-                var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // 10MB max
-                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
-                content.Add(fileContent, "Image", imageFile.Name);
+                foreach (var imageFile in imageFiles)
+                {
+                    var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // 10MB max
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
+                    content.Add(fileContent, "Images", imageFile.Name);
+                }
             }
 
             var response = await _http.PutAsync($"api/Diary/{entry.Id}", content);

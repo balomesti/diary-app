@@ -3,42 +3,32 @@
 
 <PageTitle>Diary App</PageTitle>
 
-<div class="@PageCssClass">
-    @if (IsAdminPage())
-    {
-        <AdminNavMenu />
-    }
-    else if (IsMainPage())
-    {
-        <NavMenu />
-    }
+<div class="main-layout">
+    <div class="page">
+        @if (IsAdminPage())
+        {
+            <AdminNavMenu />
+        }
+        else if (IsMainPage())
+        {
+            <NavMenu />
+        }
 
-    <main class="main">
-        <article class="@ContentCssClass">
-            @Body
-        </article>
-    </main>
+        <main class="main">
+            <article class="@ContentCssClass">
+                @Body
+            </article>
+        </main>
 
-    @if (ShowFooter())
-    {
-        <AppFooter />
-    }
+        @if (ShowFooter())
+        {
+            <AppFooter />
+        }
+    </div>
 </div>
 
 @code {
-    private string PageCssClass
-    {
-        get
-        {
-            var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-            if (IsAdminPage()) return "page admin-layout";
-            if (string.IsNullOrEmpty(relativePath) || relativePath.Equals("register", StringComparison.OrdinalIgnoreCase))
-            {
-                return "page auth-layout";
-            }
-            return "page main-layout";
-        }
-    }
+    private string PageCssClass => IsAdminPage() ? "page admin-page" : "page";
 
     private string ContentCssClass
     {

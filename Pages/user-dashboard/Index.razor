@@ -57,9 +57,12 @@
                 {
                     <NavLink class="entry-card" href="@($"/diary/{entry.Id}")">
                         <div class="entry-image-container">
-                            @if (!string.IsNullOrEmpty(entry.ImageUrl))
+                            @{
+                                var firstUrl = entry.ImageUrls?.Split(';', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+                            }
+                            @if (!string.IsNullOrEmpty(firstUrl))
                             {
-                                <img src="@($"http://localhost:5105{entry.ImageUrl}")" alt="@entry.Title" class="entry-image">
+                                <img src="@($"http://localhost:5105{firstUrl}")" alt="@entry.Title" class="entry-image">
                             }
                             else
                             {

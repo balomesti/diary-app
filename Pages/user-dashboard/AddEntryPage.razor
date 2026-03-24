@@ -16,13 +16,13 @@
     private string errorMessage = "";
     private bool isSaving = false;
 
-    private async Task<bool> HandleSave(DiaryEntry entry, IBrowserFile? selectedImage)
+    private async Task<bool> HandleSave(DiaryEntry entry, List<IBrowserFile>? selectedImages)
     {
         errorMessage = "";
         isSaving = true;
         try
         {
-            var success = await DiaryService.SaveEntryAsync(entry, selectedImage);
+            var success = await DiaryService.SaveEntryAsync(entry, selectedImages);
             if (success)
             {
                 NavigationManager.NavigateTo("/diary");

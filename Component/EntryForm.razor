@@ -50,22 +50,32 @@
         </div>
 
         <div class="form-group">
-            <label>Image</label>
-            <InputFile OnChange="HandleFileSelected" accept="image/*" />
-            <div class="help-text">@(IsEdit ? "Optional: select to replace image" : "Optional: Add a related image")</div>
+            <label>Images</label>
+            <InputFile OnChange="HandleFileSelected" accept="image/*" multiple />
+            <div class="help-text">@(IsEdit ? "Optional: select to replace images" : "Optional: Add related images")</div>
             
-            @if (!string.IsNullOrEmpty(imagePreviewUrl))
+            @if (imagePreviewUrls.Any())
             {
-                <div class="image-preview-container">
-                    <img src="@imagePreviewUrl" alt="Image Preview" class="image-preview" />
-                    <button type="button" class="btn-remove-image" @onclick="RemoveImage">Remove</button>
+                <div class="image-previews-grid">
+                    @foreach (var url in imagePreviewUrls)
+                    {
+                        <div class="image-preview-container">
+                            <img src="@url" alt="Image Preview" class="image-preview" />
+                        </div>
+                    }
+                    <button type="button" class="btn-remove-image" @onclick="RemoveImages">Clear All</button>
                 </div>
             }
-            else if (IsEdit && !string.IsNullOrEmpty(Entry.ImageUrl))
+            else if (IsEdit && !string.IsNullOrEmpty(Entry.ImageUrls))
             {
-                <div class="image-preview-container">
-                    <img src="@($"http://localhost:5105{Entry.ImageUrl}")" alt="Current Image" class="image-preview" />
-                    <div class="help-text" style="text-align: center;">Current Image</div>
+                <div class="image-previews-grid">
+                    @foreach (var url in Entry.ImageUrls.Split(';', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <div class="image-preview-container">
+                            <img src="@($"http://localhost:5105{url}")" alt="Current Image" class="image-preview" />
+                        </div>
+                    }
+                    <div class="help-text" style="width: 100%; text-align: center;">Current Images</div>
                 </div>
             }
         </div>
@@ -84,53 +94,47 @@
     [Parameter] public bool IsEdit { get; set; }
     [Parameter] public bool IsSubmitting { get; set; }
     [Parameter] public string ErrorMessage { get; set; } = string.Empty;
-    [Parameter] public Func<DiaryEntry, IBrowserFile?, Task<bool>> OnSave { get; set; } = default!;
+    [Parameter] public Func<DiaryEntry, List<IBrowserFile>?, Task<bool>> OnSave { get; set; } = default!;
     [Parameter] public EventCallback OnCancel { get; set; }
 
-    private IBrowserFile? _selectedImage;
-    private string? imagePreviewUrl;
+    private List<IBrowserFile> _selectedImages = new();
+    private List<string> imagePreviewUrls = new();
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
-        _selectedImage = e.File;
+        _selectedImages = e.GetMultipleFiles().ToList();
+        imagePreviewUrls.Clear();
         
-        if (_selectedImage != null)
+        foreach (var file in _selectedImages)
         {
             // Read the file and convert it to a base64 string for preview
-            var format = _selectedImage.ContentType;
+            var format = file.ContentType;
             var maxAllowedSize = 5120000; // 5MB limit for preview
             
             try
             {
-                var buffer = new byte[_selectedImage.Size];
-                await _selectedImage.OpenReadStream(maxAllowedSize).ReadAsync(buffer);
-                imagePreviewUrl = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+                var buffer = new byte[file.Size];
+                await file.OpenReadStream(maxAllowedSize).ReadAsync(buffer);
+                imagePreviewUrls.Add($"data:{format};base64,{Convert.ToBase64String(buffer)}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error reading file: {ex.Message}");
-                imagePreviewUrl = null;
             }
-        }
-        else
-        {
-            imagePreviewUrl = null;
         }
     }
 
-    private void RemoveImage()
+    private void RemoveImages()
     {
-        _selectedImage = null;
-        imagePreviewUrl = null;
-        // Note: Clearing the actual <input type="file"> value is tricky in Blazor without JS interop, 
-        // but setting _selectedImage to null prevents it from being sent on save.
+        _selectedImages.Clear();
+        imagePreviewUrls.Clear();
     }
 
     private async Task HandleSubmit()
     {
         if (OnSave != null)
         {
-            await OnSave.Invoke(Entry, _selectedImage);
+            await OnSave.Invoke(Entry, _selectedImages.Any() ? _selectedImages : null);
         }
     }
 }
