@@ -6,20 +6,19 @@
 <PageTitle>Admin Content Manager</PageTitle>
 
 <main class="manager-wrapper">
-    
-    <!-- LEFT PANEL: Header, Tabs, List Title -->
+
     <div class="left-panel">
         <h1>Content Manager</h1>
         <p>Manage explore posts and notices for users.</p>
 
         <div class="tabs-container" role="tablist" aria-label="View mode">
-            <button type="button" 
-                    class="tab-btn @(mode == ViewMode.Explore ? "active" : "")" 
+            <button type="button"
+                    class="tab-btn @(mode == ViewMode.Explore ? "active" : "")"
                     @onclick="() => SelectMode(ViewMode.Explore)">
                 Explore
             </button>
-            <button type="button" 
-                    class="tab-btn @(mode == ViewMode.Notice ? "active" : "")" 
+            <button type="button"
+                    class="tab-btn @(mode == ViewMode.Notice ? "active" : "")"
                     @onclick="() => SelectMode(ViewMode.Notice)">
                 Notice
             </button>
@@ -40,90 +39,88 @@
                 @loadError
             </div>
         }
-    </div>
 
-    <!-- RIGHT PANEL: Cards List -->
-    <div class="right-panel">
-        @if (mode == ViewMode.Explore)
-        {
-            @if (isLoading)
+        <div class="right-panel">
+            @if (mode == ViewMode.Explore)
             {
-                <p class="loading-text">Loading...</p>
-            }
-            else if (explorePosts.Count == 0)
-            {
-                <p class="empty-text">No explore posts found.</p>
+                @if (isLoading)
+                {
+                    <p class="loading-text">Loading...</p>
+                }
+                else if (explorePosts.Count == 0)
+                {
+                    <p class="empty-text">No explore posts found.</p>
+                }
+                else
+                {
+                    @foreach (var news in explorePosts)
+                    {
+                        <div class="post-card">
+                            @if (!string.IsNullOrEmpty(news.VideoUrl))
+                            {
+                                <video class="post-image" controls>
+                                    <source src="@news.VideoUrl" type="video/mp4">
+                                </video>
+                            }
+                            else if (!string.IsNullOrEmpty(news.ImageUrl))
+                            {
+                                <img src="@news.ImageUrl" alt="Post thumbnail" class="post-image" />
+                            }
+                            else
+                            {
+                                <div class="post-image placeholder"></div>
+                            }
+
+                            <div class="post-content">
+                                <div class="post-text">
+                                    <h3>@news.Title</h3>
+                                    <p>@news.Content</p>
+                                </div>
+                                <div class="post-actions">
+                                    <button type="button" class="btn-delete"
+                                            disabled="@(isDeleting && deletingExploreId == news.Id)"
+                                            @onclick="() => DeleteExploreAsync(news.Id)">
+                                        @(isDeleting && deletingExploreId == news.Id ? "Deleting..." : "Delete")
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
             }
             else
             {
-                @foreach (var news in explorePosts)
+                @if (isLoading)
                 {
-                    <div class="post-card">
-                        @if (!string.IsNullOrEmpty(news.VideoUrl))
-                        {
-                            <video class="post-image" controls>
-                                <source src="@news.VideoUrl" type="video/mp4">
-                            </video>
-                        }
-                        else if (!string.IsNullOrEmpty(news.ImageUrl))
-                        {
-                            <img src="@news.ImageUrl" alt="Post thumbnail" class="post-image" />
-                        }
-                        else
-                        {
-                            <div class="post-image placeholder"></div>
-                        }
-                        
-                        <div class="post-content">
-                            <div class="post-text">
-                                <h3>@news.Title</h3>
-                                <p>@news.Content</p>
-                            </div>
-                            <div class="post-actions">
-                                <button type="button" class="btn-delete" 
-                                        disabled="@(isDeleting && deletingExploreId == news.Id)" 
-                                        @onclick="() => DeleteExploreAsync(news.Id)">
-                                    @(isDeleting && deletingExploreId == news.Id ? "Deleting..." : "Delete")
-                                </button>
+                    <p class="loading-text">Loading...</p>
+                }
+                else if (notices.Count == 0)
+                {
+                    <p class="empty-text">No notices found.</p>
+                }
+                else
+                {
+                    @foreach (var item in notices)
+                    {
+                        <div class="post-card">
+                            <div class="post-content">
+                                <div class="post-text">
+                                    <h3>@item.Title</h3>
+                                    <p>@item.Message</p>
+                                </div>
+                                <div class="post-actions">
+                                    <button type="button" class="btn-delete"
+                                            disabled="@(isDeleting && deletingNoticeId == item.Id)"
+                                            @onclick="() => DeleteNoticeAsync(item.Id)">
+                                        @(isDeleting && deletingNoticeId == item.Id ? "Deleting..." : "Delete")
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 }
             }
-        }
-        else
-        {
-            @if (isLoading)
-            {
-                <p class="loading-text">Loading...</p>
-            }
-            else if (notices.Count == 0)
-            {
-                <p class="empty-text">No notices found.</p>
-            }
-            else
-            {
-                @foreach (var item in notices)
-                {
-                    <div class="post-card">
-                        <!-- Notices usually don't have images, so we just show the content -->
-                        <div class="post-content">
-                            <div class="post-text">
-                                <h3>@item.Title</h3>
-                                <p>@item.Message</p>
-                            </div>
-                            <div class="post-actions">
-                                <button type="button" class="btn-delete" 
-                                        disabled="@(isDeleting && deletingNoticeId == item.Id)" 
-                                        @onclick="() => DeleteNoticeAsync(item.Id)">
-                                    @(isDeleting && deletingNoticeId == item.Id ? "Deleting..." : "Delete")
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
-        }
+        </div>
     </div>
 
 </main>
