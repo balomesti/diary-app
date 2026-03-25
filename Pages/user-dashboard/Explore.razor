@@ -4,61 +4,57 @@
 <PageTitle>Explore</PageTitle>
 
 <section class="explore-hero">
-    <div class="explore-hero-inner">
-        <h1>Explore</h1>
-        <p>Explore news posts from the admin team.</p>
-    </div>
+    <h1>Explore</h1>
+    <p>Explore news posts from the admin team.</p>
 </section>
 
-<section class="explore-section">
-    <div class="explore-grid">
-        @if (!string.IsNullOrEmpty(loadError))
+<section class="explore-feed">
+    @if (!string.IsNullOrEmpty(loadError))
+    {
+        <div class="explore-error" role="alert">@loadError</div>
+    }
+    else if (isLoading)
+    {
+        <p class="explore-loading">Loading...</p>
+    }
+    else if (updates.Count == 0)
+    {
+        <p class="explore-empty">No explore posts found.</p>
+    }
+    else
+    {
+        @foreach (var item in updates)
         {
-            <p role="alert">@loadError</p>
-        }
-        else if (isLoading)
-        {
-            <p>Loading...</p>
-        }
-        else if (updates.Count == 0)
-        {
-            <p>No explore posts found.</p>
-        }
-        else
-        {
-            @foreach (var item in updates)
-            {
-                <article class="explore-card">
-                    <div class="explore-card-row">
-                        @if (!string.IsNullOrWhiteSpace(item.VideoUrl))
-                        {
-                            <video class="explore-thumb" controls style="object-fit: cover;">
-                                <source src="@item.VideoUrl" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-                        }
-                        else
-                        {
-                            <div class="explore-thumb" style="@ThumbStyle(item)"></div>
-                        }
-                        <div class="explore-body">
-                            <h2 class="explore-title">@item.Title</h2>
-                            <p class="explore-text">@item.Description</p>  
+            <article class="explore-post-card">
+                <div class="explore-post-author-row">
+                    <div class="explore-post-avatar"></div>
+                    <p class="explore-post-author-name">@item.Author</p>
+                </div>
 
-                            <div class="explore-tags">
-                                <span class="explore-tag">@item.Kind</span>
-                            </div>
-                        </div>
-                    </div>
+                @if (!string.IsNullOrWhiteSpace(item.VideoUrl))
+                {
+                    <video class="explore-post-video" controls>
+                        <source src="@item.VideoUrl" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                }
+                else if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                {
+                    <img class="explore-post-media" src="@item.ImageUrl" alt="@item.Title" />
+                }
+                else
+                {
+                    <div class="explore-post-media" style="background-color: #E7E5E4;"></div>
+                }
 
-                    <div class="explore-meta">
-                        <span class="explore-avatar"></span>
-                        <span class="explore-author">@item.Author</span>
-                    </div>
-                </article>
-            }
+                <div class="explore-post-body">
+                    <span class="explore-post-badge">Explore</span>
+                    <h2 class="explore-post-title">@item.Title</h2>
+                    <p class="explore-post-caption">@item.Description</p>
+                </div>
+            </article>
         }
-    </div>
+    }
 </section>
 
 @code {
@@ -96,16 +92,6 @@
         {
             isLoading = false;
         }
-    }
-
-    private string ThumbStyle(UpdateItem item)
-    {
-        if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-        {
-            return $"background-image: url('{item.ImageUrl}'); background-size: cover; background-position: center;";
-        }
-
-        return "background: #e5e7eb;";
     }
 
     private sealed class UpdateItem
