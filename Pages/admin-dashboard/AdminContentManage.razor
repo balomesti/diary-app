@@ -5,118 +5,128 @@
 
 <PageTitle>Admin Content Manager</PageTitle>
 
-<link href="css/pages/AdminContentManage.css" rel="stylesheet" />
-
-<section class="admin-dashboard-hero">
-    <div class="admin-dashboard-hero-inner">
+<main class="manager-wrapper">
+    
+    <!-- LEFT PANEL: Header, Tabs, List Title -->
+    <div class="left-panel">
         <h1>Content Manager</h1>
         <p>Manage explore posts and notices for users.</p>
 
-        <div class="admin-create-toggle" role="tablist" aria-label="View mode">
-            <button type="button" class="@ModeButtonClass(ViewMode.Explore)" @onclick="() => SelectMode(ViewMode.Explore)">Explore</button>
-            <button type="button" class="@ModeButtonClass(ViewMode.Notice)" @onclick="() => SelectMode(ViewMode.Notice)">Notice</button>
+        <div class="tabs-container" role="tablist" aria-label="View mode">
+            <button type="button" 
+                    class="tab-btn @(mode == ViewMode.Explore ? "active" : "")" 
+                    @onclick="() => SelectMode(ViewMode.Explore)">
+                Explore
+            </button>
+            <button type="button" 
+                    class="tab-btn @(mode == ViewMode.Notice ? "active" : "")" 
+                    @onclick="() => SelectMode(ViewMode.Notice)">
+                Notice
+            </button>
         </div>
-    </div>
-</section>
 
-<section class="admin-create">
-    <div class="admin-create-inner">
-        <div class="admin-create-left">
-            @if (mode == ViewMode.Explore)
+        @if (mode == ViewMode.Explore)
+        {
+            <h2 class="list-title">Explore Post List</h2>
+        }
+        else
+        {
+            <h2 class="list-title">Notice List</h2>
+        }
+
+        @if (!string.IsNullOrEmpty(loadError))
+        {
+            <div class="error-msg">
+                @loadError
+            </div>
+        }
+    </div>
+
+    <!-- RIGHT PANEL: Cards List -->
+    <div class="right-panel">
+        @if (mode == ViewMode.Explore)
+        {
+            @if (isLoading)
             {
-                <h2 class="admin-create-title">Explore Post List</h2>
+                <p class="loading-text">Loading...</p>
+            }
+            else if (explorePosts.Count == 0)
+            {
+                <p class="empty-text">No explore posts found.</p>
             }
             else
             {
-                <h2 class="admin-create-title">Notice List</h2>
-            }
-
-            @if (!string.IsNullOrEmpty(loadError))
-            {
-                <div class="admin-create-status error" style="margin-top: 20px; padding: 15px; border-radius: 8px; background: #fee2e2; color: #991b1b;">
-                    @loadError
-                </div>
-            }
-        </div>
-
-        <div class="admin-create-right">
-            @if (mode == ViewMode.Explore)
-            {
-                <div class="admin-posts-list">
-                    @if (isLoading)
-                    {
-                        <p>Loading...</p>
-                    }
-                    else if (explorePosts.Count == 0)
-                    {
-                        <p>No explore posts found.</p>
-                    }
-                    else
-                    {
-                        @foreach (var news in explorePosts)
+                @foreach (var news in explorePosts)
+                {
+                    <div class="post-card">
+                        @if (!string.IsNullOrEmpty(news.VideoUrl))
                         {
-                            <div class="admin-dashboard-formcard" style="margin-top: 18px;">
-                                @if (!string.IsNullOrEmpty(news.VideoUrl))
-                                {
-                                    <video class="admin-dashboard-formthumb" controls style="object-fit: cover;">
-                                        <source src="@news.VideoUrl" type="video/mp4">
-                                    </video>
-                                }
-                                else if (!string.IsNullOrEmpty(news.ImageUrl))
-                                {
-                                    <img src="@news.ImageUrl" alt="Post thumbnail" class="admin-dashboard-formthumb" style="object-fit: cover;" />
-                                }
-                                else
-                                {
-                                    <div class="admin-dashboard-formthumb"></div>
-                                }
-                                <div class="admin-dashboard-formbody">
-                                    <h3 class="admin-dashboard-formtitle">@news.Title</h3>
-                                    <p class="admin-dashboard-formtext">@news.Content</p>
-                                    <div style="margin-top: 12px; display: flex; justify-content: flex-end;">
-                                        <button type="button" class="admin-btn-outline" style="border-color: #ef4444; color: #ef4444;" disabled="@(isDeleting && deletingExploreId == news.Id)" @onclick="() => DeleteExploreAsync(news.Id)">
-                                            @(isDeleting && deletingExploreId == news.Id ? "Deleting..." : "Delete")
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <video class="post-image" controls>
+                                <source src="@news.VideoUrl" type="video/mp4">
+                            </video>
                         }
-                    }
-                </div>
+                        else if (!string.IsNullOrEmpty(news.ImageUrl))
+                        {
+                            <img src="@news.ImageUrl" alt="Post thumbnail" class="post-image" />
+                        }
+                        else
+                        {
+                            <div class="post-image placeholder"></div>
+                        }
+                        
+                        <div class="post-content">
+                            <div class="post-text">
+                                <h3>@news.Title</h3>
+                                <p>@news.Content</p>
+                            </div>
+                            <div class="post-actions">
+                                <button type="button" class="btn-delete" 
+                                        disabled="@(isDeleting && deletingExploreId == news.Id)" 
+                                        @onclick="() => DeleteExploreAsync(news.Id)">
+                                    @(isDeleting && deletingExploreId == news.Id ? "Deleting..." : "Delete")
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
+        else
+        {
+            @if (isLoading)
+            {
+                <p class="loading-text">Loading...</p>
+            }
+            else if (notices.Count == 0)
+            {
+                <p class="empty-text">No notices found.</p>
             }
             else
             {
-                <div class="admin-posts-list">
-                    @if (isLoading)
-                    {
-                        <p>Loading...</p>
-                    }
-                    else if (notices.Count == 0)
-                    {
-                        <p>No notices found.</p>
-                    }
-                    else
-                    {
-                        @foreach (var item in notices)
-                        {
-                            <div class="admin-dashboard-formcard" style="margin-top: 18px;">
-                                <div class="admin-dashboard-formbody">
-                                    <h3 class="admin-dashboard-formtitle">@item.Title</h3>
-                                    <p class="admin-dashboard-formtext">@item.Message</p>
-                                    <div style="margin-top: 12px; display: flex; justify-content: flex-end;">
-                                        <button type="button" class="admin-btn-outline" style="border-color: #ef4444; color: #ef4444;" disabled="@(isDeleting && deletingNoticeId == item.Id)" @onclick="() => DeleteNoticeAsync(item.Id)">
-                                            @(isDeleting && deletingNoticeId == item.Id ? "Deleting..." : "Delete")
-                                        </button>
-                                    </div>
-                                </div>
+                @foreach (var item in notices)
+                {
+                    <div class="post-card">
+                        <!-- Notices usually don't have images, so we just show the content -->
+                        <div class="post-content">
+                            <div class="post-text">
+                                <h3>@item.Title</h3>
+                                <p>@item.Message</p>
                             </div>
-                        }
-                    }
-                </div>
+                            <div class="post-actions">
+                                <button type="button" class="btn-delete" 
+                                        disabled="@(isDeleting && deletingNoticeId == item.Id)" 
+                                        @onclick="() => DeleteNoticeAsync(item.Id)">
+                                    @(isDeleting && deletingNoticeId == item.Id ? "Deleting..." : "Delete")
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
             }
-        </div>
+        }
     </div>
-</section>
+
+</main>
 
 @code {
     private ViewMode mode = ViewMode.Explore;
@@ -195,13 +205,6 @@
     private void SelectMode(ViewMode nextMode)
     {
         mode = nextMode;
-    }
-
-    private string ModeButtonClass(ViewMode buttonMode)
-    {
-        return mode == buttonMode
-            ? "admin-create-toggle-btn admin-create-toggle-btn-active"
-            : "admin-create-toggle-btn";
     }
 
     private enum ViewMode
