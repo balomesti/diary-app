@@ -1,5 +1,6 @@
 @page "/setting"
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 
 <PageTitle>Setting</PageTitle>
 
@@ -36,36 +37,17 @@
                     <div class="form-grid">
                         <!-- Left Column -->
                         <div class="form-group">
-                            <label>Diary Title</label>
-                            <input type="text" class="form-control" placeholder="Enter your diary title" @bind="diaryTitle">
+                            <label>App Title</label>
+                            <input type="text" class="form-control" placeholder="Enter your app title" @bind="diaryTitle">
                         </div>
 
                         <!-- Right Column -->
                         <div class="form-group">
                             <label>Font Size</label>
                             <div class="segmented-control">
-                                <button type="button" class="@SegmentClass(fontSize == "Small")" @onclick='() => fontSize = "Small"'>Small</button>
-                                <button type="button" class="@SegmentClass(fontSize == "Medium")" @onclick='() => fontSize = "Medium"'>Medium</button>
-                                <button type="button" class="@SegmentClass(fontSize == "Large")" @onclick='() => fontSize = "Large"'>Large</button>
-                            </div>
-                        </div>
-
-                        <!-- Left Column Bottom -->
-                        <div class="form-group">
-                            <label>Theme Color</label>
-                            <div class="segmented-control">
-                                <button type="button" class="@SegmentClass(theme == "Light")" @onclick='() => theme = "Light"'>Light</button>
-                                <button type="button" class="@SegmentClass(theme == "Dark")" @onclick='() => theme = "Dark"'>Dark</button>
-                            </div>
-                        </div>
-
-                        <!-- Right Column Bottom -->
-                        <div class="form-group">
-                            <label>Backup Frequency</label>
-                            <div class="segmented-control">
-                                <button type="button" class="@SegmentClass(backup == "Daily")" @onclick='() => backup = "Daily"'>Daily</button>
-                                <button type="button" class="@SegmentClass(backup == "Weekly")" @onclick='() => backup = "Weekly"'>Weekly</button>
-                                <button type="button" class="@SegmentClass(backup == "Monthly")" @onclick='() => backup = "Monthly"'>Monthly</button>
+                                <button type="button" class="@SegmentClass(fontSize == "Small")" @onclick='() => SetFontSize("Small")'>Small</button>
+                                <button type="button" class="@SegmentClass(fontSize == "Medium")" @onclick='() => SetFontSize("Medium")'>Medium</button>
+                                <button type="button" class="@SegmentClass(fontSize == "Large")" @onclick='() => SetFontSize("Large")'>Large</button>
                             </div>
                         </div>
                     </div>
@@ -107,6 +89,51 @@
     private string fontSize = "Medium";
     private string theme = "Light";
     private string backup = "Weekly";
+    private const string FontSizeKey = "diary_font_size";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSettingsAsync();
+    }
+
+    private async Task LoadSettingsAsync()
+    {
+        try
+        {
+            var savedFontSize = await JS.InvokeAsync<string>("localStorage.getItem", FontSizeKey);
+            if (!string.IsNullOrEmpty(savedFontSize))
+            {
+                fontSize = savedFontSize;
+                await ApplyFontSizeAsync(fontSize);
+            }
+        }
+        catch
+        {
+            fontSize = "Medium";
+        }
+    }
+
+    private async Task SetFontSize(string size)
+    {
+        fontSize = size;
+        await ApplyFontSizeAsync(size);
+        StateHasChanged();
+    }
+
+    private async Task ApplyFontSizeAsync(string size)
+    {
+        var fontSizeVar = size switch
+        {
+            "Small" => "var(--font-size-small)",
+            "Medium" => "var(--font-size-medium)",
+            "Large" => "var(--font-size-large)",
+            _ => "var(--font-size-medium)"
+        };
+
+        await JS.InvokeVoidAsync("eval", $@"
+            document.documentElement.style.setProperty('--font-size-base', '{fontSizeVar}');
+        ");
+    }
 
     private string SectionTitle => activeTab switch
     {
@@ -139,14 +166,14 @@
         return isActive ? "segment-btn active" : "segment-btn";
     }
 
+    private async Task SaveChanges()
+    {
+        await JS.InvokeVoidAsync("localStorage.setItem", FontSizeKey, fontSize);
+        NavigationManager.NavigateTo("/home");
+    }
+
     private void Cancel()
     {
         NavigationManager.NavigateTo("/home");
     }
-
-    private void SaveChanges()
-    {
-        // Logic to save changes
-    }
 }
-
