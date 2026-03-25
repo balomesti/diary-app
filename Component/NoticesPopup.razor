@@ -9,7 +9,7 @@
         </svg>
         @if (unreadCount > 0)
         {
-            <span class="notification-badge">@unreadCount</span>
+            <span class="notification-badge">@(unreadCount > 99 ? "99+" : unreadCount.ToString())</span>
         }
     </button>
 
@@ -66,7 +66,7 @@
         right: -6px;
         background-color: #ef4444;
         color: white;
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         font-weight: 700;
         min-width: 18px;
         height: 18px;
@@ -74,8 +74,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 0 5px;
+        padding: 0 4px;
         border: 2px solid white;
+        pointer-events: none;
     }
 </style>
 
@@ -85,22 +86,26 @@
     private string loadError = "";
     private int unreadCount = 0;
     private List<NoticeDto> notices = new();
-    private const string StorageKey = "diary_notices_last_read";
+    private const string LastReadKey = "diary_notices_last_read";
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await LoadUnreadCountAsync();
+        if (firstRender)
+        {
+            await RefreshUnreadCountAsync();
+        }
     }
 
-    private async Task LoadUnreadCountAsync()
+    private async Task RefreshUnreadCountAsync()
     {
         try
         {
-            var notices = await DiaryService.GetAdminListAsync<NoticeDto>("api/Admin/announcements");
-            var lastReadTicks = await JS.InvokeAsync<string?>("localStorage.getItem", StorageKey);
-            var lastRead = string.IsNullOrEmpty(lastReadTicks) ? DateTime.MinValue : DateTime.Parse(lastReadTicks);
+            var allNotices = await DiaryService.GetAdminListAsync<NoticeDto>("api/Admin/announcements");
+            var lastReadStr = await JS.InvokeAsync<string?>("localStorage.getItem", LastReadKey);
+            DateTime lastRead = string.IsNullOrEmpty(lastReadStr) ? DateTime.MinValue : DateTime.Parse(lastReadStr);
 
-            unreadCount = notices.Count(n => n.CreatedAt > lastRead);
+            unreadCount = allNotices.Count(n => n.CreatedAt > lastRead);
+            StateHasChanged();
         }
         catch
         {
@@ -117,10 +122,11 @@
         }
 
         isOpen = true;
-        unreadCount = 0;
-        await JS.InvokeVoidAsync("localStorage.setItem", StorageKey, DateTime.UtcNow.ToString("O"));
-
         await LoadAsync();
+
+        unreadCount = 0;
+        StateHasChanged();
+        await JS.InvokeVoidAsync("localStorage.setItem", LastReadKey, DateTime.UtcNow.ToString("O"));
     }
 
     private void Close()
@@ -143,6 +149,7 @@
         finally
         {
             isLoading = false;
+            StateHasChanged();
         }
     }
 
