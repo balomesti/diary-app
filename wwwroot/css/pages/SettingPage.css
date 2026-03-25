@@ -200,13 +200,14 @@
     background-color: var(--accent-color);
     color: white;
     border: none;
-    padding: 12px 28px;
-    border-radius: 8px;
+    padding: 10px 22px;
+    border-radius: 6px;
     font-family: 'Nunito', sans-serif;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: 0.3s;
+    white-space: nowrap;
 }
 
 .settings-page-container .btn-solid:hover { background-color: var(--accent-hover); }
@@ -215,13 +216,14 @@
     background-color: transparent;
     color: var(--text-main);
     border: 1px solid var(--border-color);
-    padding: 12px 28px;
-    border-radius: 8px;
+    padding: 10px 22px;
+    border-radius: 6px;
     font-family: 'Nunito', sans-serif;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: 0.3s;
+    white-space: nowrap;
 }
 
 .settings-page-container .btn-outline:hover {

@@ -1,0 +1,79 @@
+/* --- APP FOOTER --- */
+.app-footer {
+    width: 100%;
+    background: rgba(253, 251, 247, 0.85);
+    backdrop-filter: blur(10px);
+    color: #2C231F;
+    border-top: 1px solid rgba(212, 201, 189, 0.6);
+    margin-top: auto;
+    position: relative;
+    z-index: 100;
+    flex-shrink: 0;
+}
+
+.app-footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 32px;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2C231F;
+}
+
+.footer-brand-icon {
+    color: #556B55;
+}
+
+.footer-copy {
+    font-size: 0.85rem;
+    color: #7A6F66;
+    font-weight: 400;
+}
+
+.footer-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.footer-link {
+    text-decoration: none;
+    color: #2C231F;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: #556B55;
+}
+
+@media (max-width: 768px) {
+    .app-footer-inner {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        padding: 25px 20px;
+    }
+    .footer-left {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

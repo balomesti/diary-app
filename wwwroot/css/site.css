@@ -60,39 +60,41 @@ app {
     flex-direction: column;
 }
 
-/* Global Button Styles */
+/* --- BUTTON STYLES --- */
 .btn-solid {
-    background-color: #556B55;
+    background-color: var(--accent-color, #556B55);
     color: white !important;
     border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
+    padding: 10px 22px;
+    border-radius: 6px;
     font-family: 'Nunito', sans-serif;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: 0.3s;
     text-decoration: none;
     display: inline-block;
+    white-space: nowrap;
 }
 
 .btn-solid:hover {
-    background-color: #435543;
+    background-color: var(--accent-hover, #435543);
 }
 
 .btn-outline {
     background-color: transparent;
-    color: #2C231F !important;
-    border: 1px solid rgba(212, 201, 189, 0.6);
-    padding: 12px 24px;
-    border-radius: 8px;
+    color: var(--text-main, #2C231F) !important;
+    border: 1px solid var(--border-color, rgba(212, 201, 189, 0.6));
+    padding: 10px 22px;
+    border-radius: 6px;
     font-family: 'Nunito', sans-serif;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: 0.3s;
     text-decoration: none;
     display: inline-block;
+    white-space: nowrap;
 }
 
 .btn-outline:hover {

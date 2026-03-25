@@ -60,6 +60,8 @@
 /* Admin Action Buttons */
 .admin-hero-buttons {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 15px;
 }
 
@@ -67,13 +69,14 @@
     background-color: var(--accent-color);
     color: white;
     border: none;
-    padding: 14px 28px;
-    border-radius: 8px;
+    padding: 10px 22px;
+    border-radius: 6px;
     font-family: 'Nunito', sans-serif;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: 0.3s;
+    white-space: nowrap;
 }
 
 .admin-dashboard-container .btn-solid:hover { background-color: var(--accent-hover); }
@@ -82,14 +85,15 @@
     background-color: transparent;
     color: var(--text-main);
     border: 1px solid var(--border-color);
-    padding: 14px 28px;
-    border-radius: 8px;
+    padding: 10px 22px;
+    border-radius: 6px;
     font-family: 'Nunito', sans-serif;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: 0.3s;
     background-color: rgba(253, 251, 247, 0.4); /* Slight frosted background */
+    white-space: nowrap;
 }
 
 .admin-dashboard-container .btn-outline:hover {

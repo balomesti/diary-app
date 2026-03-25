@@ -48,9 +48,53 @@
     margin-bottom: 35px;
 }
 
+/* --- BUTTON STYLES --- */
+.diary-list-page .btn-solid {
+    background-color: var(--accent-color);
+    color: white !important;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.diary-list-page .btn-solid:hover {
+    background-color: var(--accent-hover);
+}
+
+.diary-list-page .btn-outline {
+    background-color: transparent;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border-color);
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.diary-list-page .btn-outline:hover {
+    background-color: rgba(253, 251, 247, 0.8);
+    border-color: var(--text-main);
+}
+
 .hero-buttons {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
     gap: 15px;
 }
 
