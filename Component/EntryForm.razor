@@ -102,15 +102,15 @@
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
-        _selectedImages = e.GetMultipleFiles().ToList();
-        imagePreviewUrls.Clear();
-        
-        foreach (var file in _selectedImages)
+        var newFiles = e.GetMultipleFiles().ToList();
+
+        foreach (var file in newFiles)
         {
-            // Read the file and convert it to a base64 string for preview
+            _selectedImages.Add(file);
+
             var format = file.ContentType;
-            var maxAllowedSize = 5120000; // 5MB limit for preview
-            
+            var maxAllowedSize = 5120000;
+
             try
             {
                 var buffer = new byte[file.Size];
