@@ -20,8 +20,6 @@
     width: 100%;
     min-height: 100vh;
     padding: 40px 20px 80px;
-    background-color: #E2D9CC;
-    background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
     font-family: 'Inter', sans-serif;
     color: var(--text-main);
     display: flex;
@@ -113,6 +111,7 @@
     border-radius: 24px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
     padding: 60px 70px;
+    /* ✅ removed background-image texture */
 }
 
 /* --- JOURNAL HEADER --- */
