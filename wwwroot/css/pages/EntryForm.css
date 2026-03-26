@@ -131,20 +131,13 @@ textarea.form-control {
 
 /* ── Mood selector ── */
 .mood-selector {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
     gap: 10px;
-    justify-content: space-between;
 }
 
 .mood-option {
-    flex: 1;
     position: relative;
-    cursor: pointer;
-}
-
-.mood-option input[type="radio"] {
-    position: absolute;
-    opacity: 0;
     cursor: pointer;
 }
 
@@ -321,10 +314,11 @@ input[type="file"]::file-selector-button {
 
 /* ── Submit ── */
 .submit-section {
-    margin-top: 30px;
+    margin-top: 40px;
     display: flex;
     justify-content: flex-end;
-    border-top: 1px solid var(--border-color);
+    gap: 12px;
+    border-top: 1px solid #D4C9BD;
     padding-top: 25px;
 }
 

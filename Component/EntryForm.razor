@@ -67,35 +67,35 @@
                     <label>How are you feeling?</label>
                     <div class="mood-selector">
                         <label class="mood-option">
-                            <input type="radio" name="mood" value="terrible" checked="@(Mood == "terrible")" @onchange='() => Mood = "terrible"' />
+                            <input type="radio" name="mood" value="terrible" checked="@(Mood == "terrible")" @onchange='() => ChangeMood("terrible")' />
                             <div class="mood-content">
                                 <span class="mood-emoji">😢</span>
                                 <span class="mood-text">Terrible</span>
                             </div>
                         </label>
                         <label class="mood-option">
-                            <input type="radio" name="mood" value="bad" checked="@(Mood == "bad")" @onchange='() => Mood = "bad"' />
+                            <input type="radio" name="mood" value="bad" checked="@(Mood == "bad")" @onchange='() => ChangeMood("bad")' />
                             <div class="mood-content">
                                 <span class="mood-emoji">😕</span>
                                 <span class="mood-text">Bad</span>
                             </div>
                         </label>
                         <label class="mood-option">
-                            <input type="radio" name="mood" value="okay" checked="@(Mood == "okay")" @onchange='() => Mood = "okay"' />
+                            <input type="radio" name="mood" value="okay" checked="@(Mood == "okay")" @onchange='() => ChangeMood("okay")' />
                             <div class="mood-content">
                                 <span class="mood-emoji">😐</span>
                                 <span class="mood-text">Okay</span>
                             </div>
                         </label>
                         <label class="mood-option">
-                            <input type="radio" name="mood" value="good" checked="@(Mood == "good")" @onchange='() => Mood = "good"' />
+                            <input type="radio" name="mood" value="good" checked="@(Mood == "good")" @onchange='() => ChangeMood("good")' />
                             <div class="mood-content">
                                 <span class="mood-emoji">😊</span>
                                 <span class="mood-text">Good</span>
                             </div>
                         </label>
                         <label class="mood-option">
-                            <input type="radio" name="mood" value="amazing" checked="@(Mood == "amazing")" @onchange='() => Mood = "amazing"' />
+                            <input type="radio" name="mood" value="amazing" checked="@(Mood == "amazing")" @onchange='() => ChangeMood("amazing")' />
                             <div class="mood-content">
                                 <span class="mood-emoji">✨</span>
                                 <span class="mood-text">Amazing</span>
@@ -142,12 +142,13 @@
         </div>
 
         <div class="submit-section">
+            <button type="button" class="btn-outline" @onclick="() => OnCancel.InvokeAsync()">Cancel</button>
             <button type="submit" class="btn-solid" disabled="@IsSubmitting">
-                @(IsSubmitting ? "Submitting..." : "Submit Entry")
+               @(IsSubmitting ? "Submitting..." : "Submit Entry")
             </button>
+      </div>
+        </EditForm>
         </div>
-    </EditForm>
-</div>
 
 @code {
     [Parameter] public DiaryEntry Entry { get; set; } = new DiaryEntry();
@@ -210,6 +211,11 @@
     private void RemoveTag(string tag)
     {
         Tags.Remove(tag);
+    }
+
+    private void ChangeMood(string mood)
+    {
+        Mood = mood;
     }
 
     private async Task HandleSubmit()
