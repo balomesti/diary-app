@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using diary_app.Models
+@inject IJSRuntime JS
 @inherits ComponentBase
 
 <div class="entry-container @Size">
@@ -36,12 +37,30 @@
 
                 <div class="sidebar-card">
                     <div class="sidebar-card-title">📍 Location</div>
-                    <InputText @bind-Value="Location" class="form-control" placeholder="E.g. Kuala Lumpur" />
+                    <div class="weather-row">
+                        <InputText @bind-Value="Location" class="form-control" placeholder="E.g. Kuala Lumpur, Malaysia" />
+                        <button type="button" class="btn-weather" @onclick="DetectLocation" title="Auto-detect location">
+                            <span aria-hidden="true">📍</span>
+                        </button>
+                    </div>
+                    @if (LocationLoading)
+                    {
+                        <div class="help-text">Detecting...</div>
+                    }
                 </div>
 
                 <div class="sidebar-card">
                     <div class="sidebar-card-title">⛅ Weather</div>
-                    <InputText @bind-Value="Weather" class="form-control" placeholder="E.g. 32°C, Sunny" />
+                    <div class="weather-row">
+                        <InputText @bind-Value="Weather" class="form-control" placeholder="E.g. 32°C, Sunny" />
+                        <button type="button" class="btn-weather" @onclick="DetectWeather" title="Auto-detect weather">
+                            <span aria-hidden="true">⛅ </span>
+                        </button>
+                    </div>
+                    @if (WeatherLoading)
+                    {
+                        <div class="help-text">Detecting...</div>
+                    }
                 </div>
 
                 <div class="sidebar-card">
@@ -167,6 +186,8 @@
     private string Mood { get; set; } = "good";
     private string TagInput { get; set; } = string.Empty;
     private List<string> Tags { get; set; } = new();
+    private bool WeatherLoading { get; set; }
+    private bool LocationLoading { get; set; }
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
@@ -217,6 +238,98 @@
     {
         Mood = mood;
     }
+
+    private async Task DetectLocation()
+    {
+        LocationLoading = true;
+        try
+        {
+            var position = await JS.InvokeAsync<GeolocationResult>("getCurrentPosition");
+            if (position?.Coords != null)
+            {
+                var lat = position.Coords.latitude;
+                var lon = position.Coords.longitude;
+                var url = $"https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json";
+                using var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Add("User-Agent", "DiaryApp/1.0");
+                var json = await httpClient.GetStringAsync(url);
+                var data = System.Text.Json.JsonDocument.Parse(json);
+                var root = data.RootElement;
+
+                var city = root.TryGetProperty("city", out var c) ? c.GetString() :
+                           root.TryGetProperty("town", out var t) ? t.GetString() :
+                           root.TryGetProperty("village", out var v) ? v.GetString() :
+                           root.TryGetProperty("municipality", out var m) ? m.GetString() : null;
+
+                var country = root.TryGetProperty("country", out var co) ? co.GetString() : null;
+
+                if (!string.IsNullOrEmpty(city) && !string.IsNullOrEmpty(country))
+                    Location = $"{city}, {country}";
+                else if (!string.IsNullOrEmpty(country))
+                    Location = country;
+                else
+                    Location = "Unknown location";
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Location detection failed: {ex.Message}");
+            Location = "Unable to detect";
+        }
+        finally
+        {
+            LocationLoading = false;
+        }
+    }
+
+    private async Task DetectWeather()
+    {
+        WeatherLoading = true;
+        try
+        {
+            var position = await JS.InvokeAsync<GeolocationResult>("getCurrentPosition");
+            if (position?.Coords != null)
+            {
+                var lat = position.Coords.latitude;
+                var lon = position.Coords.longitude;
+                var url = $"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,weather_code&wind_speed_unit=ms";
+                using var httpClient = new HttpClient();
+                var json = await httpClient.GetStringAsync(url);
+                var data = System.Text.Json.JsonDocument.Parse(json);
+                var root = data.RootElement;
+                var temp = root.GetProperty("current").GetProperty("temperature_2m").GetDouble();
+                var wcode = root.GetProperty("current").GetProperty("weather_code").GetInt32();
+                var condition = GetWeatherCondition(wcode);
+                Weather = $"{temp}°C, {condition}";
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Weather detection failed: {ex.Message}");
+            Weather = "Unable to detect";
+        }
+        finally
+        {
+            WeatherLoading = false;
+        }
+    }
+
+    private static string GetWeatherCondition(int code) => code switch
+    {
+        0 => "Clear",
+        1 or 2 or 3 => "Partly Cloudy",
+        45 or 48 => "Foggy",
+        51 or 53 or 55 => "Drizzle",
+        61 or 63 or 65 => "Rainy",
+        66 or 67 => "Freezing Rain",
+        71 or 73 or 75 => "Snowy",
+        77 => "Snow Grains",
+        80 or 81 or 82 => "Rain Showers",
+        85 or 86 => "Snow Showers",
+        95 => "Thunderstorm",
+        96 or 99 => "Thunderstorm with Hail",
+        _ => "Unknown"
+    };
 
     private async Task HandleSubmit()
     {

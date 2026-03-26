@@ -47,6 +47,19 @@
                 });
             }
         };
+        window.getCurrentPosition = function() {
+            return new Promise(function(resolve, reject) {
+                if (!navigator.geolocation) {
+                    reject(new Error("Geolocation not supported"));
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: false,
+                    timeout: 10000,
+                    maximumAge: 0
+                });
+            });
+        };
     </script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
