@@ -6,8 +6,8 @@
     border-radius: 16px;
     box-shadow: 0 15px 35px rgba(44, 35, 31, 0.08);
     width: 100%;
-    max-width: 750px;
-    padding: 50px;
+    max-width: 1200px;
+    padding: 50px 60px;
     margin: 40px auto; /* Centers the form in the layout */
 }
 

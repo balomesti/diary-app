@@ -1,89 +1,149 @@
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
 @using diary_app.Models
 @inherits ComponentBase
 
-<div class="entry-container">
-    <!-- TOP HEADER -->
+<div class="entry-container @Size">
     <div class="entry-header">
         <h1>@(IsEdit ? "Edit Diary Entry" : "New Diary Entry")</h1>
         <p>@(IsEdit ? "Update your thoughts and experiences" : "Capture your thoughts and experiences here")</p>
-        
         @if (!string.IsNullOrEmpty(ErrorMessage))
         {
             <div class="alert alert-danger">@ErrorMessage</div>
         }
-
-        <div class="header-buttons">
-            <button class="btn-outline" type="button" @onclick="OnCancel">Cancel</button>
-            <button class="btn-solid" type="submit" form="entry-form" disabled="@IsSubmitting">
-                @if (IsSubmitting)
-                {
-                    <span>Saving...</span>
-                }
-                else
-                {
-                    <span>@(IsEdit ? "Save Changes" : "Save Entry")</span>
-                }
-            </button>
-        </div>
     </div>
 
-    <!-- FORM SECTION -->
     <EditForm Model="Entry" OnValidSubmit="HandleSubmit" id="entry-form">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <div class="form-group">
+        <!-- Title spans full width -->
+        <div class="form-group title-group">
             <label>Title</label>
-            <InputText @bind-Value="Entry.Title" class="form-control" placeholder="Enter the title of your entry" />
+            <InputText @bind-Value="Entry.Title" class="form-control" placeholder="Give your entry a title..." />
         </div>
 
-        <div class="form-group">
-            <label>Comment</label>
-            <InputTextArea @bind-Value="Entry.Content" class="form-control" placeholder="Write your thoughts..." />
-        </div>
+        <!-- Two-column layout: sidebar + main -->
+        <div class="form-layout">
 
-        <div class="form-group">
-            <label>Date</label>
-            <InputDate @bind-Value="Entry.Date" class="form-control" />
-            <div class="help-text">Format: YYYY-MM-DD</div>
-        </div>
+            <!-- LEFT SIDEBAR: metadata -->
+            <aside class="form-sidebar">
 
-        <div class="form-group">
-            <label>Images</label>
-            <InputFile OnChange="HandleFileSelected" accept="image/*" multiple />
-            <div class="help-text">@(IsEdit ? "Optional: select to replace images" : "Optional: Add related images")</div>
-            
-            @if (imagePreviewUrls.Any())
-            {
-                <div class="image-previews-grid">
-                    @foreach (var url in imagePreviewUrls)
+                <div class="sidebar-card">
+                    <div class="sidebar-card-title">📅 Date</div>
+                    <InputDate @bind-Value="Entry.Date" class="form-control" />
+                </div>
+
+                <div class="sidebar-card">
+                    <div class="sidebar-card-title">📍 Location</div>
+                    <InputText @bind-Value="Location" class="form-control" placeholder="E.g. Kuala Lumpur" />
+                </div>
+
+                <div class="sidebar-card">
+                    <div class="sidebar-card-title">⛅ Weather</div>
+                    <InputText @bind-Value="Weather" class="form-control" placeholder="E.g. 32°C, Sunny" />
+                </div>
+
+                <div class="sidebar-card">
+                    <div class="sidebar-card-title">🏷️ Tags</div>
+                    <InputText @bind-Value="TagInput" class="form-control" placeholder="Type & press Enter" @onkeydown="HandleTagKeyDown" />
+                    @if (Tags.Any())
                     {
-                        <div class="image-preview-container">
-                            <img src="@url" alt="Image Preview" class="image-preview" />
+                        <div class="tags-container">
+                            @foreach (var tag in Tags)
+                            {
+                                <div class="tag-pill">@tag <span class="tag-remove" @onclick="() => RemoveTag(tag)">&times;</span></div>
+                            }
                         </div>
                     }
-                    <button type="button" class="btn-remove-image" @onclick="RemoveImages">Clear All</button>
                 </div>
-            }
-            else if (IsEdit && !string.IsNullOrEmpty(Entry.ImageUrls))
-            {
-                <div class="image-previews-grid">
-                    @foreach (var url in Entry.ImageUrls.Split(';', StringSplitOptions.RemoveEmptyEntries))
+
+            </aside>
+
+            <!-- RIGHT MAIN: mood, content, images -->
+            <main class="form-main">
+
+                <div class="form-group">
+                    <label>How are you feeling?</label>
+                    <div class="mood-selector">
+                        <label class="mood-option">
+                            <input type="radio" name="mood" value="terrible" checked="@(Mood == "terrible")" @onchange='() => Mood = "terrible"' />
+                            <div class="mood-content">
+                                <span class="mood-emoji">😢</span>
+                                <span class="mood-text">Terrible</span>
+                            </div>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" name="mood" value="bad" checked="@(Mood == "bad")" @onchange='() => Mood = "bad"' />
+                            <div class="mood-content">
+                                <span class="mood-emoji">😕</span>
+                                <span class="mood-text">Bad</span>
+                            </div>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" name="mood" value="okay" checked="@(Mood == "okay")" @onchange='() => Mood = "okay"' />
+                            <div class="mood-content">
+                                <span class="mood-emoji">😐</span>
+                                <span class="mood-text">Okay</span>
+                            </div>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" name="mood" value="good" checked="@(Mood == "good")" @onchange='() => Mood = "good"' />
+                            <div class="mood-content">
+                                <span class="mood-emoji">😊</span>
+                                <span class="mood-text">Good</span>
+                            </div>
+                        </label>
+                        <label class="mood-option">
+                            <input type="radio" name="mood" value="amazing" checked="@(Mood == "amazing")" @onchange='() => Mood = "amazing"' />
+                            <div class="mood-content">
+                                <span class="mood-emoji">✨</span>
+                                <span class="mood-text">Amazing</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Comment</label>
+                    <InputTextArea @bind-Value="Entry.Content" class="form-control" placeholder="Write your thoughts..." />
+                </div>
+
+                <div class="form-group">
+                    <label>📷 Images</label>
+                    <InputFile OnChange="HandleFileSelected" accept="image/*" multiple />
+                    @if (imagePreviewUrls.Any())
                     {
-                        <div class="image-preview-container">
-                            <img src="@($"http://localhost:5105{url}")" alt="Current Image" class="image-preview" />
+                        <div class="image-previews-grid">
+                            @foreach (var url in imagePreviewUrls)
+                            {
+                                <div class="image-preview-container">
+                                    <img src="@url" alt="Image Preview" class="image-preview" />
+                                </div>
+                            }
                         </div>
+                        <button type="button" class="btn-outline btn-clear" @onclick="RemoveImages">Clear All</button>
                     }
-                    <div class="help-text" style="width: 100%; text-align: center;">Current Images</div>
+                    else if (IsEdit && !string.IsNullOrEmpty(Entry.ImageUrls))
+                    {
+                        <div class="image-previews-grid">
+                            @foreach (var url in Entry.ImageUrls.Split(';', StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <div class="image-preview-container">
+                                    <img src="@($"http://localhost:5105{url}")" alt="Current Image" class="image-preview" />
+                                </div>
+                            }
+                        </div>
+                        <div class="help-text" style="text-align:center; margin-top: 8px;">Current Images</div>
+                    }
                 </div>
-            }
+
+            </main>
         </div>
 
-        <!-- BOTTOM ACTIONS -->
         <div class="submit-section">
             <button type="submit" class="btn-solid" disabled="@IsSubmitting">
-                @(IsSubmitting ? "Submitting..." : "Submit")
+                @(IsSubmitting ? "Submitting..." : "Submit Entry")
             </button>
         </div>
     </EditForm>
@@ -96,21 +156,25 @@
     [Parameter] public string ErrorMessage { get; set; } = string.Empty;
     [Parameter] public Func<DiaryEntry, List<IBrowserFile>?, Task<bool>> OnSave { get; set; } = default!;
     [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public string Size { get; set; } = "normal";
 
     private List<IBrowserFile> _selectedImages = new();
     private List<string> imagePreviewUrls = new();
 
+    private string Location { get; set; } = string.Empty;
+    private string Weather { get; set; } = string.Empty;
+    private string Mood { get; set; } = "good";
+    private string TagInput { get; set; } = string.Empty;
+    private List<string> Tags { get; set; } = new();
+
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
         var newFiles = e.GetMultipleFiles().ToList();
-
         foreach (var file in newFiles)
         {
             _selectedImages.Add(file);
-
             var format = file.ContentType;
             var maxAllowedSize = 5120000;
-
             try
             {
                 var buffer = new byte[file.Size];
@@ -128,6 +192,24 @@
     {
         _selectedImages.Clear();
         imagePreviewUrls.Clear();
+    }
+
+    private void HandleTagKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(TagInput))
+        {
+            var tag = TagInput.Trim();
+            if (!Tags.Contains(tag, StringComparer.OrdinalIgnoreCase))
+            {
+                Tags.Add(tag);
+            }
+            TagInput = string.Empty;
+        }
+    }
+
+    private void RemoveTag(string tag)
+    {
+        Tags.Remove(tag);
     }
 
     private async Task HandleSubmit()
