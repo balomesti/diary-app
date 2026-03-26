@@ -47,12 +47,16 @@ namespace diary_app.Services
             content.Add(new StringContent(entry.Title), "Title");
             content.Add(new StringContent(entry.Content), "Content");
             content.Add(new StringContent(entry.Date.ToString("yyyy-MM-ddTHH:mm:ss")), "Date");
+            content.Add(new StringContent(entry.Location ?? ""), "Location");
+            content.Add(new StringContent(entry.Weather ?? ""), "Weather");
+            content.Add(new StringContent(entry.Mood ?? ""), "Mood");
+            content.Add(new StringContent(entry.Tags ?? ""), "Tags");
 
             if (imageFiles != null && imageFiles.Count > 0)
             {
                 foreach (var imageFile in imageFiles)
                 {
-                    var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // 10MB max
+                    var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10));
                     fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
                     content.Add(fileContent, "Images", imageFile.Name);
                 }
@@ -68,12 +72,16 @@ namespace diary_app.Services
             content.Add(new StringContent(entry.Title), "Title");
             content.Add(new StringContent(entry.Content), "Content");
             content.Add(new StringContent(entry.Date.ToString("yyyy-MM-ddTHH:mm:ss")), "Date");
+            content.Add(new StringContent(entry.Location ?? ""), "Location");
+            content.Add(new StringContent(entry.Weather ?? ""), "Weather");
+            content.Add(new StringContent(entry.Mood ?? ""), "Mood");
+            content.Add(new StringContent(entry.Tags ?? ""), "Tags");
 
             if (imageFiles != null && imageFiles.Count > 0)
             {
                 foreach (var imageFile in imageFiles)
                 {
-                    var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // 10MB max
+                    var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10));
                     fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
                     content.Add(fileContent, "Images", imageFile.Name);
                 }

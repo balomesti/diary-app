@@ -8,6 +8,10 @@ namespace diary_app.Models
         public DateTime Date { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
-        public string ImageUrls { get; set; } = string.Empty; // Semicolon separated list of image URLs
+        public string ImageUrls { get; set; } = string.Empty;
+        public string Location { get; set; } = string.Empty;
+        public string Weather { get; set; } = string.Empty;
+        public string Mood { get; set; } = string.Empty;
+        public string Tags { get; set; } = string.Empty;
     }
 }

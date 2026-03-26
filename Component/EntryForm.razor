@@ -359,8 +359,25 @@
         _ => "Unknown"
     };
 
+    protected override void OnInitialized()
+    {
+        Location = Entry.Location ?? "";
+        Weather = Entry.Weather ?? "";
+        Mood = string.IsNullOrEmpty(Entry.Mood) ? "good" : Entry.Mood;
+        if (!string.IsNullOrWhiteSpace(Entry.Tags))
+        {
+            Tags = Entry.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                             .Select(t => t.Trim())
+                             .ToList();
+        }
+    }
+
     private async Task HandleSubmit()
     {
+        Entry.Location = Location ?? "";
+        Entry.Weather = Weather ?? "";
+        Entry.Mood = Mood ?? "";
+        Entry.Tags = string.Join(",", Tags);
         if (OnSave != null)
             await OnSave.Invoke(Entry, _selectedImages.Any() ? _selectedImages : null);
     }
