@@ -54,7 +54,7 @@
                     <div class="weather-row">
                         <InputText @bind-Value="Weather" class="form-control" placeholder="E.g. 32°C, Sunny" />
                         <button type="button" class="btn-weather" @onclick="DetectWeather" title="Auto-detect weather">
-                            <span aria-hidden="true">⛅ </span>
+                            <span aria-hidden="true">⛅</span>
                         </button>
                     </div>
                     @if (WeatherLoading)
@@ -63,15 +63,38 @@
                     }
                 </div>
 
+                <!-- TAGS: preset buttons + custom input -->
                 <div class="sidebar-card">
                     <div class="sidebar-card-title">🏷️ Tags</div>
-                    <InputText @bind-Value="TagInput" class="form-control" placeholder="Type & press Enter" @onkeydown="HandleTagKeyDown" />
+
+                    <!-- Preset tag buttons -->
+                    <div class="preset-tags">
+                        @foreach (var preset in PresetTags)
+                        {
+                            var isSelected = Tags.Contains(preset.Label, StringComparer.OrdinalIgnoreCase);
+                            <button type="button"
+                                    class="preset-tag @(isSelected ? "preset-tag--active" : "")"
+                                    @onclick="() => TogglePresetTag(preset.Label)">
+                                @preset.Icon @preset.Label
+                            </button>
+                        }
+                    </div>
+
+                    <!-- Custom tag input -->
+                    <InputText @bind-Value="TagInput"
+                               class="form-control"
+                               placeholder="Custom tag, press Enter"
+                               @onkeydown="HandleTagKeyDown" />
+
+                    <!-- Selected tags -->
                     @if (Tags.Any())
                     {
                         <div class="tags-container">
                             @foreach (var tag in Tags)
                             {
-                                <div class="tag-pill">@tag <span class="tag-remove" @onclick="() => RemoveTag(tag)">&times;</span></div>
+                                <div class="tag-pill">
+                                    @tag <span class="tag-remove" @onclick="() => RemoveTag(tag)">&times;</span>
+                                </div>
                             }
                         </div>
                     }
@@ -165,9 +188,9 @@
             <button type="submit" class="btn-solid" disabled="@IsSubmitting">
                @(IsSubmitting ? "Submitting..." : "Submit Entry")
             </button>
-      </div>
-        </EditForm>
         </div>
+    </EditForm>
+</div>
 
 @code {
     [Parameter] public DiaryEntry Entry { get; set; } = new DiaryEntry();
@@ -188,6 +211,30 @@
     private List<string> Tags { get; set; } = new();
     private bool WeatherLoading { get; set; }
     private bool LocationLoading { get; set; }
+
+    private record PresetTag(string Icon, string Label);
+
+    private readonly List<PresetTag> PresetTags = new()
+    {
+        new("💼", "Work"),
+        new("🍽️", "Food"),
+        new("✈️", "Travel"),
+        new("🏋️", "Exercise"),
+        new("👨‍👩‍👧", "Family"),
+        new("👫", "Social"),
+        new("📚", "Study"),
+        new("🎉", "Special"),
+        new("💊", "Health"),
+        new("💰", "Finance"),
+    };
+
+    private void TogglePresetTag(string label)
+    {
+        if (Tags.Contains(label, StringComparer.OrdinalIgnoreCase))
+            Tags.RemoveAll(t => t.Equals(label, StringComparison.OrdinalIgnoreCase));
+        else
+            Tags.Add(label);
+    }
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
@@ -222,22 +269,13 @@
         {
             var tag = TagInput.Trim();
             if (!Tags.Contains(tag, StringComparer.OrdinalIgnoreCase))
-            {
                 Tags.Add(tag);
-            }
             TagInput = string.Empty;
         }
     }
 
-    private void RemoveTag(string tag)
-    {
-        Tags.Remove(tag);
-    }
-
-    private void ChangeMood(string mood)
-    {
-        Mood = mood;
-    }
+    private void RemoveTag(string tag) => Tags.Remove(tag);
+    private void ChangeMood(string mood) => Mood = mood;
 
     private async Task DetectLocation()
     {
@@ -255,14 +293,11 @@
                 var json = await httpClient.GetStringAsync(url);
                 var data = System.Text.Json.JsonDocument.Parse(json);
                 var root = data.RootElement;
-
                 var city = root.TryGetProperty("city", out var c) ? c.GetString() :
                            root.TryGetProperty("town", out var t) ? t.GetString() :
                            root.TryGetProperty("village", out var v) ? v.GetString() :
                            root.TryGetProperty("municipality", out var m) ? m.GetString() : null;
-
                 var country = root.TryGetProperty("country", out var co) ? co.GetString() : null;
-
                 if (!string.IsNullOrEmpty(city) && !string.IsNullOrEmpty(country))
                     Location = $"{city}, {country}";
                 else if (!string.IsNullOrEmpty(country))
@@ -276,10 +311,7 @@
             Console.WriteLine($"Location detection failed: {ex.Message}");
             Location = "Unable to detect";
         }
-        finally
-        {
-            LocationLoading = false;
-        }
+        finally { LocationLoading = false; }
     }
 
     private async Task DetectWeather()
@@ -299,8 +331,7 @@
                 var root = data.RootElement;
                 var temp = root.GetProperty("current").GetProperty("temperature_2m").GetDouble();
                 var wcode = root.GetProperty("current").GetProperty("weather_code").GetInt32();
-                var condition = GetWeatherCondition(wcode);
-                Weather = $"{temp}°C, {condition}";
+                Weather = $"{temp}°C, {GetWeatherCondition(wcode)}";
             }
         }
         catch (Exception ex)
@@ -308,10 +339,7 @@
             Console.WriteLine($"Weather detection failed: {ex.Message}");
             Weather = "Unable to detect";
         }
-        finally
-        {
-            WeatherLoading = false;
-        }
+        finally { WeatherLoading = false; }
     }
 
     private static string GetWeatherCondition(int code) => code switch
@@ -334,8 +362,6 @@
     private async Task HandleSubmit()
     {
         if (OnSave != null)
-        {
             await OnSave.Invoke(Entry, _selectedImages.Any() ? _selectedImages : null);
-        }
     }
 }

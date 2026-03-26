@@ -243,6 +243,44 @@ textarea.form-control {
     color: #A75D50;
 }
 
+/* ── Preset tag buttons ── */
+.preset-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.preset-tag {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 5px 11px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.preset-tag:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: rgba(85, 107, 85, 0.06);
+}
+
+.preset-tag--active {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #ffffff;
+}
+
+.preset-tag--active:hover {
+    background-color: var(--accent-hover);
+    color: #ffffff;
+}
+
 /* ── File input ── */
 input[type="file"] {
     padding: 10px;
