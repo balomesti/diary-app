@@ -43,7 +43,7 @@ else
         }
     }
 
-    private async Task<bool> HandleSave(DiaryEntry updated, List<IBrowserFile>? selectedImages)
+    private async Task<bool> HandleSave(DiaryEntry updated, List<ImageFileData>? selectedImages)
     {
         if (entry == null) return false;
         errorMessage = "";

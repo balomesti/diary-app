@@ -15,7 +15,7 @@
     private string errorMessage = "";
     private bool isSaving = false;
 
-    private async Task<bool> HandleSave(DiaryEntry entry, List<IBrowserFile>? selectedImages)
+    private async Task<bool> HandleSave(DiaryEntry entry, List<ImageFileData>? selectedImages)
     {
         errorMessage = "";
         isSaving = true;

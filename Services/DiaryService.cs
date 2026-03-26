@@ -41,7 +41,7 @@ namespace diary_app.Services
             }
         }
 
-        public async Task<bool> SaveEntryAsync(DiaryEntry entry, List<IBrowserFile>? imageFiles)
+        public async Task<bool> SaveEntryAsync(DiaryEntry entry, List<ImageFileData>? imageFiles)
         {
             using var content = new MultipartFormDataContent();
             content.Add(new StringContent(entry.Title), "Title");
@@ -56,9 +56,9 @@ namespace diary_app.Services
             {
                 foreach (var imageFile in imageFiles)
                 {
-                    var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10));
+                    var fileContent = new ByteArrayContent(imageFile.Data);
                     fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
-                    content.Add(fileContent, "Images", imageFile.Name);
+                    content.Add(fileContent, "Images", imageFile.FileName);
                 }
             }
 
@@ -66,7 +66,7 @@ namespace diary_app.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UpdateEntryAsync(DiaryEntry entry, List<IBrowserFile>? imageFiles)
+        public async Task<bool> UpdateEntryAsync(DiaryEntry entry, List<ImageFileData>? imageFiles)
         {
             using var content = new MultipartFormDataContent();
             content.Add(new StringContent(entry.Title), "Title");
@@ -81,9 +81,9 @@ namespace diary_app.Services
             {
                 foreach (var imageFile in imageFiles)
                 {
-                    var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10));
+                    var fileContent = new ByteArrayContent(imageFile.Data);
                     fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
-                    content.Add(fileContent, "Images", imageFile.Name);
+                    content.Add(fileContent, "Images", imageFile.FileName);
                 }
             }
 
