@@ -1,135 +1,188 @@
-/* Importing fonts */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap');
-
-/* Color Palette */
 :root {
-    --text-main: #2C231F;      
-    --text-light: #7A6F66;     
-    --accent-color: #556B55;   
-    --accent-hover: #435543; 
-    --card-bg: rgba(253, 251, 247, 0.85); /* Frosted glass */
-    --border-color: rgba(212, 201, 189, 0.8); 
-    --delete-text: #A75D50; 
-    --delete-bg: #F7EBE9; 
-    --edit-text: #3E5A4E; 
-    --edit-bg: #E8EFEA; 
+    --text-main: #1C1917;
+    --text-light: #57534E;
+    --accent-color: #556B55;
+    --accent-hover: #435543;
+    --card-bg: rgba(253, 251, 247, 0.85);
+    --border-color: rgba(212, 201, 189, 0.8);
+    --delete-text: #DC2626;
+    --delete-border: #FECACA;
+    --delete-hover-bg: #FEF2F2;
 }
 
-/* --- MAIN CONTAINER --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 .diary-detail-page {
     width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 60px 20px;
-    font-family: 'Nunito', sans-serif;
-    color: var(--text-main);
     min-height: 100vh;
+    padding: 40px 20px 80px;
+    background-color: #E2D9CC;
+    background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* --- HEADER SECTION --- */
-.detail-header {
+/* --- MAIN WRAPPER --- */
+.detail-wrapper {
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* --- TOP ACTIONS --- */
+.top-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
+    padding: 0 10px;
 }
 
-.back-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.btn-back {
     background: transparent;
     border: none;
     color: var(--text-light);
-    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     transition: color 0.3s ease;
     padding: 0;
 }
 
-.back-btn:hover {
-    color: var(--accent-color);
+.btn-back:hover {
+    color: var(--text-main);
 }
 
-.header-actions {
+.action-buttons {
     display: flex;
     gap: 12px;
 }
 
-.action-btn {
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    border: none;
+.btn-edit {
+    background-color: var(--card-bg);
+    backdrop-filter: blur(10px);
+    color: var(--accent-color);
+    border: 1px solid rgba(85, 107, 85, 0.3);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.btn-edit {
-    background-color: var(--edit-bg);
-    color: var(--edit-text);
-}
-.btn-edit:hover { 
-    background-color: #d1dfd4; 
-    transform: translateY(-1px);
+.btn-edit:hover {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
 }
 
 .btn-delete {
-    background-color: var(--delete-bg);
+    background-color: #ffffff;
     color: var(--delete-text);
-}
-.btn-delete:hover { 
-    background-color: #e8d5d2; 
-    transform: translateY(-1px);
-}
-
-/* --- DETAIL CARD --- */
-.detail-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(10px); 
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 60px;
-    box-shadow: 0 20px 40px rgba(44, 35, 31, 0.08);
-    position: relative;
-    /* Paper texture background */
-    background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
-}
-
-.detail-meta {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
-    color: var(--text-light);
-    font-size: 0.95rem;
+    border: 1px solid var(--delete-border);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.detail-date {
-    position: relative;
+.btn-delete:hover {
+    background-color: var(--delete-hover-bg);
 }
 
-.detail-date::after {
-    content: "•";
-    margin-left: 15px;
-    opacity: 0.4;
+/* --- JOURNAL PAGE (MAIN CARD) --- */
+.journal-page {
+    background: var(--card-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+    padding: 60px 70px;
 }
 
-.detail-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 3.2rem;
+/* --- JOURNAL HEADER --- */
+.journal-header {
     margin-bottom: 40px;
+    border-bottom: 1px solid rgba(212, 201, 189, 0.5);
+    padding-bottom: 30px;
+}
+
+.journal-datetime {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 15px;
+}
+
+.journal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
     color: var(--text-main);
-    line-height: 1.2;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+}
+
+/* --- CONTEXT RIBBON (Location, Weather, Mood) --- */
+.context-ribbon {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.context-pill {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid var(--border-color);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* --- TAGS ROW --- */
+.tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    background-color: rgba(85, 107, 85, 0.08);
+    color: var(--accent-color);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
 /* --- IMAGE GALLERY --- */
-.image-gallery {
+.journal-gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin-bottom: 40px;
 }
@@ -138,14 +191,14 @@
     aspect-ratio: 4 / 3;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
     cursor: pointer;
     transition: transform 0.3s ease;
 }
 
 .gallery-item:hover {
-    transform: scale(1.03);
+    transform: scale(1.02);
 }
 
 .gallery-item img {
@@ -154,16 +207,16 @@
     object-fit: cover;
 }
 
-/* --- CONTENT SECTION --- */
-.detail-content {
+/* --- JOURNAL BODY --- */
+.journal-body {
+    font-family: 'Inter', sans-serif;
     font-size: 1.15rem;
+    color: var(--text-main);
     line-height: 1.8;
-    color: #3D3530;
 }
 
-.detail-content p {
-    margin-bottom: 25px;
-    white-space: pre-wrap; /* Preserve spaces if not manually split */
+.journal-body p {
+    margin-bottom: 20px;
 }
 
 /* --- LOADING STATE --- */
@@ -191,32 +244,32 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Mobile Responsiveness */
+/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-    .diary-detail-page {
-        padding: 30px 15px;
+    .journal-page {
+        padding: 40px 25px;
     }
-    .detail-card {
-        padding: 30px 20px;
+
+    .journal-title {
+        font-size: 2.5rem;
     }
-    .detail-title {
-        font-size: 2.2rem;
-        margin-bottom: 25px;
-    }
-    .image-gallery {
+
+    .journal-gallery {
         grid-template-columns: 1fr;
     }
-    .detail-header {
+
+    .top-actions {
         flex-direction: column;
-        gap: 20px;
         align-items: flex-start;
+        gap: 20px;
     }
-    .header-actions {
+
+    .action-buttons {
         width: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        justify-content: space-between;
     }
-    .action-btn {
-        text-align: center;
+
+    .action-buttons button {
+        flex: 1;
     }
 }
