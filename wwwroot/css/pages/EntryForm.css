@@ -1,3 +1,30 @@
+/* ── Close Button ── */
+.entry-container {
+    position: relative;
+}
+
+.btn-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.btn-close:hover {
+    background: rgba(44, 35, 31, 0.06);
+    color: var(--text-main);
+}
+
 /* ── Container ── */
 .entry-container {
     background: var(--card-bg);
