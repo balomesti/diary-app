@@ -1,15 +1,16 @@
 @inject NavigationManager NavigationManager
+@inject UserService UserService
+@inject AuthenticationStateProvider AuthStateProvider
+@using Microsoft.AspNetCore.Components.Authorization
 
 <header class="navmenu">
     <div class="navmenu-inner">
         <!-- Logo Section (Left) -->
         <div class="nav-left">
             <NavLink class="navmenu-brand" href="/home" Match="NavLinkMatch.All">
-                <svg class="navmenu-profile-icon" width="36" height="36" viewBox="0 0 36 36" fill="none">
-                    <circle cx="18" cy="18" r="17" stroke="currentColor" stroke-width="2"/>
-                    <circle cx="18" cy="14" r="5" fill="currentColor"/>
-                    <path d="M8 30c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+                <div class="navmenu-profile-wrapper" @onclick="NavigateToSettings" @onclick:stopPropagation>
+                    <img src="@(string.IsNullOrEmpty(profileImageUrl) ? "images/pic1.jpg" : profileImageUrl)" alt="Profile" class="navmenu-profile-image">
+                </div>
                 <span class="navmenu-brand-text">Diary Me</span>
             </NavLink>
         </div>
@@ -36,11 +37,31 @@
 
 @code {
     private bool collapseNavMenu = true;
+    private string profileImageUrl = string.Empty;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : string.Empty;
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void NavigateToSettings()
+    {
+        NavigationManager.NavigateTo("/setting");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var profile = await UserService.GetProfileAsync();
+            if (profile != null && !string.IsNullOrEmpty(profile.ProfileImg))
+            {
+                profileImageUrl = profile.ProfileImg;
+            }
+        }
     }
 }
