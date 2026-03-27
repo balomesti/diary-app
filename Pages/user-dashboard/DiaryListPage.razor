@@ -15,6 +15,52 @@
         </div>
     </section>
 
+    <!-- Gamification Section -->
+    <section class="gamification-section">
+        <div class="gamification-row">
+            <!-- Streak Card -->
+            <div class="stat-card streak-card">
+                <div class="streak-icon">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>@streakCount Day Streak</h3>
+                    <p>@(streakCount > 0 ? "You're on fire! Keep it up." : "Start your streak today!")</p>
+                </div>
+            </div>
+
+            <!-- Progress Card -->
+            <div class="stat-card progress-card">
+                <div class="stat-info">
+                    <div class="progress-header">
+                        <h3>Total Entries: @totalEntries</h3>
+                        <span class="next-milestone">Next: @nextMilestone</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-fill" style="width: @GetProgressPercentage()%"></div>
+                    </div>
+                    <p class="progress-hint">@GetEntriesToNextMilestone() more to become a <b>@GetNextMilestoneTitle()</b></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Milestones Card -->
+        <div class="milestones-card">
+            <div class="milestone-header">
+                <h3>Achievements</h3>
+            </div>
+            <div class="badge-list">
+                @foreach (var badge in badges)
+                {
+                    <div class="badge @(badge.IsUnlocked ? "unlocked" : "")">
+                        <i class="@badge.IconClass"></i>
+                        <span>@badge.Title</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
     <!-- Entries List Section -->
     <section class="entries-section">
         <div class="entries-header">
@@ -77,13 +123,13 @@
                                 </div>
                             }
                         </div>
-                        
+
                         <div class="card-content">
                             <h3>@entry.Title</h3>
                             <p>@entry.Content</p>
-                            
+
                             <hr class="card-divider">
-                            
+
                             <div class="card-footer">
                                 <span class="card-date">@entry.Date.ToString("MMMM d, yyyy")</span>
                                 <div class="card-actions">
@@ -102,9 +148,78 @@
 @code {
     private List<DiaryEntry>? entries;
 
+    private int totalEntries = 33;
+    private int streakCount = 7;
+    private int nextMilestone = 50;
+
+    private List<Badge> badges = new List<Badge>
+    {
+        new Badge { IconClass = "fas fa-seedling", Title = "First Entry", IsUnlocked = true },
+        new Badge { IconClass = "fas fa-calendar-check", Title = "7 Days", IsUnlocked = true },
+        new Badge { IconClass = "fas fa-camera", Title = "Photo Buff", IsUnlocked = true },
+        new Badge { IconClass = "fas fa-award", Title = "Master (50)", IsUnlocked = false },
+        new Badge { IconClass = "fas fa-pen-fancy", Title = "100 Entries", IsUnlocked = false }
+    };
+
     protected override async Task OnInitializedAsync()
     {
         entries = await DiaryService.GetEntriesAsync();
+        if (entries != null)
+        {
+            totalEntries = entries.Count;
+        }
+        CalculateNextMilestone();
+    }
+
+    private void CalculateNextMilestone()
+    {
+        if (totalEntries >= 100)
+            nextMilestone = 100;
+        else if (totalEntries >= 50)
+            nextMilestone = 100;
+        else if (totalEntries >= 10)
+            nextMilestone = 50;
+        else if (totalEntries >= 5)
+            nextMilestone = 10;
+        else
+            nextMilestone = 5;
+    }
+
+    private string GetProgressPercentage()
+    {
+        int currentMilestone = nextMilestone switch
+        {
+            100 when totalEntries >= 50 => 50,
+            50 when totalEntries >= 10 => 10,
+            10 when totalEntries >= 5 => 5,
+            5 => 0,
+            _ => 0
+        };
+
+        if (nextMilestone == 100 && totalEntries >= 50)
+            currentMilestone = 50;
+        else if (nextMilestone == 50 && totalEntries >= 10)
+            currentMilestone = 10;
+
+        double percentage = (double)totalEntries / nextMilestone * 100;
+        return Math.Min(percentage, 100).ToString("F0");
+    }
+
+    private string GetEntriesToNextMilestone()
+    {
+        return Math.Max(nextMilestone - totalEntries, 0).ToString();
+    }
+
+    private string GetNextMilestoneTitle()
+    {
+        return nextMilestone switch
+        {
+            5 => "Beginner",
+            10 => "Chronicler",
+            50 => "Master Chronicler",
+            100 => "Legend",
+            _ => "Beginner"
+        };
     }
 
     private async Task DeleteEntry(DiaryEntry entry)
@@ -117,6 +232,11 @@
 
         await DiaryService.DeleteEntryAsync(entry);
         entries = await DiaryService.GetEntriesAsync();
+        if (entries != null)
+        {
+            totalEntries = entries.Count;
+            CalculateNextMilestone();
+        }
     }
 
     private void EditEntry(DiaryEntry entry)
@@ -127,5 +247,12 @@
     private void ViewDetail(int id)
     {
         NavigationManager.NavigateTo($"/diary/{id}");
+    }
+
+    private class Badge
+    {
+        public string IconClass { get; set; } = "";
+        public string Title { get; set; } = "";
+        public bool IsUnlocked { get; set; }
     }
 }
