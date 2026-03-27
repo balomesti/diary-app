@@ -3,285 +3,155 @@
 @inject IJSRuntime JS
 @inject UserService UserService
 
-<style>
-    .avatar-upload-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 24px;
-        padding: 20px;
-        margin-bottom: 30px;
-        background: rgba(255, 255, 255, 0.4);
-        border-radius: 16px;
-        border: 1px dashed var(--border-color, #d4c9bd);
-    }
-
-    .avatar-preview-container {
-        position: relative;
-        width: 100px;
-        height: 100px;
-    }
-
-    .avatar-preview-image {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid #fff;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        transition: filter 0.3s ease;
-    }
-
-    .avatar-placeholder {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid #fff;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        background: rgba(255, 255, 255, 0.4);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-light, #57534E);
-    }
-
-    .avatar-edit-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background: rgba(0, 0, 0, 0.4);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        cursor: pointer;
-        color: white;
-    }
-
-    .avatar-preview-container:hover .avatar-edit-overlay {
-        opacity: 1;
-    }
-
-    .avatar-preview-container:hover .avatar-preview-image {
-        filter: blur(1px);
-    }
-
-    .avatar-content {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .avatar-content h3 {
-        margin: 0;
-        font-size: 1.1rem;
-        color: var(--text-main, #1C1917);
-    }
-
-    .avatar-content p {
-        margin: 0;
-        font-size: 0.85rem;
-        color: var(--text-light, #57534E);
-    }
-
-    .avatar-button-group {
-        display: flex;
-        gap: 12px;
-        margin-top: 8px;
-    }
-
-    .btn-upload {
-        background-color: var(--accent-color, #556B55);
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .btn-upload:hover {
-        background-color: var(--accent-hover, #435543);
-        transform: translateY(-1px);
-    }
-
-    .btn-remove {
-        background: transparent;
-        border: 1px solid #e5e7eb;
-        color: #ef4444;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .btn-remove:hover {
-        background: #fef2f2;
-        border-color: #fecaca;
-    }
-
-    #imageUpload {
-        display: none;
-    }
-
-    .toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: var(--accent-color, #556B55);
-        color: white;
-        padding: 16px 24px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        z-index: 1000;
-    }
-
-    .toast.success {
-        background: #22c55e;
-    }
-
-    .toast.error {
-        background: #ef4444;
-    }
-</style>
-
-<PageTitle>Setting</PageTitle>
+<PageTitle>Settings - Diary Me</PageTitle>
 
 <div class="settings-page-container">
     <div class="settings-wrapper">
-        <!-- TOP LEVEL ACTIONS -->
-        <div class="page-header">
-            <h1>Customize Your Diary</h1>
-            <p>Manage your diary settings to personalize your experience.</p>
+        <div class="settings-header">
+            <h1>Settings</h1>
+            <p>Customize your diary experience and manage your account.</p>
         </div>
 
-        <!-- TABS -->
-        <div class="tabs-container" role="tablist" aria-label="Settings sections">
-            <button type="button" class="@TabClass(SettingsTab.Profile)" @onclick="() => SelectTab(SettingsTab.Profile)">Profile</button>
-            <button type="button" class="@TabClass(SettingsTab.General)" @onclick="() => SelectTab(SettingsTab.General)">General</button>
-            <button type="button" class="@TabClass(SettingsTab.Privacy)" @onclick="() => SelectTab(SettingsTab.Privacy)">Privacy</button>
-            <button type="button" class="@TabClass(SettingsTab.Notifications)" @onclick="() => SelectTab(SettingsTab.Notifications)">Notifications</button>
+        <div class="settings-tabs" role="tablist">
+            <button type="button" class="settings-tab-btn @GetTabClass(SettingsTab.Profile)" @onclick="() => SelectTab(SettingsTab.Profile)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Profile
+            </button>
+            <button type="button" class="settings-tab-btn @GetTabClass(SettingsTab.General)" @onclick="() => SelectTab(SettingsTab.General)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                General
+            </button>
+            <button type="button" class="settings-tab-btn @GetTabClass(SettingsTab.Privacy)" @onclick="() => SelectTab(SettingsTab.Privacy)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Privacy
+            </button>
+            <button type="button" class="settings-tab-btn @GetTabClass(SettingsTab.Notifications)" @onclick="() => SelectTab(SettingsTab.Notifications)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                Notifications
+            </button>
         </div>
 
-        <!-- SETTINGS CARD -->
         <div class="settings-card">
-            <div class="card-header">
+            <div class="settings-card-header">
                 <h2>@SectionTitle</h2>
                 <p>@SectionSubtitle</p>
             </div>
 
-            @if (activeTab == SettingsTab.Profile)
-            {
-                <div class="avatar-upload-wrapper">
-                    <div class="avatar-preview-container" @onclick="TriggerImageUpload">
-                        @if (!string.IsNullOrEmpty(profileImageUrl))
-                        {
-                            <img src="@profileImageUrl" 
-                                 alt="Profile" 
-                                 class="avatar-preview-image">
-                        }
-                        else
-                        {
-                            <div class="avatar-placeholder">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <div class="settings-card-body">
+                @if (activeTab == SettingsTab.Profile)
+                {
+                    <div class="profile-avatar-section">
+                        <div class="avatar-preview-wrapper" @onclick="TriggerImageUpload">
+                            @if (!string.IsNullOrEmpty(profileImageUrl))
+                            {
+                                <img src="@profileImageUrl" alt="Profile" class="avatar-preview-img">
+                            }
+                            else
+                            {
+                                <div class="avatar-preview-placeholder">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                </div>
+                            }
+                            <div class="avatar-overlay">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                             </div>
-                        }
-                        
-                        <div class="avatar-edit-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                         </div>
-                    </div>
-
-                    <div class="avatar-content">
-                        <h3>Profile Picture</h3>
-                        <p>PNG, JPG or GIF. Recommended size 200x200.</p>
-                        
-                        <div class="avatar-button-group">
-                            <InputFile id="imageUpload" OnChange="HandleImageUpload" accept="image/*" style="display: none;" />
-                            <button type="button" class="btn-upload" @onclick="TriggerImageUpload">
-                                Change Photo
-                            </button>
-                            <button type="button" class="btn-remove" @onclick="RemovePhoto">
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <form action="#">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" class="form-control" placeholder="Enter your full name" @bind="profileName">
-                        </div>
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" class="form-control" value="@profileEmail" readonly>
-                        </div>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label>Bio</label>
-                        <textarea class="form-control" rows="3" placeholder="Write a short bio about yourself..." @bind="profileBio"></textarea>
-                    </div>
-
-                    <div class="submit-section">
-                        <button type="button" class="btn-solid" @onclick="SaveChanges">Update Profile</button>
-                    </div>
-                </form>
-            }
-            else if (activeTab == SettingsTab.General)
-            {
-                <!-- GENERAL SETTINGS -->
-                <form action="#">
-                    <div class="form-grid">
-                        <!-- Left Column -->
-                        <div class="form-group">
-                            <label>App Title</label>
-                            <input type="text" class="form-control" placeholder="Enter your app title" @bind="diaryTitle">
-                        </div>
-
-                        <!-- Right Column -->
-                        <div class="form-group">
-                            <label>Font Size</label>
-                            <div class="segmented-control">
-                                <button type="button" class="@SegmentClass(fontSize == "Small")" @onclick='() => SetFontSize("Small")'>Small</button>
-                                <button type="button" class="@SegmentClass(fontSize == "Medium")" @onclick='() => SetFontSize("Medium")'>Medium</button>
-                                <button type="button" class="@SegmentClass(fontSize == "Large")" @onclick='() => SetFontSize("Large")'>Large</button>
+                        <div class="avatar-info">
+                            <h3>Profile Picture</h3>
+                            <p>PNG, JPG or GIF. Recommended size 200x200.</p>
+                            <div class="avatar-actions">
+                                <InputFile id="imageUpload" OnChange="HandleImageUpload" accept="image/*" style="display: none;" />
+                                <button type="button" class="btn-change-photo" @onclick="TriggerImageUpload">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                    Change Photo
+                                </button>
+                                @if (!string.IsNullOrEmpty(profileImageUrl))
+                                {
+                                    <button type="button" class="btn-remove-photo" @onclick="RemovePhoto">
+                                        Remove
+                                    </button>
+                                }
                             </div>
                         </div>
                     </div>
 
-                    <div class="submit-section">
-                        <button type="button" class="btn-solid" @onclick="SaveChanges">Update Settings</button>
+                    <div class="form-section">
+                        <h3 class="form-section-title">Personal Information</h3>
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label>Full Name</label>
+                                <input type="text" @bind="profileName" placeholder="Enter your full name">
+                            </div>
+                            <div class="form-field">
+                                <label>Email Address</label>
+                                <input type="email" value="@profileEmail" readonly>
+                            </div>
+                        </div>
                     </div>
-                </form>
-            }
-            else if (activeTab == SettingsTab.Privacy)
-            {
-                <div class="settings-placeholder" style="text-align: center; padding: 40px;">
-                    <h3>Privacy</h3>
-                    <p>Privacy settings will appear here.</p>
-                </div>
-            }
-            else
-            {
-                <div class="settings-placeholder" style="text-align: center; padding: 40px;">
-                    <h3>Notifications</h3>
-                    <p>Notification settings will appear here.</p>
-                </div>
-            }
+
+                    <div class="form-section">
+                        <h3 class="form-section-title">About You</h3>
+                        <div class="form-row">
+                            <div class="form-field full-width">
+                                <label>Bio</label>
+                                <textarea @bind="profileBio" placeholder="Write a short bio about yourself..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button type="button" class="btn-cancel" @onclick="Cancel">Cancel</button>
+                        <button type="button" class="btn-save" @onclick="SaveChanges">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                            Save Changes
+                        </button>
+                    </div>
+                }
+                else if (activeTab == SettingsTab.General)
+                {
+                    <div class="form-section">
+                        <h3 class="form-section-title">App Settings</h3>
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label>Diary Title</label>
+                                <input type="text" @bind="diaryTitle" placeholder="Enter your diary title">
+                            </div>
+                            <div class="form-field">
+                                <label>Font Size</label>
+                                <div class="segmented-control">
+                                    <button type="button" class="segment-btn @GetSegmentClass(fontSize == "Small")" @onclick='() => SetFontSize("Small")'>Small</button>
+                                    <button type="button" class="segment-btn @GetSegmentClass(fontSize == "Medium")" @onclick='() => SetFontSize("Medium")'>Medium</button>
+                                    <button type="button" class="segment-btn @GetSegmentClass(fontSize == "Large")" @onclick='() => SetFontSize("Large")'>Large</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button type="button" class="btn-cancel" @onclick="Cancel">Cancel</button>
+                        <button type="button" class="btn-save" @onclick="SaveChanges">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                            Save Changes
+                        </button>
+                    </div>
+                }
+                else if (activeTab == SettingsTab.Privacy)
+                {
+                    <div class="settings-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <h3>Privacy Settings</h3>
+                        <p>Privacy settings will be available soon.</p>
+                    </div>
+                }
+                else if (activeTab == SettingsTab.Notifications)
+                {
+                    <div class="settings-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <h3>Notification Settings</h3>
+                        <p>Notification preferences will be available soon.</p>
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>
@@ -312,13 +182,11 @@
 
     private SettingsTab activeTab = SettingsTab.Profile;
     
-    // Profile State
     private string profileName = "Maria";
     private string profileEmail = "maria@example.com";
     private string profileBio = "Just a girl navigating through life one journal entry at a time.";
     private string profileImageUrl = "";
 
-    // General Settings State
     private string diaryTitle = "";
     private string fontSize = "Medium";
     private const string FontSizeKey = "diary_font_size";
@@ -403,10 +271,10 @@
 
     private string SectionSubtitle => activeTab switch
     {
-        SettingsTab.Profile => "Update your personal information.",
-        SettingsTab.General => "Update basic diary settings.",
-        SettingsTab.Privacy => "Manage privacy and visibility settings.",
-        SettingsTab.Notifications => "Control notifications and reminders.",
+        SettingsTab.Profile => "Update your personal information and profile picture.",
+        SettingsTab.General => "Customize your diary appearance and preferences.",
+        SettingsTab.Privacy => "Control your privacy and visibility settings.",
+        SettingsTab.Notifications => "Manage your notification preferences.",
         _ => ""
     };
 
@@ -415,14 +283,14 @@
         activeTab = tab;
     }
 
-    private string TabClass(SettingsTab tab)
+    private string GetTabClass(SettingsTab tab)
     {
-        return tab == activeTab ? "tab-btn active" : "tab-btn";
+        return tab == activeTab ? "active" : "";
     }
 
-    private string SegmentClass(bool isActive)
+    private string GetSegmentClass(bool isActive)
     {
-        return isActive ? "segment-btn active" : "segment-btn";
+        return isActive ? "active" : "";
     }
 
     private async Task SaveChanges()
