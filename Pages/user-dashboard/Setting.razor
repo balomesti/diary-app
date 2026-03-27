@@ -1,6 +1,7 @@
 @page "/setting"
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
+@inject UserService UserService
 
 <style>
     .avatar-upload-wrapper {
@@ -180,7 +181,7 @@
                         </div>
                         <div class="form-group">
                             <label>Email Address</label>
-                            <input type="email" class="form-control" placeholder="Enter your email" @bind="profileEmail">
+                            <input type="email" class="form-control" value="@profileEmail" readonly>
                         </div>
                     </div>
 
@@ -265,7 +266,29 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadProfileAsync();
         await LoadSettingsAsync();
+    }
+
+    private async Task LoadProfileAsync()
+    {
+        try
+        {
+            var profile = await UserService.GetProfileAsync();
+            if (profile != null)
+            {
+                profileName = profile.Username;
+                profileEmail = profile.Email;
+                profileBio = profile.UserBio ?? string.Empty;
+                if (!string.IsNullOrEmpty(profile.ProfileImg))
+                {
+                    profileImageUrl = profile.ProfileImg;
+                }
+            }
+        }
+        catch
+        {
+        }
     }
 
     private async Task LoadSettingsAsync()
@@ -277,12 +300,6 @@
             {
                 fontSize = savedFontSize;
                 await ApplyFontSizeAsync(fontSize);
-            }
-
-            var savedImageUrl = await JS.InvokeAsync<string>("localStorage.getItem", "profileImageUrl");
-            if (!string.IsNullOrEmpty(savedImageUrl))
-            {
-                profileImageUrl = savedImageUrl;
             }
         }
         catch
@@ -348,15 +365,31 @@
 
     private async Task SaveChanges()
     {
-        await JS.InvokeVoidAsync("localStorage.setItem", FontSizeKey, fontSize);
-        // You can also add logic here to save Profile details to the backend!
+        if (activeTab == SettingsTab.Profile)
+        {
+            var request = new UpdateProfileRequest
+            {
+                Username = profileName,
+                ProfileImg = profileImageUrl,
+                UserBio = profileBio
+            };
+            await UserService.UpdateProfileAsync(request);
+        }
+        else if (activeTab == SettingsTab.General)
+        {
+            await JS.InvokeVoidAsync("localStorage.setItem", FontSizeKey, fontSize);
+        }
         NavigationManager.NavigateTo("/home");
     }
 
     private async Task RemovePhoto()
     {
         profileImageUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop";
-        await JS.InvokeVoidAsync("localStorage.setItem", "profileImageUrl", profileImageUrl);
+        var request = new UpdateProfileRequest
+        {
+            ProfileImg = profileImageUrl
+        };
+        await UserService.UpdateProfileAsync(request);
     }
 
     private void Cancel()
@@ -378,9 +411,7 @@
             var resizedFile = await file.RequestImageFileAsync(format, 200, 200);
             var buffer = new byte[resizedFile.Size];
             await resizedFile.OpenReadStream().ReadAsync(buffer);
-            var imageUrl = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
-            profileImageUrl = imageUrl;
-            await JS.InvokeVoidAsync("localStorage.setItem", "profileImageUrl", profileImageUrl);
+            profileImageUrl = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
         }
     }
 }
