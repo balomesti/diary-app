@@ -1,133 +1,61 @@
-/* Color Palette */
+/* --- EXISTING SETTINGS STYLES OVERVIEW --- */
+/* Make sure these variables exist in your root */
 :root {
-    --text-main: #2C231F;
-    --text-light: #7A6F66;
-    --accent-color: #556B55;
+    --text-main: #1C1917;     
+    --text-light: #57534E;    
+    --accent-color: #556B55;  
     --accent-hover: #435543;
-    --card-bg: rgba(253, 251, 247, 0.85); /* Frosted glass */
+    --card-bg: rgba(253, 251, 247, 0.85); 
     --border-color: rgba(212, 201, 189, 0.8);
     --input-bg: rgba(255, 255, 255, 0.6);
 }
 
 .settings-page-container {
-    /* Paper texture background applied to the whole page */
-    background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png') !important;
-    font-family: 'Nunito', sans-serif;
-    color: var(--text-main);
-    min-height: 100vh;
     display: flex;
     justify-content: center;
-    padding: 50px 20px;
-    width: 100%;
-    margin-top: -1.1rem; /* Offset the padding from site.css .content */
+    padding: 60px 20px;
 }
 
-/* --- MAIN WRAPPER --- */
 .settings-wrapper {
     width: 100%;
-    max-width: 900px;
-    display: flex;
-    flex-direction: column;
+    max-width: 800px; 
 }
 
-/* --- TOP HEADER --- */
-.page-header {
-    text-align: center;
-    margin-bottom: 35px;
+.btn-small {
+    padding: 8px 16px;
+    font-size: 0.85rem;
 }
 
-.page-header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.8rem;
-    color: var(--text-main);
-    margin-bottom: 10px;
-}
-
-.page-header p {
+.btn-text {
+    background: transparent;
+    border: none;
     color: var(--text-light);
-    font-size: 1.1rem;
-    margin-bottom: 25px;
-}
-
-.global-actions {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-}
-
-/* --- NAVIGATION TABS --- */
-.tabs-container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.tab-btn {
-    background-color: transparent;
-    border: 1px solid transparent;
-    color: var(--text-light);
-    padding: 10px 24px;
-    border-radius: 25px; /* Pill shape */
     font-family: 'Nunito', sans-serif;
-    font-weight: 700;
-    font-size: 0.95rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: color 0.2s ease;
 }
 
-.tab-btn:hover {
-    color: var(--text-main);
-    background-color: rgba(255, 255, 255, 0.4);
+.btn-text:hover {
+    color: #DC2626; /* Soft Red for "Remove" hover */
 }
 
-/* The active tab looks connected to the card below */
-.tab-btn.active {
-    background-color: var(--card-bg);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 10px rgba(44, 35, 31, 0.03);
-}
-
-/* --- SETTINGS CARD --- */
-.settings-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    box-shadow: 0 15px 35px rgba(44, 35, 31, 0.05);
-    padding: 50px;
-}
-
-.card-header {
-    text-align: center;
-    margin-bottom: 40px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.card-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.2rem;
-    margin-bottom: 8px;
-}
-
-.card-header p {
-    color: var(--text-light);
-    font-size: 1rem;
-}
-
-/* --- FORM GRID --- */
+/* --- FORM LAYOUT FIXES --- */
 .form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 Columns on desktop */
-    gap: 40px;
-    margin-bottom: 40px;
+    grid-template-columns: 1fr 1fr; 
+    gap: 30px;
+    margin-bottom: 25px;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: span 2;
+    margin-bottom: 25px;
 }
 
 .form-group label {
@@ -137,115 +65,30 @@
     color: var(--text-main);
 }
 
-/* Standard Text Input */
-.form-control {
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    padding: 14px 16px;
-    border-radius: 8px;
+textarea.form-control {
+    resize: vertical;
     font-family: 'Nunito', sans-serif;
-    font-size: 1rem;
-    color: var(--text-main);
-    transition: all 0.3s ease;
-    width: 100%;
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(85, 107, 85, 0.1);
-    background: #ffffff;
-}
-
-/* Custom Segmented Controls (Replaces messy individual buttons) */
-.segmented-control {
-    display: flex;
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    width: 100%;
-}
-
-.segment-btn {
-    flex: 1;
-    padding: 12px 10px;
-    background: transparent;
-    border: none;
-    font-family: 'Nunito', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text-light);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.segment-btn:not(:last-child) {
-    border-right: 1px solid var(--border-color);
-}
-
-.segment-btn:hover:not(.active) {
-    background: rgba(44, 35, 31, 0.03);
-    color: var(--text-main);
-}
-
-/* Active option */
-.segment-btn.active {
-    background-color: var(--accent-color);
-    color: white;
-}
-
-/* --- BUTTON STYLES --- */
-.settings-page-container .btn-solid {
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    padding: 10px 22px;
-    border-radius: 6px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: 0.3s;
-    white-space: nowrap;
-}
-
-.settings-page-container .btn-solid:hover { background-color: var(--accent-hover); }
-
-.settings-page-container .btn-outline {
-    background-color: transparent;
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    padding: 10px 22px;
-    border-radius: 6px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: 0.3s;
-    white-space: nowrap;
-}
-
-.settings-page-container .btn-outline:hover {
-    background-color: rgba(44, 35, 31, 0.05);
-    border-color: var(--text-main);
+    line-height: 1.5;
 }
 
 .submit-section {
-    text-align: center;
-    margin-top: 20px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 25px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end; /* Aligns save buttons to the right nicely */
 }
 
-/* --- MOBILE RESPONSIVENESS --- */
-@media (max-width: 768px) {
+/* Mobile Responsiveness */
+@media (max-width: 650px) {
     .form-grid {
-        grid-template-columns: 1fr; /* Stacks to 1 column on phones */
-        gap: 25px;
+        grid-template-columns: 1fr;
     }
-    .settings-card {
-        padding: 30px 20px;
+    .form-group.full-width {
+        grid-column: span 1;
     }
-    .tabs-container {
-        flex-wrap: wrap;
+    .profile-avatar-row {
+        flex-direction: column;
+        text-align: center;
     }
 }

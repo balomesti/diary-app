@@ -2,6 +2,122 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 
+<style>
+    .avatar-upload-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding: 20px;
+        margin-bottom: 30px;
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 16px;
+        border: 1px dashed var(--border-color, #d4c9bd);
+    }
+
+    .avatar-preview-container {
+        position: relative;
+        width: 100px;
+        height: 100px;
+    }
+
+    .avatar-preview-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #fff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: filter 0.3s ease;
+    }
+
+    .avatar-edit-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        cursor: pointer;
+        color: white;
+    }
+
+    .avatar-preview-container:hover .avatar-edit-overlay {
+        opacity: 1;
+    }
+
+    .avatar-preview-container:hover .avatar-preview-image {
+        filter: blur(1px);
+    }
+
+    .avatar-content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .avatar-content h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--text-main, #1C1917);
+    }
+
+    .avatar-content p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-light, #57534E);
+    }
+
+    .avatar-button-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    .btn-upload {
+        background-color: var(--accent-color, #556B55);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-upload:hover {
+        background-color: var(--accent-hover, #435543);
+        transform: translateY(-1px);
+    }
+
+    .btn-remove {
+        background: transparent;
+        border: 1px solid #e5e7eb;
+        color: #ef4444;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-remove:hover {
+        background: #fef2f2;
+        border-color: #fecaca;
+    }
+
+    #imageUpload {
+        display: none;
+    }
+</style>
+
 <PageTitle>Setting</PageTitle>
 
 <div class="settings-page-container">
@@ -10,15 +126,11 @@
         <div class="page-header">
             <h1>Customize Your Diary</h1>
             <p>Manage your diary settings to personalize your experience.</p>
-
-            <div class="global-actions">
-                <button class="btn-outline" type="button" @onclick="Cancel">Cancel</button>
-                <button class="btn-solid" type="button" @onclick="SaveChanges">Save Changes</button>
-            </div>
         </div>
 
         <!-- TABS -->
         <div class="tabs-container" role="tablist" aria-label="Settings sections">
+            <button type="button" class="@TabClass(SettingsTab.Profile)" @onclick="() => SelectTab(SettingsTab.Profile)">Profile</button>
             <button type="button" class="@TabClass(SettingsTab.General)" @onclick="() => SelectTab(SettingsTab.General)">General</button>
             <button type="button" class="@TabClass(SettingsTab.Privacy)" @onclick="() => SelectTab(SettingsTab.Privacy)">Privacy</button>
             <button type="button" class="@TabClass(SettingsTab.Notifications)" @onclick="() => SelectTab(SettingsTab.Notifications)">Notifications</button>
@@ -31,8 +143,60 @@
                 <p>@SectionSubtitle</p>
             </div>
 
-            @if (activeTab == SettingsTab.General)
+            @if (activeTab == SettingsTab.Profile)
             {
+                <div class="avatar-upload-wrapper">
+                    <div class="avatar-preview-container" @onclick="TriggerImageUpload">
+                        <img src="@profileImageUrl" 
+                             alt="Profile" 
+                             class="avatar-preview-image">
+                        
+                        <div class="avatar-edit-overlay">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                        </div>
+                    </div>
+
+                    <div class="avatar-content">
+                        <h3>Profile Picture</h3>
+                        <p>PNG, JPG or GIF. Recommended size 200x200.</p>
+                        
+                        <div class="avatar-button-group">
+                            <InputFile id="imageUpload" OnChange="HandleImageUpload" accept="image/*" style="display: none;" />
+                            <button type="button" class="btn-upload" @onclick="TriggerImageUpload">
+                                Change Photo
+                            </button>
+                            <button type="button" class="btn-remove" @onclick="RemovePhoto">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <form action="#">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" class="form-control" placeholder="Enter your full name" @bind="profileName">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" class="form-control" placeholder="Enter your email" @bind="profileEmail">
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Bio</label>
+                        <textarea class="form-control" rows="3" placeholder="Write a short bio about yourself..." @bind="profileBio"></textarea>
+                    </div>
+
+                    <div class="submit-section">
+                        <button type="button" class="btn-solid" @onclick="SaveChanges">Update Profile</button>
+                    </div>
+                </form>
+            }
+            else if (activeTab == SettingsTab.General)
+            {
+                <!-- GENERAL SETTINGS -->
                 <form action="#">
                     <div class="form-grid">
                         <!-- Left Column -->
@@ -52,7 +216,6 @@
                         </div>
                     </div>
 
-                    <!-- BOTTOM SUBMIT -->
                     <div class="submit-section">
                         <button type="button" class="btn-solid" @onclick="SaveChanges">Update Settings</button>
                     </div>
@@ -79,12 +242,21 @@
 @code {
     private enum SettingsTab
     {
+        Profile,
         General,
         Privacy,
         Notifications
     }
 
-    private SettingsTab activeTab = SettingsTab.General;
+    private SettingsTab activeTab = SettingsTab.Profile;
+    
+    // Profile State
+    private string profileName = "Maria";
+    private string profileEmail = "maria@example.com";
+    private string profileBio = "Just a girl navigating through life one journal entry at a time.";
+    private string profileImageUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop";
+
+    // General Settings State
     private string diaryTitle = "";
     private string fontSize = "Medium";
     private string theme = "Light";
@@ -105,6 +277,12 @@
             {
                 fontSize = savedFontSize;
                 await ApplyFontSizeAsync(fontSize);
+            }
+
+            var savedImageUrl = await JS.InvokeAsync<string>("localStorage.getItem", "profileImageUrl");
+            if (!string.IsNullOrEmpty(savedImageUrl))
+            {
+                profileImageUrl = savedImageUrl;
             }
         }
         catch
@@ -137,6 +315,7 @@
 
     private string SectionTitle => activeTab switch
     {
+        SettingsTab.Profile => "Profile Settings",
         SettingsTab.General => "General Settings",
         SettingsTab.Privacy => "Privacy Settings",
         SettingsTab.Notifications => "Notification Settings",
@@ -145,6 +324,7 @@
 
     private string SectionSubtitle => activeTab switch
     {
+        SettingsTab.Profile => "Update your personal information.",
         SettingsTab.General => "Update basic diary settings.",
         SettingsTab.Privacy => "Manage privacy and visibility settings.",
         SettingsTab.Notifications => "Control notifications and reminders.",
@@ -169,11 +349,38 @@
     private async Task SaveChanges()
     {
         await JS.InvokeVoidAsync("localStorage.setItem", FontSizeKey, fontSize);
+        // You can also add logic here to save Profile details to the backend!
         NavigationManager.NavigateTo("/home");
+    }
+
+    private async Task RemovePhoto()
+    {
+        profileImageUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop";
+        await JS.InvokeVoidAsync("localStorage.setItem", "profileImageUrl", profileImageUrl);
     }
 
     private void Cancel()
     {
         NavigationManager.NavigateTo("/home");
+    }
+
+    private async Task TriggerImageUpload()
+    {
+        await JS.InvokeVoidAsync("eval", "document.getElementById('imageUpload').click()");
+    }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var format = "image/jpeg";
+            var resizedFile = await file.RequestImageFileAsync(format, 200, 200);
+            var buffer = new byte[resizedFile.Size];
+            await resizedFile.OpenReadStream().ReadAsync(buffer);
+            var imageUrl = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+            profileImageUrl = imageUrl;
+            await JS.InvokeVoidAsync("localStorage.setItem", "profileImageUrl", profileImageUrl);
+        }
     }
 }
