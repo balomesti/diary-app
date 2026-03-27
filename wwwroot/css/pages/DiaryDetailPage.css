@@ -133,7 +133,7 @@
 
 .journal-title {
     font-family: 'Playfair Display', serif;
-    font-size: 3.5rem;
+    font-size: 3.0rem;
     font-weight: 700;
     color: var(--text-main);
     line-height: 1.1;
@@ -146,7 +146,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .context-pill {
@@ -209,7 +209,7 @@
 /* --- JOURNAL BODY --- */
 .journal-body {
     font-family: 'Inter', sans-serif;
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     color: var(--text-main);
     line-height: 1.8;
 }

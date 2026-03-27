@@ -77,7 +77,7 @@
 /* 2. MAIN MEDIA (The large picture/video) */
 .explore-post-media {
     width: 100%;
-    max-height: 600px;
+    max-height: 400px;
     object-fit: cover;
     border-radius: 16px;
     margin-bottom: 20px;
@@ -87,7 +87,7 @@
 
 .explore-post-video {
     width: 100%;
-    max-height: 600px;
+    max-height: 400px;
     border-radius: 16px;
     margin-bottom: 20px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
