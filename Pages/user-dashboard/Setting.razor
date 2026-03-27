@@ -31,6 +31,20 @@
         transition: filter 0.3s ease;
     }
 
+    .avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #fff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        background: rgba(255, 255, 255, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-light, #57534E);
+    }
+
     .avatar-edit-overlay {
         position: absolute;
         top: 0;
@@ -117,6 +131,29 @@
     #imageUpload {
         display: none;
     }
+
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--accent-color, #556B55);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 1000;
+    }
+
+    .toast.success {
+        background: #22c55e;
+    }
+
+    .toast.error {
+        background: #ef4444;
+    }
 </style>
 
 <PageTitle>Setting</PageTitle>
@@ -148,9 +185,18 @@
             {
                 <div class="avatar-upload-wrapper">
                     <div class="avatar-preview-container" @onclick="TriggerImageUpload">
-                        <img src="@profileImageUrl" 
-                             alt="Profile" 
-                             class="avatar-preview-image">
+                        @if (!string.IsNullOrEmpty(profileImageUrl))
+                        {
+                            <img src="@profileImageUrl" 
+                                 alt="Profile" 
+                                 class="avatar-preview-image">
+                        }
+                        else
+                        {
+                            <div class="avatar-placeholder">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </div>
+                        }
                         
                         <div class="avatar-edit-overlay">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
@@ -240,6 +286,21 @@
     </div>
 </div>
 
+@if (showToast)
+{
+    <div class="toast @toastType">
+        @if (toastType == "success")
+        {
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        }
+        else
+        {
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        }
+        <span>@toastMessage</span>
+    </div>
+}
+
 @code {
     private enum SettingsTab
     {
@@ -255,14 +316,15 @@
     private string profileName = "Maria";
     private string profileEmail = "maria@example.com";
     private string profileBio = "Just a girl navigating through life one journal entry at a time.";
-    private string profileImageUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop";
+    private string profileImageUrl = "";
 
     // General Settings State
     private string diaryTitle = "";
     private string fontSize = "Medium";
-    private string theme = "Light";
-    private string backup = "Weekly";
     private const string FontSizeKey = "diary_font_size";
+    private bool showToast;
+    private string toastMessage = "";
+    private string toastType = "success";
 
     protected override async Task OnInitializedAsync()
     {
@@ -373,23 +435,36 @@
                 ProfileImg = profileImageUrl,
                 UserBio = profileBio
             };
-            await UserService.UpdateProfileAsync(request);
+            var success = await UserService.UpdateProfileAsync(request);
+            await ShowToast(success ? "Profile updated successfully!" : "Failed to update profile.", success ? "success" : "error");
         }
         else if (activeTab == SettingsTab.General)
         {
             await JS.InvokeVoidAsync("localStorage.setItem", FontSizeKey, fontSize);
+            await ShowToast("Settings saved successfully!", "success");
         }
-        NavigationManager.NavigateTo("/home");
+    }
+
+    private async Task ShowToast(string message, string type)
+    {
+        toastMessage = message;
+        toastType = type;
+        showToast = true;
+        StateHasChanged();
+        await Task.Delay(3000);
+        showToast = false;
+        StateHasChanged();
     }
 
     private async Task RemovePhoto()
     {
-        profileImageUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop";
+        profileImageUrl = "";
         var request = new UpdateProfileRequest
         {
             ProfileImg = profileImageUrl
         };
-        await UserService.UpdateProfileAsync(request);
+        var success = await UserService.UpdateProfileAsync(request);
+        await ShowToast(success ? "Profile photo removed." : "Failed to remove photo.", success ? "success" : "error");
     }
 
     private void Cancel()
