@@ -238,10 +238,6 @@
     border-color: var(--danger-color);
 }
 
-.form-section {
-    margin-bottom: 24px;
-}
-
 .form-section:last-child {
     margin-bottom: 0;
 }
