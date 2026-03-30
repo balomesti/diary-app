@@ -21,7 +21,12 @@
             <!-- Streak Card -->
             <div class="stat-card streak-card">
                 <div class="streak-icon">
-                    <i class="fas fa-fire"></i>
+                    <div class="fire-wrap">
+                        <span class="fire-icon">🔥</span>
+                        <span class="spark"></span>
+                        <span class="spark"></span>
+                        <span class="spark"></span>
+                    </div>
                 </div>
                 <div class="stat-info">
                     <h3>@streakCount Day Streak</h3>
@@ -49,15 +54,7 @@
             <div class="milestone-header">
                 <h3>Achievements</h3>
             </div>
-            <div class="badge-list">
-                @foreach (var badge in badges)
-                {
-                    <div class="badge @(badge.IsUnlocked ? "unlocked" : "")">
-                        <i class="@badge.IconClass"></i>
-                        <span>@badge.Title</span>
-                    </div>
-                }
-            </div>
+            <AnimatedBadges Badges="badges" />
         </div>
     </section>
 
@@ -284,12 +281,5 @@
     private void ViewDetail(int id)
     {
         NavigationManager.NavigateTo($"/diary/{id}");
-    }
-
-    private class Badge
-    {
-        public string IconClass { get; set; } = "";
-        public string Title { get; set; } = "";
-        public bool IsUnlocked { get; set; }
     }
 }

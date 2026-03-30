@@ -74,6 +74,7 @@
     padding: 7px 16px;
     border-radius: 20px;
     transition: color 0.3s ease, background 0.3s ease;
+    margin: 0 10px;
 }
 
 .navmenu-link:hover:not(.active) {

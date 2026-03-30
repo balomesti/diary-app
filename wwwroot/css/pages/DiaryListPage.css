@@ -130,9 +130,6 @@
 }
 
 .streak-icon {
-    font-size: 2.5rem;
-    color: var(--streak-color);
-    filter: drop-shadow(0 0 8px var(--streak-glow));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -517,4 +514,48 @@
     .entries-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Fire Icon Animation */
+.fire-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+
+.fire-icon {
+    display: inline-block;
+    font-size: 2.5rem;
+    line-height: 1;
+    animation: burn-rise 4.4s ease-in-out infinite;
+}
+
+@keyframes burn-rise {
+    0%   { transform: scale(1);     filter: brightness(1) blur(0px); }
+    25%  { transform: scale(1.15);  filter: brightness(1.3) blur(0.5px); }
+    50%  { transform: scale(0.95);  filter: brightness(0.9) blur(0px); }
+    75%  { transform: scale(1.1);   filter: brightness(1.2) blur(0.3px); }
+    100% { transform: scale(1);     filter: brightness(1) blur(0px); }
+}
+
+.spark {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #FF9500;
+    box-shadow: 0 0 4px #FF9500;
+    animation: spark-fly 1s ease-out infinite;
+}
+
+.spark:nth-child(2) { left: 30%; animation-delay: 0.15s; }
+.spark:nth-child(3) { left: 50%; animation-delay: 0.35s; }
+.spark:nth-child(4) { left: 70%; animation-delay: 0.55s; }
+
+@keyframes spark-fly {
+    0%   { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-25px) scale(0.3); opacity: 0; }
 }

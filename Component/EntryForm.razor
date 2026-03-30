@@ -91,7 +91,7 @@
                     </label>
                     <label class="mood-chip @(Mood == "good" ? "active" : "")">
                         <input type="radio" name="mood" value="good" checked="@(Mood == "good")" @onchange='() => ChangeMood("good")' />
-                        <span class="mood-em">�</span>
+                        <span class="mood-em">😊</span>
                         <span class="mood-label">Good</span>
                     </label>
                     <label class="mood-chip @(Mood == "amazing" ? "active" : "")">
@@ -139,11 +139,11 @@
 
             <div class="form-group">
                 <label class="field-label">Images</label>
-                <div class="upload-zone" onclick="document.getElementById('file-input').click()">
-                    <input id="file-input" type="file" style="display:none" OnChange="HandleFileSelected" accept="image/*" multiple />
+                <label class="upload-zone" for="file-input">
+                    <InputFile id="file-input" OnChange="HandleFileSelected" accept="image/*" multiple style="display:none" />
                     <div class="upload-icon">📷</div>
                     <div>Tap to add photos</div>
-                </div>
+                </label>
                 @if (imagePreviewUrls.Any())
                 {
                     <div class="image-previews-grid">
