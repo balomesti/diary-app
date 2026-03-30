@@ -109,6 +109,18 @@ namespace diary_app.Services
             return items ?? new List<KeyHighlight>();
         }
 
+        public async Task<StreakInfo?> GetStreakAsync()
+        {
+            try
+            {
+                return await _http.GetFromJsonAsync<StreakInfo>("api/Diary/streak");
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task<KeyHighlight> AddHighlightAsync(int entryId, KeyHighlight highlight)
         {
             var response = await _http.PostAsJsonAsync($"api/Diary/{entryId}/highlights", new

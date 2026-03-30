@@ -169,6 +169,12 @@
             totalEntries = entries.Count;
         }
         CalculateNextMilestone();
+
+        var streakInfo = await DiaryService.GetStreakAsync();
+        if (streakInfo != null)
+        {
+            streakCount = streakInfo.CurrentStreak;
+        }
     }
 
     private void CalculateNextMilestone()
@@ -221,7 +227,6 @@
             _ => "Beginner"
         };
     }
-
     private async Task DeleteEntry(DiaryEntry entry)
     {
         var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Delete \"{entry.Title}\"?");
