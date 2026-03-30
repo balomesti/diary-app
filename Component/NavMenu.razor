@@ -5,46 +5,118 @@
 
 <header class="navmenu">
     <div class="navmenu-inner">
-        <!-- Logo Section (Left) -->
-        <div class="nav-left">
-            <NavLink class="navmenu-brand" href="/home" Match="NavLinkMatch.All">
-                <div class="navmenu-profile-wrapper" @onclick="NavigateToSettings" @onclick:stopPropagation>
-                    <img src="@(string.IsNullOrEmpty(profileImageUrl) ? "images/pic1.jpg" : profileImageUrl)" alt="Profile" class="navmenu-profile-image">
-                </div>
-                <span class="navmenu-brand-text">Diary Me</span>
-            </NavLink>
-        </div>
+        <NavLink class="navmenu-brand" href="/home" Match="NavLinkMatch.All">
+            <img src="@(string.IsNullOrEmpty(profileImageUrl) ? "images/pic1.jpg" : profileImageUrl)"
+                 alt="Profile"
+                 class="navmenu-profile-image"
+                 @onclick="NavigateToSettings"
+                 @onclick:stopPropagation />
+            <span class="navmenu-brand-text">Diary Me</span>
+        </NavLink>
 
-        <button class="navmenu-toggle" type="button" @onclick="ToggleNavMenu">
-            Menu
-        </button>
-
-        <!-- Links Section (Center) -->
-        <div class="nav-center @NavMenuCssClass">
+        <nav class="navmenu-desktop-links" aria-label="Main navigation">
             <NavLink class="navmenu-link" href="/home" Match="NavLinkMatch.All">Home</NavLink>
             <NavLink class="navmenu-link" href="/diary">My Diary</NavLink>
             <NavLink class="navmenu-link" href="/explore">Explore</NavLink>
             <NavLink class="navmenu-link" href="/setting">Setting</NavLink>
+        </nav>
+
+        <div class="navmenu-actions">
+            <NoticesPopup />
+            <NavLink class="navmenu-link-logout" href="/logout">Logout</NavLink>
         </div>
 
-        <!-- Actions Section (Right) -->
-        <div class="nav-right @NavMenuCssClass">
-            <NoticesPopup />
-            <NavLink class="navmenu-link navmenu-link-logout" href="/logout">Logout</NavLink>
-        </div>
+        <button class="navmenu-toggle" type="button" @onclick="ToggleNavMenu"
+                aria-label="Open menu" aria-expanded="@(!collapseNavMenu)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.2"
+                 stroke-linecap="round" stroke-linejoin="round">
+                @if (collapseNavMenu)
+                {
+                    <line x1="3" y1="7"  x2="21" y2="7"></line>
+                    <line x1="3" y1="12" x2="17" y2="12"></line>
+                    <line x1="3" y1="17" x2="21" y2="17"></line>
+                }
+                else
+                {
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6"  y1="6" x2="18" y2="18"></line>
+                }
+            </svg>
+        </button>
     </div>
 </header>
+
+<div class="nav-overlay @(collapseNavMenu ? "" : "open")" @onclick="ToggleNavMenu" aria-hidden="true"></div>
+
+<aside class="nav-drawer @(collapseNavMenu ? "" : "open")" aria-label="Mobile navigation">
+    <div class="nav-drawer-head">
+        <NavLink class="nav-drawer-brand" href="/home" Match="NavLinkMatch.All" @onclick="CloseMenu">
+            <img src="@(string.IsNullOrEmpty(profileImageUrl) ? "images/pic1.jpg" : profileImageUrl)"
+                 alt="Profile" class="nav-drawer-avatar" />
+            <span class="nav-drawer-title">Diary Me</span>
+        </NavLink>
+        <button class="nav-close-btn" type="button" @onclick="ToggleNavMenu" aria-label="Close menu">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6"  y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <nav class="nav-drawer-nav">
+        <NavLink class="nav-mlink" href="/home" Match="NavLinkMatch.All" @onclick="CloseMenu">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/>
+            </svg>
+            Home
+        </NavLink>
+
+        <NavLink class="nav-mlink" href="/diary" @onclick="CloseMenu">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+            </svg>
+            My Diary
+        </NavLink>
+
+        <NavLink class="nav-mlink" href="/explore" @onclick="CloseMenu">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+            </svg>
+            Explore
+        </NavLink>
+
+        <NavLink class="nav-mlink" href="/setting" @onclick="CloseMenu">
+            <svg class="nav-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+            </svg>
+            Setting
+        </NavLink>
+    </nav>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-drawer-foot">
+        <NoticesPopup IsMobile="true" />
+
+        <NavLink class="nav-logout-mobile" href="/logout" @onclick="CloseMenu">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Logout
+        </NavLink>
+    </div>
+</aside>
 
 @code {
     private bool collapseNavMenu = true;
     private string profileImageUrl = string.Empty;
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : string.Empty;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
+    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+    private void CloseMenu() => collapseNavMenu = true;
 
     private void NavigateToSettings()
     {

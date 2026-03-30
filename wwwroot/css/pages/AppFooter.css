@@ -68,12 +68,26 @@
 @media (max-width: 768px) {
     .app-footer-inner {
         flex-direction: column;
-        gap: 15px;
+        gap: 20px;
         text-align: center;
-        padding: 25px 20px;
+        padding: 30px 20px;
     }
+
     .footer-left {
         flex-direction: column;
-        gap: 8px;
+        gap: 10px;
+    }
+
+    .footer-brand {
+        font-size: 1.4rem; /* Slightly larger on mobile for better focus */
+    }
+
+    .footer-right {
+        justify-content: center;
+        gap: 30px; /* More space between links on mobile */
+    }
+
+    .footer-link {
+        font-size: 0.9rem;
     }
 }
