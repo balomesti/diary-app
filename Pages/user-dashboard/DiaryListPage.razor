@@ -154,11 +154,12 @@
 
     private List<Badge> badges = new List<Badge>
     {
-        new Badge { IconClass = "fas fa-seedling", Title = "First Entry", IsUnlocked = true },
-        new Badge { IconClass = "fas fa-calendar-check", Title = "7 Days", IsUnlocked = true },
-        new Badge { IconClass = "fas fa-camera", Title = "Photo Buff", IsUnlocked = true },
-        new Badge { IconClass = "fas fa-award", Title = "Master (50)", IsUnlocked = false },
-        new Badge { IconClass = "fas fa-pen-fancy", Title = "100 Entries", IsUnlocked = false }
+        new Badge { IconClass = "fas fa-seedling", Title = "First Entry", IsUnlocked = false },
+        new Badge { IconClass = "fas fa-calendar-check", Title = "7 Days", IsUnlocked = false },
+        new Badge { IconClass = "fas fa-camera", Title = "Photo Buff", IsUnlocked = false },
+        new Badge { IconClass = "fas fa-award", Title = "10 Entries", IsUnlocked = false },
+        new Badge { IconClass = "fas fa-pen-fancy", Title = "20 Entries", IsUnlocked = false },
+        new Badge { IconClass = "fas fa-star", Title = "35 Entries", IsUnlocked = false }
     };
 
     protected override async Task OnInitializedAsync()
@@ -169,22 +170,52 @@
             totalEntries = entries.Count;
         }
         CalculateNextMilestone();
+        UpdateBadgeStatus();
 
         var streakInfo = await DiaryService.GetStreakAsync();
         if (streakInfo != null)
         {
             streakCount = streakInfo.CurrentStreak;
         }
+        UpdateBadgeStatus();
+    }
+
+    private void UpdateBadgeStatus()
+    {
+        foreach (var badge in badges)
+        {
+            switch (badge.Title)
+            {
+                case "First Entry":
+                    badge.IsUnlocked = totalEntries >= 1;
+                    break;
+                case "7 Days":
+                    badge.IsUnlocked = streakCount >= 7;
+                    break;
+                case "Photo Buff":
+                    badge.IsUnlocked = entries?.Any(e => !string.IsNullOrEmpty(e.ImageUrls)) ?? false;
+                    break;
+                case "10 Entries":
+                    badge.IsUnlocked = totalEntries >= 10;
+                    break;
+                case "20 Entries":
+                    badge.IsUnlocked = totalEntries >= 20;
+                    break;
+                case "35 Entries":
+                    badge.IsUnlocked = totalEntries >= 35;
+                    break;
+            }
+        }
     }
 
     private void CalculateNextMilestone()
     {
-        if (totalEntries >= 100)
-            nextMilestone = 100;
-        else if (totalEntries >= 50)
-            nextMilestone = 100;
+        if (totalEntries >= 35)
+            nextMilestone = 35;
+        else if (totalEntries >= 20)
+            nextMilestone = 35;
         else if (totalEntries >= 10)
-            nextMilestone = 50;
+            nextMilestone = 20;
         else if (totalEntries >= 5)
             nextMilestone = 10;
         else
@@ -195,16 +226,16 @@
     {
         int currentMilestone = nextMilestone switch
         {
-            100 when totalEntries >= 50 => 50,
-            50 when totalEntries >= 10 => 10,
+            35 when totalEntries >= 20 => 20,
+            20 when totalEntries >= 10 => 10,
             10 when totalEntries >= 5 => 5,
             5 => 0,
             _ => 0
         };
 
-        if (nextMilestone == 100 && totalEntries >= 50)
-            currentMilestone = 50;
-        else if (nextMilestone == 50 && totalEntries >= 10)
+        if (nextMilestone == 35 && totalEntries >= 20)
+            currentMilestone = 20;
+        else if (nextMilestone == 20 && totalEntries >= 10)
             currentMilestone = 10;
 
         double percentage = (double)totalEntries / nextMilestone * 100;
@@ -222,8 +253,8 @@
         {
             5 => "Beginner",
             10 => "Chronicler",
-            50 => "Master Chronicler",
-            100 => "Legend",
+            20 => "Expert",
+            35 => "Legend",
             _ => "Beginner"
         };
     }
@@ -242,6 +273,7 @@
             totalEntries = entries.Count;
             CalculateNextMilestone();
         }
+        UpdateBadgeStatus();
     }
 
     private void EditEntry(DiaryEntry entry)
