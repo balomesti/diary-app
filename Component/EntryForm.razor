@@ -6,7 +6,7 @@
 
 <div class="entry-container @Size">
     <button type="button" class="btn-close" @onclick="() => OnCancel.InvokeAsync()" title="Close">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -25,29 +25,28 @@
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <!-- Title spans full width -->
-        <div class="form-group title-group">
-            <label>Title</label>
-            <InputText @bind-Value="Entry.Title" class="form-control" placeholder="Give your entry a title..." />
-        </div>
-
-        <!-- Two-column layout: sidebar + main -->
         <div class="form-layout">
+            <div class="form-group title-group">
+                <label class="field-label">Title</label>
+                <InputText @bind-Value="Entry.Title" class="form-control" placeholder="Give your entry a title..." />
+            </div>
 
-            <!-- LEFT SIDEBAR: metadata -->
-            <aside class="form-sidebar">
-
-                <div class="sidebar-card">
-                    <div class="sidebar-card-title">📅 Date</div>
-                    <InputDate @bind-Value="Entry.Date" class="form-control" />
+            <div class="meta-row">
+                <div class="form-group">
+                    <label class="field-label">Date</label>
+                    <div class="inline-field">
+                        <span class="inline-icon">📅</span>
+                        <InputDate @bind-Value="Entry.Date" class="form-control-inline" />
+                    </div>
                 </div>
 
-                <div class="sidebar-card">
-                    <div class="sidebar-card-title">📍 Location</div>
-                    <div class="weather-row">
-                        <InputText @bind-Value="Location" class="form-control" placeholder="E.g. Kuala Lumpur, Malaysia" />
-                        <button type="button" class="btn-weather" @onclick="DetectLocation" title="Auto-detect location">
-                            <span aria-hidden="true">📍</span>
+                <div class="form-group">
+                    <label class="field-label">Location</label>
+                    <div class="inline-field">
+                        <span class="inline-icon">📍</span>
+                        <InputText @bind-Value="Location" class="form-control-inline" placeholder="KL, MY" />
+                        <button type="button" class="btn-inline" @onclick="DetectLocation" title="Auto-detect">
+                            <span aria-hidden="true">↻</span>
                         </button>
                     </div>
                     @if (LocationLoading)
@@ -55,145 +54,127 @@
                         <div class="help-text">Detecting...</div>
                     }
                 </div>
+            </div>
 
-                <div class="sidebar-card">
-                    <div class="sidebar-card-title">⛅ Weather</div>
-                    <div class="weather-row">
-                        <InputText @bind-Value="Weather" class="form-control" placeholder="E.g. 32°C, Sunny" />
-                        <button type="button" class="btn-weather" @onclick="DetectWeather" title="Auto-detect weather">
-                            <span aria-hidden="true">⛅</span>
-                        </button>
-                    </div>
-                    @if (WeatherLoading)
+            <div class="form-group">
+                <label class="field-label">Weather</label>
+                <div class="inline-field">
+                    <span class="inline-icon">⛅</span>
+                    <InputText @bind-Value="Weather" class="form-control-inline" placeholder="e.g. 32°C, Sunny" />
+                    <button type="button" class="btn-inline" @onclick="DetectWeather" title="Auto-detect">
+                        <span aria-hidden="true">↻</span>
+                    </button>
+                </div>
+                @if (WeatherLoading)
+                {
+                    <div class="help-text">Detecting...</div>
+                }
+            </div>
+
+            <div class="form-group">
+                <label class="field-label">How are you feeling?</label>
+                <div class="mood-row">
+                    <label class="mood-chip @(Mood == "terrible" ? "active" : "")">
+                        <input type="radio" name="mood" value="terrible" checked="@(Mood == "terrible")" @onchange='() => ChangeMood("terrible")' />
+                        <span class="mood-em">😢</span>
+                        <span class="mood-label">Terrible</span>
+                    </label>
+                    <label class="mood-chip @(Mood == "bad" ? "active" : "")">
+                        <input type="radio" name="mood" value="bad" checked="@(Mood == "bad")" @onchange='() => ChangeMood("bad")' />
+                        <span class="mood-em">😕</span>
+                        <span class="mood-label">Bad</span>
+                    </label>
+                    <label class="mood-chip @(Mood == "okay" ? "active" : "")">
+                        <input type="radio" name="mood" value="okay" checked="@(Mood == "okay")" @onchange='() => ChangeMood("okay")' />
+                        <span class="mood-em">😐</span>
+                        <span class="mood-label">Okay</span>
+                    </label>
+                    <label class="mood-chip @(Mood == "good" ? "active" : "")">
+                        <input type="radio" name="mood" value="good" checked="@(Mood == "good")" @onchange='() => ChangeMood("good")' />
+                        <span class="mood-em">�</span>
+                        <span class="mood-label">Good</span>
+                    </label>
+                    <label class="mood-chip @(Mood == "amazing" ? "active" : "")">
+                        <input type="radio" name="mood" value="amazing" checked="@(Mood == "amazing")" @onchange='() => ChangeMood("amazing")' />
+                        <span class="mood-em">✨</span>
+                        <span class="mood-label">Amazing</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="field-label">Comment</label>
+                <InputTextArea @bind-Value="Entry.Content" class="form-control" placeholder="Write your thoughts..." rows="5" />
+            </div>
+
+            <div class="form-group">
+                <label class="field-label">Tags</label>
+                <div class="tag-presets">
+                    @foreach (var preset in PresetTags)
                     {
-                        <div class="help-text">Detecting...</div>
+                        var isSelected = Tags.Contains(preset.Label, StringComparer.OrdinalIgnoreCase);
+                        <button type="button"
+                                class="tag-btn @(isSelected ? "on" : "")"
+                                @onclick="() => TogglePresetTag(preset.Label)">
+                            @preset.Icon @preset.Label
+                        </button>
                     }
                 </div>
-
-                <!-- TAGS: preset buttons + custom input -->
-                <div class="sidebar-card">
-                    <div class="sidebar-card-title">🏷️ Tags</div>
-
-                    <!-- Preset tag buttons -->
-                    <div class="preset-tags">
-                        @foreach (var preset in PresetTags)
+                <InputText @bind-Value="TagInput"
+                           class="form-control tag-input"
+                           placeholder="Custom tag, press Enter"
+                           @onkeydown="HandleTagKeyDown" />
+                @if (Tags.Any())
+                {
+                    <div class="tag-pill-row">
+                        @foreach (var tag in Tags)
                         {
-                            var isSelected = Tags.Contains(preset.Label, StringComparer.OrdinalIgnoreCase);
-                            <button type="button"
-                                    class="preset-tag @(isSelected ? "preset-tag--active" : "")"
-                                    @onclick="() => TogglePresetTag(preset.Label)">
-                                @preset.Icon @preset.Label
-                            </button>
+                            <div class="tag-pill">
+                                @tag <span class="tag-x" @onclick="() => RemoveTag(tag)">×</span>
+                            </div>
                         }
                     </div>
+                }
+            </div>
 
-                    <!-- Custom tag input -->
-                    <InputText @bind-Value="TagInput"
-                               class="form-control"
-                               placeholder="Custom tag, press Enter"
-                               @onkeydown="HandleTagKeyDown" />
-
-                    <!-- Selected tags -->
-                    @if (Tags.Any())
-                    {
-                        <div class="tags-container">
-                            @foreach (var tag in Tags)
-                            {
-                                <div class="tag-pill">
-                                    @tag <span class="tag-remove" @onclick="() => RemoveTag(tag)">&times;</span>
-                                </div>
-                            }
-                        </div>
-                    }
+            <div class="form-group">
+                <label class="field-label">Images</label>
+                <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+                    <input id="file-input" type="file" style="display:none" OnChange="HandleFileSelected" accept="image/*" multiple />
+                    <div class="upload-icon">📷</div>
+                    <div>Tap to add photos</div>
                 </div>
-
-            </aside>
-
-            <!-- RIGHT MAIN: mood, content, images -->
-            <main class="form-main">
-
-                <div class="form-group">
-                    <label>How are you feeling?</label>
-                    <div class="mood-selector">
-                        <label class="mood-option">
-                            <input type="radio" name="mood" value="terrible" checked="@(Mood == "terrible")" @onchange='() => ChangeMood("terrible")' />
-                            <div class="mood-content">
-                                <span class="mood-emoji">😢</span>
-                                <span class="mood-text">Terrible</span>
+                @if (imagePreviewUrls.Any())
+                {
+                    <div class="image-previews-grid">
+                        @foreach (var url in imagePreviewUrls)
+                        {
+                            <div class="image-preview-container">
+                                <img src="@url" alt="Image Preview" class="image-preview" />
                             </div>
-                        </label>
-                        <label class="mood-option">
-                            <input type="radio" name="mood" value="bad" checked="@(Mood == "bad")" @onchange='() => ChangeMood("bad")' />
-                            <div class="mood-content">
-                                <span class="mood-emoji">😕</span>
-                                <span class="mood-text">Bad</span>
-                            </div>
-                        </label>
-                        <label class="mood-option">
-                            <input type="radio" name="mood" value="okay" checked="@(Mood == "okay")" @onchange='() => ChangeMood("okay")' />
-                            <div class="mood-content">
-                                <span class="mood-emoji">😐</span>
-                                <span class="mood-text">Okay</span>
-                            </div>
-                        </label>
-                        <label class="mood-option">
-                            <input type="radio" name="mood" value="good" checked="@(Mood == "good")" @onchange='() => ChangeMood("good")' />
-                            <div class="mood-content">
-                                <span class="mood-emoji">😊</span>
-                                <span class="mood-text">Good</span>
-                            </div>
-                        </label>
-                        <label class="mood-option">
-                            <input type="radio" name="mood" value="amazing" checked="@(Mood == "amazing")" @onchange='() => ChangeMood("amazing")' />
-                            <div class="mood-content">
-                                <span class="mood-emoji">✨</span>
-                                <span class="mood-text">Amazing</span>
-                            </div>
-                        </label>
+                        }
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Comment</label>
-                    <InputTextArea @bind-Value="Entry.Content" class="form-control" placeholder="Write your thoughts..." />
-                </div>
-
-                <div class="form-group">
-                    <label>📷 Images</label>
-                    <InputFile OnChange="HandleFileSelected" accept="image/*" multiple />
-                    @if (imagePreviewUrls.Any())
-                    {
-                        <div class="image-previews-grid">
-                            @foreach (var url in imagePreviewUrls)
-                            {
-                                <div class="image-preview-container">
-                                    <img src="@url" alt="Image Preview" class="image-preview" />
-                                </div>
-                            }
-                        </div>
-                        <button type="button" class="btn-outline btn-clear" @onclick="RemoveImages">Clear All</button>
-                    }
-                    else if (IsEdit && !string.IsNullOrEmpty(Entry.ImageUrls))
-                    {
-                        <div class="image-previews-grid">
-                            @foreach (var url in Entry.ImageUrls.Split(';', StringSplitOptions.RemoveEmptyEntries))
-                            {
-                                <div class="image-preview-container">
-                                    <img src="@($"http://localhost:5105{url}")" alt="Current Image" class="image-preview" />
-                                </div>
-                            }
-                        </div>
-                        <div class="help-text" style="text-align:center; margin-top: 8px;">Current Images</div>
-                    }
-                </div>
-
-            </main>
+                    <button type="button" class="btn-outline btn-clear" @onclick="RemoveImages">Clear All</button>
+                }
+                else if (IsEdit && !string.IsNullOrEmpty(Entry.ImageUrls))
+                {
+                    <div class="image-previews-grid">
+                        @foreach (var url in Entry.ImageUrls.Split(';', StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            <div class="image-preview-container">
+                                <img src="@($"http://localhost:5105{url}")" alt="Current Image" class="image-preview" />
+                            </div>
+                        }
+                    </div>
+                    <div class="help-text" style="text-align:center; margin-top: 8px;">Current Images</div>
+                }
+            </div>
         </div>
 
         <div class="submit-section">
-            <button type="button" class="btn-outline" @onclick="() => OnCancel.InvokeAsync()">Cancel</button>
-            <button type="submit" class="btn-solid" disabled="@IsSubmitting">
-               @(IsSubmitting ? "Submitting..." : "Submit Entry")
+            <button type="button" class="btn-cancel" @onclick="() => OnCancel.InvokeAsync()">Cancel</button>
+            <button type="submit" class="btn-submit" disabled="@IsSubmitting">
+                @(IsSubmitting ? "Submitting..." : "Submit Entry")
             </button>
         </div>
     </EditForm>

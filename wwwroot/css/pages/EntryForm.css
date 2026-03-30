@@ -1,170 +1,87 @@
-/* ── Close Button ── */
+/* ── Entry Form Container ── */
 .entry-container {
     position: relative;
+    background: #F5F0E8;
+    border-radius: 16px;
+    padding: 20px 16px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
+/* ── Close Button ── */
 .btn-close {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    background: transparent;
-    border: none;
-    color: var(--text-light);
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 6px;
+    top: 14px;
+    right: 14px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #F0EAE0;
+    border: 1px solid #D4C9BD;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    color: #5C4033;
     transition: all 0.2s ease;
     z-index: 10;
 }
 
 .btn-close:hover {
-    background: rgba(44, 35, 31, 0.06);
-    color: var(--text-main);
-}
-
-/* ── Container ── */
-.entry-container {
-    background: var(--card-bg);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 16px;
-    box-shadow: 0 15px 35px rgba(44, 35, 31, 0.08);
-    width: 100%;
-    max-width: 1200px;
-    padding: 50px 60px;
-    margin: 20px auto;
-}
-
-.entry-container.large {
-    max-width: 1400px;
-    padding: 60px 80px;
+    background: #E4D9CE;
 }
 
 /* ── Header ── */
 .entry-header {
     text-align: center;
-    margin-bottom: 35px;
+    padding: 10px 0 20px;
 }
 
 .entry-header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.6rem;
-    color: var(--text-main);
-    margin-bottom: 8px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.5rem;
+    color: #2C1F16;
+    margin-bottom: 4px;
 }
 
 .entry-header p {
-    color: var(--text-light);
-    font-size: 1.05rem;
-    margin-bottom: 0;
+    font-size: 0.8rem;
+    color: #8C7B6E;
 }
 
-/* ── Title row (full width) ── */
-.title-group {
-    margin-bottom: 30px;
-}
-
-/* ── Two-column layout ── */
+/* ── Form Layout ── */
 .form-layout {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 40px;
-    align-items: start;
-}
-
-/* ── Sidebar ── */
-.form-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
 }
 
-.sidebar-card {
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.sidebar-card-title {
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: var(--text-main);
-}
-
-/* Override form-control inside sidebar to remove extra width padding */
-.sidebar-card .form-control {
-    padding: 10px 12px;
-    font-size: 0.9rem;
-}
-
-/* ── Weather row ── */
-.weather-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.weather-row .form-control {
-    flex: 1;
-}
-
-.btn-weather {
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 8px 10px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.2s;
-    flex-shrink: 0;
-}
-
-.btn-weather:hover {
-    background: #fff;
-    border-color: var(--accent-color);
-}
-
-/* ── Main content area ── */
-.form-main {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-
-/* ── Shared form-group ── */
+/* ── Form Group ── */
 .form-group {
-    margin-bottom: 25px;
     display: flex;
     flex-direction: column;
-}
-
-.form-group label,
-.sidebar-card-title {
-    font-weight: 700;
-    margin-bottom: 8px;
-    font-size: 0.95rem;
-    color: var(--text-main);
-    display: flex;
-    align-items: center;
     gap: 6px;
 }
 
-/* ── Form controls ── */
+.field-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8C7B6E;
+}
+
+/* ── Form Controls ── */
 .form-control {
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    padding: 12px 16px;
+    background: #FAF7F2;
+    border: 1px solid #E4D9CE;
     border-radius: 8px;
+    padding: 10px 12px;
     font-family: 'Nunito', sans-serif;
-    font-size: 1rem;
-    color: var(--text-main);
+    font-size: 0.88rem;
+    color: #2C1F16;
     transition: all 0.3s ease;
     width: 100%;
     box-sizing: border-box;
@@ -172,179 +89,214 @@
 
 .form-control:focus {
     outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(85, 107, 85, 0.1);
-    background: #ffffff;
+    border-color: #4A6741;
+    box-shadow: 0 0 0 3px rgba(74, 103, 65, 0.1);
+}
+
+.form-control::placeholder {
+    color: #BBA99A;
 }
 
 textarea.form-control {
-    min-height: 200px;
+    min-height: 100px;
     resize: vertical;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
-/* ── Mood selector ── */
-.mood-selector {
+.form-control-inline {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.8rem;
+    color: #BBA99A;
+    flex: 1;
+    min-width: 0;
+}
+
+.form-control-inline:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* ── Inline Field ── */
+.inline-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #FAF7F2;
+    border: 1px solid #E4D9CE;
+    border-radius: 8px;
+    padding: 8px 10px;
+}
+
+.inline-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.btn-inline {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #4A6741;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #fff;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-inline:hover {
+    background: #3d5736;
+}
+
+/* ── Meta Row (Date + Location side by side) ── */
+.meta-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
 
-.mood-option {
-    position: relative;
-    cursor: pointer;
+/* ── Mood Selector ── */
+.mood-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
 }
 
-.mood-content {
+.mood-chip {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    padding: 12px 5px;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    height: 90px;
-    box-sizing: border-box;
+    gap: 4px;
+    background: #FAF7F2;
+    border: 1px solid #E4D9CE;
+    border-radius: 10px;
+    padding: 8px 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.mood-emoji {
-    font-size: 1.8rem;
-    line-height: 1;
-    display: block;
-    height: 2rem;
+.mood-chip .mood-em {
+    font-size: 18px;
 }
 
-.mood-text {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-light);
+.mood-chip .mood-label {
+    font-size: 0.65rem;
+    color: #8C7B6E;
 }
 
-.mood-option:hover .mood-content {
-    background: #ffffff;
-    border-color: var(--accent-color);
+.mood-chip.active {
+    background: #4A6741;
+    border-color: #4A6741;
 }
 
-.mood-option input[type="radio"]:checked + .mood-content {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-    box-shadow: 0 4px 15px rgba(85, 107, 85, 0.2);
+.mood-chip.active .mood-label {
+    color: #fff;
 }
 
-.mood-option input[type="radio"]:checked + .mood-content .mood-text {
-    color: #ffffff;
+.mood-chip input[type="radio"] {
+    display: none;
 }
 
 /* ── Tags ── */
-.tags-container {
+.tag-presets {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.tag-btn {
+    background: #FAF7F2;
+    border: 1px solid #E4D9CE;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    color: #8C7B6E;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tag-btn.on {
+    background: #4A6741;
+    border-color: #4A6741;
+    color: #fff;
+}
+
+.tag-input {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+}
+
+.tag-pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 4px;
 }
 
 .tag-pill {
-    background-color: rgba(85, 107, 85, 0.1);
-    color: var(--accent-color);
-    border: 1px solid rgba(85, 107, 85, 0.2);
-    padding: 4px 12px;
+    background: rgba(74, 103, 65, 0.10);
+    border: 1px solid rgba(74, 103, 65, 0.22);
+    color: #3B5E33;
     border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 700;
+    padding: 3px 10px;
+    font-size: 0.72rem;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
 }
 
-.tag-remove {
+.tag-x {
+    color: #8C7B6E;
+    font-size: 11px;
     cursor: pointer;
-    font-size: 1rem;
-    line-height: 1;
-    color: var(--text-light);
 }
 
-.tag-remove:hover {
+.tag-x:hover {
     color: #A75D50;
 }
 
-/* ── Preset tag buttons ── */
-.preset-tags {
+/* ── Upload Zone ── */
+.upload-zone {
+    border: 1.5px dashed #D4C9BD;
+    border-radius: 10px;
+    padding: 16px;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
     gap: 6px;
-}
-
-.preset-tag {
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 5px 11px;
-    font-family: 'Nunito', sans-serif;
+    color: #BBA99A;
     font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--text-light);
+    text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    white-space: nowrap;
 }
 
-.preset-tag:hover {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-    background: rgba(85, 107, 85, 0.06);
+.upload-zone:hover {
+    border-color: #4A6741;
+    background: rgba(74, 103, 65, 0.02);
 }
 
-.preset-tag--active {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-    color: #ffffff;
+.upload-icon {
+    font-size: 22px;
+    color: #C4B29E;
 }
 
-.preset-tag--active:hover {
-    background-color: var(--accent-hover);
-    color: #ffffff;
-}
-
-/* ── File input ── */
-input[type="file"] {
-    padding: 10px;
-    background: transparent;
-    border: 1px dashed var(--border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    width: 100%;
-    font-family: 'Nunito', sans-serif;
-    color: var(--text-light);
-    transition: all 0.3s ease;
-}
-
-input[type="file"]:hover {
-    border-color: var(--accent-color);
-    background: rgba(85, 107, 85, 0.02);
-}
-
-input[type="file"]::file-selector-button {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 6px 16px;
-    border-radius: 6px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 600;
-    margin-right: 15px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-/* ── Image previews ── */
+/* ── Image Previews ── */
 .image-previews-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-    margin-top: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
 }
 
 .image-preview-container {
@@ -352,7 +304,7 @@ input[type="file"]::file-selector-button {
     aspect-ratio: 1;
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid var(--border-color);
+    border: 1px solid #E4D9CE;
 }
 
 .image-preview {
@@ -361,70 +313,66 @@ input[type="file"]::file-selector-button {
     object-fit: cover;
 }
 
-.btn-clear {
-    margin-top: 10px;
-    padding: 8px 20px;
-    font-size: 0.85rem;
-    align-self: flex-start;
-}
-
-/* ── Buttons ── */
-.btn-solid {
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    padding: 12px 36px;
-    border-radius: 8px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btn-solid:hover {
-    background-color: var(--accent-hover);
-}
-
-.btn-outline {
-    background-color: transparent;
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    padding: 12px 28px;
-    border-radius: 8px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btn-outline:hover {
-    background-color: rgba(44, 35, 31, 0.05);
-    border-color: var(--text-main);
-}
-
-/* ── Submit ── */
+/* ── Submit Section ── */
 .submit-section {
-    margin-top: 40px;
     display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    border-top: 1px solid #D4C9BD;
-    padding-top: 25px;
+    gap: 10px;
+    padding: 4px 0;
+}
+
+.btn-cancel {
+    flex: 1;
+    padding: 11px;
+    border-radius: 10px;
+    border: 1.5px solid #D4C9BD;
+    background: transparent;
+    font-size: 0.85rem;
+    color: #5C4033;
+    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+    background: rgba(44, 35, 31, 0.05);
+}
+
+.btn-submit {
+    flex: 2;
+    padding: 11px;
+    border-radius: 10px;
+    background: #4A6741;
+    border: none;
+    font-size: 0.85rem;
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-submit:hover {
+    background: #3d5736;
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* ── Misc ── */
 .help-text {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    margin-top: 6px;
+    font-size: 0.75rem;
+    color: #8C7B6E;
+    margin-top: 4px;
 }
 
 .alert {
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-radius: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
 }
 
 .alert-danger {
@@ -433,21 +381,143 @@ input[type="file"]::file-selector-button {
     border: 1px solid #f5c6cb;
 }
 
-/* ── Responsive ── */
-@media (max-width: 768px) {
-    .form-layout {
-        grid-template-columns: 1fr;
-    }
+.btn-outline {
+    background: transparent;
+    border: 1px solid #D4C9BD;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.8rem;
+    color: #5C4033;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
 
-    .mood-selector {
-        flex-wrap: wrap;
-    }
+.btn-outline:hover {
+    background: rgba(44, 35, 31, 0.05);
+}
 
-    .mood-option {
-        min-width: 30%;
-    }
+.btn-clear {
+    margin-top: 8px;
+    align-self: flex-start;
+}
 
+/* ── Desktop Styles (min-width: 768px) ── */
+@media (min-width: 768px) {
     .entry-container {
-        padding: 30px 20px;
+        background: rgba(253, 251, 247, 0.95);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 16px;
+        box-shadow: 0 15px 35px rgba(44, 35, 31, 0.08);
+        max-width: 900px;
+        padding: 40px 50px;
+        margin: 20px auto;
+    }
+
+    .btn-close {
+        top: 20px;
+        right: 20px;
+        width: 36px;
+        height: 36px;
+        background: transparent;
+        border: none;
+        color: #5C4033;
+    }
+
+    .btn-close:hover {
+        background: rgba(44, 35, 31, 0.06);
+        color: #2C1F16;
+    }
+
+    .entry-header {
+        padding: 0 0 30px;
+    }
+
+    .entry-header h1 {
+        font-size: 2rem;
+    }
+
+    .entry-header p {
+        font-size: 1rem;
+    }
+
+    .form-layout {
+        gap: 20px;
+    }
+
+    .field-label {
+        font-size: 0.75rem;
+    }
+
+    .form-control {
+        padding: 12px 16px;
+        font-size: 1rem;
+    }
+
+    textarea.form-control {
+        min-height: 180px;
+    }
+
+    .meta-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .mood-row {
+        gap: 10px;
+    }
+
+    .mood-chip {
+        padding: 12px 6px;
+    }
+
+    .mood-chip .mood-em {
+        font-size: 24px;
+    }
+
+    .mood-chip .mood-label {
+        font-size: 0.8rem;
+    }
+
+    .tag-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+
+    .tag-input {
+        padding: 10px 14px;
+    }
+
+    .tag-pill {
+        padding: 4px 12px;
+        font-size: 0.8rem;
+    }
+
+    .image-previews-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+    }
+
+    .submit-section {
+        padding: 10px 0;
+    }
+
+    .btn-cancel {
+        padding: 12px 28px;
+        font-size: 1rem;
+    }
+
+    .btn-submit {
+        padding: 12px 36px;
+        font-size: 1rem;
+    }
+}
+
+/* ── Large Desktop ── */
+@media (min-width: 1024px) {
+    .entry-container.large {
+        max-width: 1100px;
+        padding: 50px 70px;
     }
 }
