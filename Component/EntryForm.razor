@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using diary_app.Models
+@using diary_app.Component.Shared
 @inject IJSRuntime JS
 @inherits ComponentBase
 
@@ -123,11 +124,11 @@
             </div>
 
             <div class="form-group">
-                <label class="field-label">Comment</label>
-                <div style="position: relative;">
-                    <InputTextArea @bind-Value="Entry.Content" class="form-control" placeholder=" " rows="5" />
-                    <span class="typewriter-placeholder textarea-placeholder">Write your thoughts...</span>
-                </div>
+                <label class="field-label">COMMENT</label>
+                <RichTextEditor
+                    @bind-Value="Entry.Content"
+                    Placeholder="Write your thoughts..."
+                    MinHeight="180" />
             </div>
             
             <div class="form-group">

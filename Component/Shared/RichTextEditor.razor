@@ -1,0 +1,271 @@
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div class="editor-shell" id="editorShell-@_id">
+    <div class="toolbar">
+        <div class="tb-group">
+            <button type="button" class="tb-btn @IsFormatActive("Bold")" data-tip="Bold" @onclick='() => ExecCmd("bold")'>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h8a4 4 0 0 1 0 8H6z"/><path d="M6 12h9a4 4 0 0 1 0 8H6z"/></svg>
+            </button>
+            <button type="button" class="tb-btn @IsFormatActive("Italic")" data-tip="Italic" @onclick='() => ExecCmd("italic")'>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
+            </button>
+            <button type="button" class="tb-btn @IsFormatActive("Underline")" data-tip="Underline" @onclick='() => ExecCmd("underline")'>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" y1="20" x2="20" y2="20"/></svg>
+            </button>
+            <button type="button" class="tb-btn @IsFormatActive("Strike")" data-tip="Strikethrough" @onclick='() => ExecCmd("strikeThrough")'>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><path d="M16 6C16 6 14.5 4 12 4C9.5 4 7 5.5 7 8C7 10 9 11.5 12 12"/><path d="M8 18C8 18 9.5 20 12 20C14.5 20 17 18.5 17 16C17 14 15 12.5 12 12"/></svg>
+            </button>
+        </div>
+
+        <div class="tb-sep"></div>
+
+        <div class="tb-group">
+            <button type="button" class="tb-btn @IsFormatActive("List")" data-tip="Bullet list" @onclick='() => ExecCmd("insertUnorderedList")'>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
+            </button>
+            <button type="button" class="tb-btn @IsFormatActive("Numbered")" data-tip="Numbered list" @onclick='() => ExecCmd("insertOrderedList")'>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4M4 10H6" fill="none"/><path d="M6 18H4l2-2a1.5 1.5 0 0 0-2.5-1.5" fill="none"/></svg>
+            </button>
+            <button type="button" class="tb-btn @IsFormatActive("Quote")" data-tip="Blockquote" @onclick="ToggleBlockquote">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+            </button>
+        </div>
+
+        <div class="tb-sep"></div>
+
+        <select class="tb-select" value="@_selectedHeading" @onchange="ApplyHeading">
+            <option value="">Normal</option>
+            <option value="h1">Heading 1</option>
+            <option value="h2">Heading 2</option>
+            <option value="h3">Heading 3</option>
+        </select>
+
+        <div class="tb-sep"></div>
+
+        <button type="button" class="tb-btn" data-tip="Clear formatting" @onclick="ClearFormat">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>
+        </button>
+
+        <button type="button" class="tb-ai" @onclick="AiAssist">
+            <span>✦</span> AI assist
+        </button>
+    </div>
+
+    <div class="editor-body">
+        <div
+            class="editor-content"
+            id="editorContent-@_id"
+            contenteditable="true"
+            data-placeholder="@Placeholder"
+            @oninput="OnInput"
+            @onkeyup="SyncToolbar"
+            @onmouseup="SyncToolbar"
+            @ref="_editorRef"
+        ></div>
+    </div>
+
+    <div class="format-bar @(_activeFormats.Any() ? "has-formats" : "")" id="formatBar-@_id">
+        @foreach (var fmt in _activeFormats)
+        {
+            <span class="fmt-tag">@fmt</span>
+        }
+    </div>
+
+    <div class="editor-footer">
+        <div class="meta-left">
+            <span class="meta-pill" id="wordEl-@_id">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="15" y2="18"/></svg>
+                @WordCount words
+            </span>
+            <div class="meta-dot"></div>
+            <span class="meta-pill" id="readEl-@_id">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                ~@ReadTime min read
+            </span>
+        </div>
+        <span class="char-count @(CharCount > MaxChars ? "over" : CharCount > MaxChars * 0.9 ? "warn" : "")" id="charEl-@_id">@CharCount / @MaxChars</span>
+    </div>
+</div>
+
+<input type="hidden" @bind="Value" />
+
+@code {
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public string Placeholder { get; set; } = "Write your thoughts...";
+    [Parameter] public int MinHeight { get; set; } = 170;
+    [Parameter] public int MaxChars { get; set; } = 2000;
+
+    private string _id = Guid.NewGuid().ToString("N")[..8];
+    private ElementReference _editorRef;
+    private bool _isInitialized;
+    private List<string> _activeFormats = new();
+    private int WordCount { get; set; }
+    private int ReadTime { get; set; } = 1;
+    private int CharCount { get; set; }
+    private string _selectedHeading = "";
+
+    private string IsFormatActive(string format) => _activeFormats.Contains(format) ? "active" : "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_isInitialized)
+        {
+            _isInitialized = true;
+            await JS.InvokeVoidAsync("RichTextEditor.init", _id, _editorRef, Value, Placeholder, MinHeight, MaxChars);
+        }
+    }
+
+    private async Task OnInput()
+    {
+        var content = await JS.InvokeAsync<string>("RichTextEditor.getContent", _id);
+        Value = content;
+        await ValueChanged.InvokeAsync(content);
+        UpdateStats();
+        SyncToolbar();
+    }
+
+    private void UpdateStats()
+    {
+        var text = Value.Trim();
+        WordCount = text.Length > 0 ? text.Split(new[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length : 0;
+        ReadTime = Math.Max(1, (int)Math.Ceiling(WordCount / 200.0));
+        CharCount = Value?.Length ?? 0;
+    }
+
+    private async Task ExecCmd(string command)
+    {
+        await JS.InvokeVoidAsync("RichTextEditor.execCommand", _id, command);
+        SyncToolbar();
+    }
+
+    private async Task ToggleBlockquote()
+    {
+        await JS.InvokeVoidAsync("RichTextEditor.toggleBlockquote", _id);
+        SyncToolbar();
+    }
+
+    private async Task ApplyHeading(ChangeEventArgs e)
+    {
+        var tag = e.Value?.ToString() ?? "";
+        _selectedHeading = tag;
+        await JS.InvokeVoidAsync("RichTextEditor.applyHeading", _id, tag);
+        SyncToolbar();
+    }
+
+    private async Task ClearFormat()
+    {
+        await JS.InvokeVoidAsync("RichTextEditor.clearFormat", _id);
+        _selectedHeading = "";
+        SyncToolbar();
+    }
+
+    private void SyncToolbar()
+    {
+        var formats = new List<string>();
+        var labelMap = new Dictionary<string, string>
+        {
+            { "bold", "Bold" },
+            { "italic", "Italic" },
+            { "underline", "Underline" },
+            { "strikeThrough", "Strike" },
+            { "insertUnorderedList", "List" },
+            { "insertOrderedList", "Numbered" }
+        };
+
+        foreach (var kvp in labelMap)
+        {
+            if (IsCommandActive(kvp.Key))
+                formats.Add(kvp.Value);
+        }
+
+        if (IsInBlockquote())
+            formats.Add("Quote");
+
+        var heading = GetCurrentHeading();
+        if (!string.IsNullOrEmpty(heading))
+        {
+            formats.Add(heading.ToUpper());
+            _selectedHeading = heading.ToLower();
+        }
+        else if (string.IsNullOrEmpty(_selectedHeading))
+        {
+            _selectedHeading = "";
+        }
+
+        _activeFormats = formats;
+        StateHasChanged();
+    }
+
+    private bool IsCommandActive(string command)
+    {
+        try
+        {
+            return JS.InvokeAsync<bool>("RichTextEditor.queryCommandState", _id, command).Result;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private bool IsInBlockquote()
+    {
+        try
+        {
+            return JS.InvokeAsync<bool>("RichTextEditor.isInBlockquote", _id).Result;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private string GetCurrentHeading()
+    {
+        try
+        {
+            return JS.InvokeAsync<string>("RichTextEditor.getCurrentHeading", _id).Result;
+        }
+        catch
+        {
+            return "";
+        }
+    }
+
+    private bool _aiLoading;
+
+    private async Task AiAssist()
+    {
+        if (_aiLoading) return;
+        _aiLoading = true;
+
+        await JS.InvokeVoidAsync("RichTextEditor.setAiLoading", _id, true);
+
+        await Task.Delay(1000);
+
+        var suggestions = new[]
+        {
+            " It reminded me of simpler times, before the weight of the world had settled in.",
+            " Perhaps that's what growth feels like — uncomfortable, but quietly necessary.",
+            " I want to hold onto this feeling a little longer before it fades.",
+            " These small, ordinary moments are the ones I'll want to return to someday.",
+        };
+
+        var suggestion = suggestions[new Random().Next(suggestions.Length)];
+        await JS.InvokeVoidAsync("RichTextEditor.insertText", _id, suggestion);
+
+        await OnInput();
+        await JS.InvokeVoidAsync("RichTextEditor.setAiLoading", _id, false);
+        _aiLoading = false;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_isInitialized)
+        {
+            await JS.InvokeVoidAsync("RichTextEditor.destroy", _id);
+        }
+    }
+}
