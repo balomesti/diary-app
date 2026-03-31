@@ -126,6 +126,9 @@
 }
 
 .streak-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     gap: 16px;
 }
 
@@ -133,16 +136,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
-}
-
-.streak-icon i {
-    line-height: 1;
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
 }
 
 .stat-info {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.streak-icon i {
+    line-height: 1;
 }
 
 .stat-info h3 {
