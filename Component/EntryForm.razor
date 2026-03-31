@@ -64,7 +64,7 @@
                     <label class="field-label">Location</label>
                     <div class="inline-field">
                         <span class="inline-icon">📍</span>
-                        <InputText @bind-Value="Location" class="form-control-inline" placeholder="Kuala Lumpur, Malaysia" />
+                        <InputText @bind-Value="Location" class="form-control-inline" placeholder="Where are you?" />
                         <button type="button" class="btn-inline" @onclick="DetectLocation" title="Auto-detect">
                             <span aria-hidden="true">↻</span>
                         </button>
@@ -80,7 +80,7 @@
                 <label class="field-label">Weather</label>
                 <div class="inline-field">
                     <span class="inline-icon">⛅</span>
-                    <InputText @bind-Value="Weather" class="form-control-inline" placeholder="32°C, Sunny" />
+                    <InputText @bind-Value="Weather" class="form-control-inline" placeholder="e.g. 32°C, Sunny" />
                     <button type="button" class="btn-inline" @onclick="DetectWeather" title="Auto-detect">
                         <span aria-hidden="true">↻</span>
                     </button>
@@ -300,28 +300,82 @@
         LocationLoading = true;
         try
         {
-            var position = await JS.InvokeAsync<GeolocationResult>("getCurrentPosition");
-            if (position?.Coords != null)
+            var lat = 0.0;
+            var lon = 0.0;
+            string? ipCity = null;
+            string? ipCountry = null;
+
+            try 
             {
-                var lat = position.Coords.latitude;
-                var lon = position.Coords.longitude;
+                var geoResult = await JS.InvokeAsync<GeolocationResult>("getCurrentPosition");
+                if (geoResult?.Coords != null)
+                {
+                    lat = geoResult.Coords.Latitude;
+                    lon = geoResult.Coords.Longitude;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Browser geolocation failed: {ex.Message}");
+            }
+
+            // Fallback to IP-based location if coordinates are still 0
+            if (lat == 0 && lon == 0)
+            {
+                try 
+                {
+                    using var httpClient = new HttpClient();
+                    // Using freeipapi.com as it supports HTTPS and CORS for free
+                    var ipApi = await httpClient.GetStringAsync("https://freeipapi.com/api/json");
+                    var ipData = System.Text.Json.JsonDocument.Parse(ipApi);
+                    lat = ipData.RootElement.GetProperty("latitude").GetDouble();
+                    lon = ipData.RootElement.GetProperty("longitude").GetDouble();
+                    ipCity = ipData.RootElement.TryGetProperty("cityName", out var c) ? c.GetString() : null;
+                    ipCountry = ipData.RootElement.TryGetProperty("countryName", out var co) ? co.GetString() : null;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"IP geolocation fallback failed: {ex.Message}");
+                }
+            }
+
+            if (lat != 0 || lon != 0)
+            {
                 var url = $"https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json";
                 using var httpClient = new HttpClient();
                 httpClient.DefaultRequestHeaders.Add("User-Agent", "DiaryApp/1.0");
                 var json = await httpClient.GetStringAsync(url);
                 var data = System.Text.Json.JsonDocument.Parse(json);
                 var root = data.RootElement;
-                var city = root.TryGetProperty("city", out var c) ? c.GetString() :
-                           root.TryGetProperty("town", out var t) ? t.GetString() :
-                           root.TryGetProperty("village", out var v) ? v.GetString() :
-                           root.TryGetProperty("municipality", out var m) ? m.GetString() : null;
-                var country = root.TryGetProperty("country", out var co) ? co.GetString() : null;
+                
+                // Nominatim puts address details inside an "address" object
+                var address = root.TryGetProperty("address", out var addr) ? addr : root;
+                
+                var city = address.TryGetProperty("city", out var c_val) ? c_val.GetString() :
+                           address.TryGetProperty("town", out var t_val) ? t_val.GetString() :
+                           address.TryGetProperty("village", out var v_val) ? v_val.GetString() :
+                           address.TryGetProperty("municipality", out var m_val) ? m_val.GetString() : 
+                           address.TryGetProperty("suburb", out var s_val) ? s_val.GetString() : 
+                           address.TryGetProperty("city_district", out var cd_val) ? cd_val.GetString() : null;
+                
+                var country = address.TryGetProperty("country", out var co_val) ? co_val.GetString() : null;
+
+                // Final fallback to IP-based location if Nominatim didn't give us enough
+                city ??= ipCity;
+                country ??= ipCountry;
+
                 if (!string.IsNullOrEmpty(city) && !string.IsNullOrEmpty(country))
                     Location = $"{city}, {country}";
                 else if (!string.IsNullOrEmpty(country))
                     Location = country;
+                else if (!string.IsNullOrEmpty(city))
+                    Location = city;
                 else
                     Location = "Unknown location";
+            }
+            else 
+            {
+                Location = "Unknown location";
             }
         }
         catch (Exception ex)
@@ -337,11 +391,41 @@
         WeatherLoading = true;
         try
         {
-            var position = await JS.InvokeAsync<GeolocationResult>("getCurrentPosition");
-            if (position?.Coords != null)
+            var lat = 0.0;
+            var lon = 0.0;
+
+            try 
             {
-                var lat = position.Coords.latitude;
-                var lon = position.Coords.longitude;
+                var geoResult = await JS.InvokeAsync<GeolocationResult>("getCurrentPosition");
+                if (geoResult?.Coords != null)
+                {
+                    lat = geoResult.Coords.Latitude;
+                    lon = geoResult.Coords.Longitude;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Browser geolocation failed for weather: {ex.Message}");
+            }
+
+            if (lat == 0 && lon == 0)
+            {
+                try 
+                {
+                    using var httpClient = new HttpClient();
+                    var ipApi = await httpClient.GetStringAsync("https://freeipapi.com/api/json");
+                    var ipData = System.Text.Json.JsonDocument.Parse(ipApi);
+                    lat = ipData.RootElement.GetProperty("latitude").GetDouble();
+                    lon = ipData.RootElement.GetProperty("longitude").GetDouble();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"IP geolocation fallback for weather failed: {ex.Message}");
+                }
+            }
+
+            if (lat != 0 || lon != 0)
+            {
                 var url = $"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,weather_code&wind_speed_unit=ms";
                 using var httpClient = new HttpClient();
                 var json = await httpClient.GetStringAsync(url);
@@ -350,6 +434,10 @@
                 var temp = root.GetProperty("current").GetProperty("temperature_2m").GetDouble();
                 var wcode = root.GetProperty("current").GetProperty("weather_code").GetInt32();
                 Weather = $"{temp}°C, {GetWeatherCondition(wcode)}";
+            }
+            else 
+            {
+                Weather = "Unable to detect";
             }
         }
         catch (Exception ex)
