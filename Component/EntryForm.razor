@@ -44,11 +44,13 @@
     <EditForm EditContext="editContext" OnSubmit="HandleSubmit" id="entry-form">
         <DataAnnotationsValidator />
         <div class="form-layout">
-            <div class="form-group title-group">
-                <label class="field-label">Title</label>
-                <InputText @bind-Value="Entry.Title" class="form-control" placeholder="Give your entry a title..." />
+         <div class="form-group title-group">
+          <label class="field-label">Title</label>
+            <div style="position: relative;">
+               <InputText @bind-Value="Entry.Title" class="form-control" placeholder=" " />
+               <span class="typewriter-placeholder">Give your entry a title...</span>
+               </div>
             </div>
-
             <div class="meta-row">
                 <div class="form-group">
                     <label class="field-label">Date</label>
@@ -122,9 +124,12 @@
 
             <div class="form-group">
                 <label class="field-label">Comment</label>
-                <InputTextArea @bind-Value="Entry.Content" class="form-control" placeholder="Write your thoughts..." rows="5" />
+                <div style="position: relative;">
+                    <InputTextArea @bind-Value="Entry.Content" class="form-control" placeholder=" " rows="5" />
+                    <span class="typewriter-placeholder textarea-placeholder">Write your thoughts...</span>
+                </div>
             </div>
-
+            
             <div class="form-group">
                 <label class="field-label">Tags</label>
                 <div class="tag-presets">

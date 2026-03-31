@@ -58,6 +58,88 @@
     gap: 14px;
 }
 
+.title-group {
+    position: relative;
+}
+
+.title-group .typewriter-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #BBA99A;
+    font-size: 1rem;
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+    animation: typewriter-loop 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.typewriter-text {
+    border-right: 2px solid #8C7B6E;
+    animation: blink-cursor 0.8s step-end infinite;
+    padding-right: 2px;
+}
+
+.title-group .form-control::placeholder {
+    color: transparent;
+}
+
+.title-group:has(.form-control:focus) .typewriter-placeholder,
+.title-group:has(.form-control:not(:placeholder-shown)) .typewriter-placeholder {
+    display: none;
+}
+
+@keyframes typewriter-loop {
+    0%   { width: 0; }
+    25%  { width: 100%; }
+    50%  { width: 100%; }
+    55%  { width: 100%; }
+    75%  { width: 0; }
+    100% { width: 0; }
+}
+
+@keyframes blink-cursor {
+    0%, 100% { border-color: #8C7B6E; }
+    50%       { border-color: transparent; }
+}
+
+/* ── Comment / Textarea Typewriter ── */
+.textarea-wrapper {
+    position: relative;
+}
+
+.textarea-placeholder {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    color: #BBA99A;
+    font-size: 0.88rem;
+    font-family: 'Nunito', sans-serif;
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+    border-right: 2px solid #8C7B6E;
+    animation: textarea-typewriter 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite,
+               blink-cursor 0.8s step-end infinite;
+}
+
+.form-group:has(.form-control:focus) .textarea-placeholder,
+.form-group:has(.form-control:not(:placeholder-shown)) .textarea-placeholder {
+    display: none;
+}
+
+@keyframes textarea-typewriter {
+    0%   { width: 0; }
+    25%  { width: 140px; }
+    50%  { width: 140px; }
+    55%  { width: 140px; }
+    75%  { width: 0; }
+    100% { width: 0; }
+}
+
 /* ── Form Group ── */
 .form-group {
     display: flex;
@@ -70,7 +152,7 @@
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #8C7B6E;
+    color: #BBA99A;
 }
 
 /* ── Form Controls ── */
@@ -81,7 +163,7 @@
     padding: 10px 12px;
     font-family: 'Nunito', sans-serif;
     font-size: 0.88rem;
-    color: #2C1F16;
+     color: #BBA99A ;
     transition: all 0.3s ease;
     width: 100%;
     box-sizing: border-box;
