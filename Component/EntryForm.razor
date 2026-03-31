@@ -44,7 +44,7 @@
                     <label class="field-label">Location</label>
                     <div class="inline-field">
                         <span class="inline-icon">📍</span>
-                        <InputText @bind-Value="Location" class="form-control-inline" placeholder="KL, MY" />
+                        <InputText @bind-Value="Location" class="form-control-inline" placeholder="Kuala Lumpur, Malaysia" />
                         <button type="button" class="btn-inline" @onclick="DetectLocation" title="Auto-detect">
                             <span aria-hidden="true">↻</span>
                         </button>
@@ -60,7 +60,7 @@
                 <label class="field-label">Weather</label>
                 <div class="inline-field">
                     <span class="inline-icon">⛅</span>
-                    <InputText @bind-Value="Weather" class="form-control-inline" placeholder="e.g. 32°C, Sunny" />
+                    <InputText @bind-Value="Weather" class="form-control-inline" placeholder="32°C, Sunny" />
                     <button type="button" class="btn-inline" @onclick="DetectWeather" title="Auto-detect">
                         <span aria-hidden="true">↻</span>
                     </button>
@@ -120,10 +120,12 @@
                         </button>
                     }
                 </div>
-                <InputText @bind-Value="TagInput"
-                           class="form-control tag-input"
-                           placeholder="Custom tag, press Enter"
-                           @onkeydown="HandleTagKeyDown" />
+                <div class="tag-input-row">
+                    <InputText @bind-Value="TagInput"
+                               class="form-control tag-input"
+                               placeholder="Custom tag" />
+                    <button type="button" class="tag-add-btn" @onclick="AddCustomTag">Add</button>
+                </div>
                 @if (Tags.Any())
                 {
                     <div class="tag-pill-row">
@@ -253,9 +255,9 @@
         imagePreviewUrls.Clear();
     }
 
-    private void HandleTagKeyDown(KeyboardEventArgs e)
+    private void AddCustomTag()
     {
-        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(TagInput))
+        if (!string.IsNullOrWhiteSpace(TagInput))
         {
             var tag = TagInput.Trim();
             if (!Tags.Contains(tag, StringComparer.OrdinalIgnoreCase))
