@@ -21,10 +21,28 @@
         }
     </div>
 
-    <EditForm Model="Entry" OnValidSubmit="HandleSubmit" id="entry-form">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+    @if (ShowValidationPopup)
+    {
+        <div class="validation-popup-overlay" @onclick="() => ShowValidationPopup = false">
+            <div class="validation-popup" @onclick:stopPropagation="true">
+                <div class="validation-popup-header">
+                    <span>⚠️</span>
+                    <span>Missing Required Fields</span>
+                    <button type="button" class="validation-popup-close" @onclick="() => ShowValidationPopup = false">×</button>
+                </div>
+                <div class="validation-popup-body">
+                    @foreach (var line in ValidationMessage.Split('\n'))
+                    {
+                        <div>@line</div>
+                    }
+                </div>
+                <button type="button" class="validation-popup-btn" @onclick="() => ShowValidationPopup = false">OK</button>
+            </div>
+        </div>
+    }
 
+    <EditForm EditContext="editContext" OnSubmit="HandleSubmit" id="entry-form">
+        <DataAnnotationsValidator />
         <div class="form-layout">
             <div class="form-group title-group">
                 <label class="field-label">Title</label>
@@ -201,6 +219,9 @@
     private List<string> Tags { get; set; } = new();
     private bool WeatherLoading { get; set; }
     private bool LocationLoading { get; set; }
+    private bool ShowValidationPopup { get; set; }
+    private string ValidationMessage { get; set; } = string.Empty;
+    private EditContext? editContext;
 
     private record PresetTag(string Icon, string Label);
 
@@ -353,6 +374,7 @@
 
     protected override void OnInitialized()
     {
+        editContext = new EditContext(Entry);
         Location = Entry.Location ?? "";
         Weather = Entry.Weather ?? "";
         Mood = string.IsNullOrEmpty(Entry.Mood) ? "good" : Entry.Mood;
@@ -366,6 +388,18 @@
 
     private async Task HandleSubmit()
     {
+        if (!editContext!.Validate())
+        {
+            var messages = editContext.GetValidationMessages().ToList();
+            if (messages.Any())
+            {
+                ValidationMessage = string.Join("\n", messages);
+                ShowValidationPopup = true;
+            }
+            return;
+        }
+
+        ShowValidationPopup = false;
         Entry.Location = Location ?? "";
         Entry.Weather = Weather ?? "";
         Entry.Mood = Mood ?? "";
