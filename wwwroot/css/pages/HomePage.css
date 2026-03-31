@@ -241,6 +241,10 @@
     overflow: hidden;
 }
 
+.entry-text p:last-child {
+    margin-bottom: 0;
+}
+
 /* Empty State */
 .empty-state {
     text-align: center;
