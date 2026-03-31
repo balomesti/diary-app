@@ -65,6 +65,38 @@
                                 <span class="tag">@tag.Trim()</span>
                             }
                         </div>
+                        
+                        <div class="content-stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon-wrap words">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value">@GetWordCount(entry.Content)</span>
+                                    <span class="stat-label">Words written</span>
+                                </div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon-wrap reading">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value">@GetReadTime(entry.Content) min</span>
+                                    <span class="stat-label">Reading time</span>
+                                </div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon-wrap chars">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value">@GetCharCount(entry.Content)</span>
+                                    <span class="stat-label">Characters</span>
+                                </div>
+                            </div>
+                        </div>
                     }
                 </header>
 
@@ -81,10 +113,7 @@
                 }
 
                 <div class="journal-body">
-                    @foreach (var paragraph in entry.Content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None))
-                    {
-                        <p>@paragraph</p>
-                    }
+                    @((MarkupString)entry.Content)
                 </div>
 
             </article>
@@ -140,4 +169,27 @@
         "amazing" => "✨",
         _ => "😊"
     };
+
+    private static readonly System.Text.RegularExpressions.Regex _htmlTagRegex =
+        new System.Text.RegularExpressions.Regex("<[^>]*>", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    private static string StripHtml(string html) =>
+        string.IsNullOrEmpty(html) ? string.Empty : _htmlTagRegex.Replace(html, " ");
+
+    private static int GetWordCount(string htmlContent)
+    {
+        var text = StripHtml(htmlContent).Trim();
+        return text.Length > 0 ? text.Split(new[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length : 0;
+    }
+
+    private static int GetReadTime(string htmlContent)
+    {
+        var wordCount = GetWordCount(htmlContent);
+        return Math.Max(1, (int)Math.Ceiling(wordCount / 200.0));
+    }
+
+    private static int GetCharCount(string htmlContent)
+    {
+        return string.IsNullOrEmpty(htmlContent) ? 0 : StripHtml(htmlContent).Length;
+    }
 }

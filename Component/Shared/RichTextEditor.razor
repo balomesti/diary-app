@@ -95,7 +95,7 @@
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public string Placeholder { get; set; } = "Write your thoughts...";
     [Parameter] public int MinHeight { get; set; } = 170;
-    [Parameter] public int MaxChars { get; set; } = 2000;
+    [Parameter] public int MaxChars { get; set; } = int.MaxValue;
 
     private string _id = Guid.NewGuid().ToString("N")[..8];
     private ElementReference _editorRef;
@@ -128,11 +128,17 @@
 
     private void UpdateStats()
     {
-        var text = Value.Trim();
+        var text = StripHtml(Value).Trim();
         WordCount = text.Length > 0 ? text.Split(new[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length : 0;
         ReadTime = Math.Max(1, (int)Math.Ceiling(WordCount / 200.0));
         CharCount = Value?.Length ?? 0;
     }
+
+    private static readonly System.Text.RegularExpressions.Regex _htmlTagRegex =
+        new System.Text.RegularExpressions.Regex("<[^>]*>", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    private static string StripHtml(string html) =>
+        string.IsNullOrEmpty(html) ? string.Empty : _htmlTagRegex.Replace(html, " ");
 
     private async Task ExecCmd(string command)
     {
