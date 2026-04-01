@@ -224,10 +224,17 @@
     flex-direction: column;
 }
 
+.entry-date {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
 .entry-text h3 {
     font-family: 'Playfair Display', serif;
     font-size: 1.4rem;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     color: var(--text-main);
 }
 
@@ -243,6 +250,31 @@
 
 .entry-text p:last-child {
     margin-bottom: 0;
+}
+
+/* Context Ribbon & Pills */
+.context-ribbon {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.context-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(253, 251, 247, 0.9);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.context-pill:hover {
+    background: var(--card-bg);
+    transform: translateY(-1px);
 }
 
 /* Empty State */

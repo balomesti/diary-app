@@ -69,7 +69,26 @@
                         </div>
                         
                         <div class="entry-text">
+                            <div class="entry-date">@entry.Date.ToString("MMMM d, yyyy")</div>
                             <h3>@entry.Title</h3>
+                            
+                            @if (!string.IsNullOrEmpty(entry.Location) || !string.IsNullOrEmpty(entry.Weather) || !string.IsNullOrEmpty(entry.Mood))
+                            {
+                                <div class="context-ribbon">
+                                    @if (!string.IsNullOrEmpty(entry.Location))
+                                    {
+                                        <span class="context-pill">📍 @entry.Location</span>
+                                    }
+                                    @if (!string.IsNullOrEmpty(entry.Weather))
+                                    {
+                                        <span class="context-pill">⛅ @entry.Weather</span>
+                                    }
+                                    @if (!string.IsNullOrEmpty(entry.Mood))
+                                    {
+                                        <span class="context-pill">@GetMoodEmoji(entry.Mood) @entry.Mood</span>
+                                    }
+                                </div>
+                            }
                         </div>
                     </NavLink>
                 }
@@ -89,4 +108,14 @@
             .Take(4)
             .ToList();
     }
+
+    private static string GetMoodEmoji(string mood) => mood.ToLower() switch
+    {
+        "terrible" => "😢",
+        "bad" => "😕",
+        "okay" => "😐",
+        "good" => "😊",
+        "amazing" => "✨",
+        _ => "😊"
+    };
 }
