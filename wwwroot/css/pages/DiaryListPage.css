@@ -611,15 +611,15 @@
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     .diary-list-page {
-        padding: 30px 15px;
+        padding: 20px 12px;
     }
 
     .hero {
-        padding: 40px 30px;
+        padding: 30px 20px;
     }
 
     .hero h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
     }
 
     .hero-buttons {
@@ -627,11 +627,105 @@
     }
 
     .gamification-row {
-        flex-direction: column;
+        flex-direction: row !important;
+        gap: 8px;
+        align-items: stretch;
     }
 
     .stat-card {
-        min-width: 100%;
+        min-width: 0; /* Allow shrinking */
+        flex: 1;
+        padding: 12px 8px;
+        min-height: 140px; /* Ensure enough height for content */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px;
+        overflow: hidden; /* Contain icons */
+    }
+
+    .streak-icon, .progress-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 2px;
+        flex-shrink: 0;
+    }
+
+    .fire-wrap, .icon-wrap {
+        width: 32px;
+        height: 32px;
+    }
+
+    .main-icon {
+        font-size: 1.4rem;
+    }
+
+    .stat-info {
+        align-items: center !important;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .stat-info h3 {
+        font-size: 0.85rem;
+        margin: 0;
+        line-height: 1.2;
+        white-space: normal; /* Allow wrap if needed */
+    }
+
+    .stat-info p {
+        font-size: 0.65rem;
+        line-height: 1.2;
+        opacity: 0.8;
+    }
+
+    .progress-main {
+        align-items: center;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .progress-header {
+        margin-bottom: 0;
+    }
+
+    .progress-header h3 {
+        font-size: 0.85rem;
+    }
+
+    .progress-bar-wrap {
+        width: 100%;
+        gap: 4px;
+    }
+
+    .progress-meta {
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        gap: 2px;
+        align-items: center;
+    }
+
+    .progress-hint {
+        text-align: center;
+        font-size: 0.6rem;
+        margin: 0;
+    }
+
+    .next-milestone {
+        font-size: 0.6rem;
+        padding: 1px 6px;
+        margin-top: 2px;
+    }
+
+    .progress-container {
+        height: 6px;
+        margin: 2px 0;
     }
 
     .badge-list {
@@ -640,17 +734,7 @@
 
     .entries-grid {
         grid-template-columns: 1fr;
-    }
-
-    .progress-meta {
-        flex-direction: column;
-        justify-content: center;
-        gap: 6px;
-        text-align: center;
-    }
-
-    .progress-hint {
-        text-align: center;
+        gap: 20px;
     }
 }
 

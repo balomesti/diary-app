@@ -68,6 +68,19 @@
                 });
             });
         };
+        window.scrollToTop = function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+        window.addEventListener('scroll', function() {
+            var btn = document.getElementById('scrollTopBtn');
+            if (btn) {
+                if (window.scrollY > 200) {
+                    btn.classList.add('visible');
+                } else {
+                    btn.classList.remove('visible');
+                }
+            }
+        });
     </script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
