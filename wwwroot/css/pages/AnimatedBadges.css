@@ -4,10 +4,11 @@
 
 /* ── Grid ── */
 .badges-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    padding: 20px 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px 0;
 }
 
 @media (max-width: 480px) {

@@ -20,9 +20,9 @@
         <div class="gamification-row">
             <!-- Streak Card -->
             <div class="stat-card streak-card">
-                <div class="streak-icon">
+                <div class="streak-icon">   
                     <div class="fire-wrap">
-                        <span class="fire-icon">🔥</span>
+                        <span class="main-icon">🔥</span>
                         <span class="spark"></span>
                         <span class="spark"></span>
                         <span class="spark"></span>
@@ -36,15 +36,25 @@
 
             <!-- Progress Card -->
             <div class="stat-card progress-card">
-                <div class="stat-info">
+                <div class="progress-icon">
+                    <div class="icon-wrap">
+                        <span class="main-icon">📚</span>
+                    </div>
+                </div>
+                <div class="progress-main">
                     <div class="progress-header">
-                        <h3>Total Entries: @totalEntries</h3>
-                        <span class="next-milestone">Next: @nextMilestone</span>
+                        <h3>@totalEntries Total Entries</h3>
                     </div>
-                    <div class="progress-container">
-                        <div class="progress-fill" style="width: @GetProgressPercentage()%"></div>
+                    <div class="progress-bar-wrap">
+                        <div class="progress-container">
+                            <div class="progress-fill" style="width: @GetProgressPercentage()%"></div>
+                        </div>
+                        <div class="progress-meta">
+                            <span class="progress-hint">@GetEntriesToNextMilestone() more for <b>@GetNextMilestoneTitle()</b></span>
+                            <span class="next-milestone">Goal: @nextMilestone</span>
+
+                        </div>
                     </div>
-                    <p class="progress-hint">@GetEntriesToNextMilestone() more to become a <b>@GetNextMilestoneTitle()</b></p>
                 </div>
             </div>
         </div>
