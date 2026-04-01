@@ -440,6 +440,53 @@
     transform: scale(1.1);
 }
 
+.sort-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 12px;
+    flex-shrink: 0;
+}
+
+.sort-label {
+    display: flex;
+    align-items: center;
+    color: var(--text-light);
+}
+
+.sort-pills {
+    display: flex;
+    background: rgba(212, 201, 189, 0.3);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+}
+
+.sort-pill {
+    padding: 7px 14px;
+    border: none;
+    border-radius: 7px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-light);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.sort-pill:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.sort-pill.active {
+    background: white;
+    color: var(--accent-color);
+    box-shadow: 0 2px 8px rgba(85, 107, 85, 0.15);
+}
+
 /* Grid Layout for Cards */
 .entries-grid {
     display: grid;

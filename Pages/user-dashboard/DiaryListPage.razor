@@ -94,6 +94,27 @@
                     </svg>
                 </button>
             }
+            <div class="sort-toggle">
+                <span class="sort-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="20" x2="12" y2="10"></line>
+                        <line x1="18" y1="20" x2="18" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="16"></line>
+                    </svg>
+                </span>
+                <div class="sort-pills">
+                    <button class="sort-pill @(sortOption == "title_asc" ? "active" : "")"
+                            @onclick='() => sortOption = "title_asc"'
+                            type="button">
+                        A-Z
+                    </button>
+                    <button class="sort-pill @(sortOption == "date_desc" ? "active" : "")"
+                            @onclick='() => sortOption = "date_desc"'
+                            type="button">
+                        Date & Time
+                    </button>
+                </div>
+            </div>
         </div>
         
         <div class="entries-grid">
@@ -175,6 +196,7 @@
 @code {
     private List<DiaryEntry>? entries;
     private string searchTerm = string.Empty;
+    private string sortOption = "date_desc";
 
     private int totalEntries = 33;
     private int streakCount = 7;
@@ -182,12 +204,16 @@
 
     private IEnumerable<DiaryEntry> GetFilteredEntries()
     {
-        if (string.IsNullOrWhiteSpace(searchTerm))
-            return entries?.OrderByDescending(e => e.Date) ?? Enumerable.Empty<DiaryEntry>();
-        
-        return entries?
-            .Where(e => e.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-            .OrderByDescending(e => e.Date) ?? Enumerable.Empty<DiaryEntry>();
+        var filtered = string.IsNullOrWhiteSpace(searchTerm)
+            ? entries?.AsEnumerable() ?? Enumerable.Empty<DiaryEntry>()
+            : entries?.Where(e => e.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ?? Enumerable.Empty<DiaryEntry>();
+
+        return sortOption switch
+        {
+            "title_asc" => filtered.OrderBy(e => e.Title),
+            "date_desc" => filtered.OrderByDescending(e => e.Date),
+            _ => filtered.OrderByDescending(e => e.Date)
+        };
     }
 
     private void ClearSearch()
