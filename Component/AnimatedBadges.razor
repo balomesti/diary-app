@@ -38,41 +38,165 @@
 </div>
 
 @code {
+    [Parameter] public List<DiaryEntry>? Entries { get; set; }
+    [Parameter] public StreakInfo? StreakInfo { get; set; }
+
     private bool isMinimized = true;
 
     private void ToggleMinimize() => isMinimized = !isMinimized;
 
-    private List<Badge> AllBadges = new()
+    private List<Badge> AllBadges { get; set; } = new();
+
+    protected override void OnParametersSet()
     {
-        // Row 1
-        new Badge { IconClass = "fas fa-seedling",       Title = "First Entry",      IsUnlocked = true  },  // gold
-        new Badge { IconClass = "fas fa-align-left",     Title = "Storyteller",      IsUnlocked = false },  // teal
-        new Badge { IconClass = "fas fa-heart",          Title = "Grateful Heart",   IsUnlocked = false },  // rose
-        new Badge { IconClass = "fas fa-moon",           Title = "Night Owl",        IsUnlocked = false },  // purple
-        // Row 2
-        new Badge { IconClass = "fas fa-calendar-check", Title = "7 Days",           IsUnlocked = true  },  // gold
-        new Badge { IconClass = "fas fa-tags",           Title = "Tag Master",       IsUnlocked = false },  // teal
-        new Badge { IconClass = "fas fa-rainbow",        Title = "Mood Explorer",    IsUnlocked = false },  // rose
-        new Badge { IconClass = "fas fa-crown",          Title = "Diary Legend",     IsUnlocked = false },  // purple
-        // Row 3
-        new Badge { IconClass = "fas fa-camera",         Title = "Photo Buff",       IsUnlocked = true  },  // gold
-        new Badge { IconClass = "fas fa-spa",            Title = "Wellness Warrior", IsUnlocked = false },  // teal
-        new Badge { IconClass = "fas fa-smile-beam",     Title = "Sunshine Days",    IsUnlocked = false },  // rose
-        new Badge { IconClass = "fas fa-award",          Title = "10 Entries",       IsUnlocked = true  },  // gold  (no purple left → gold, separated by rose)
-        // Row 4
-        new Badge { IconClass = "fas fa-globe",          Title = "Globetrotter",     IsUnlocked = false },  // teal
-        new Badge { IconClass = "fas fa-birthday-cake",  Title = "Anniversary",      IsUnlocked = false },  // rose
-        new Badge { IconClass = "fas fa-pen-fancy",      Title = "20 Entries",       IsUnlocked = false },  // gold
-        new Badge { IconClass = "fas fa-umbrella-beach", Title = "Weekend Vibes",    IsUnlocked = false },  // teal
-        // Row 5
-        new Badge { IconClass = "fas fa-star",           Title = "35 Entries",       IsUnlocked = false },  // gold
-        new Badge { IconClass = "fas fa-bolt",           Title = "Early Bird",       IsUnlocked = false },  // gold  (separated by teal above)
-        new Badge { IconClass = "fas fa-fire",           Title = "30 Day Streak",    IsUnlocked = false },  // gold  → offset: preceded by gold above so place teal gap
-        new Badge { IconClass = "fas fa-calendar-alt",   Title = "Monthly Master",   IsUnlocked = false },  // gold
-        // Row 6
-        new Badge { IconClass = "fas fa-images",         Title = "Memory Keeper",    IsUnlocked = false },  // teal
-        new Badge { IconClass = "fas fa-trophy",         Title = "50 Entries",       IsUnlocked = false },  // gold
-    };
+        ComputeBadgeUnlockStatus();
+    }
+
+    private void ComputeBadgeUnlockStatus()
+    {
+        var entries = Entries ?? new List<DiaryEntry>();
+        var streak = StreakInfo ?? new StreakInfo();
+        int totalEntries = entries.Count;
+        int streakCount = streak.CurrentStreak;
+
+        AllBadges = new List<Badge>
+        {
+            new Badge { IconClass = "fas fa-seedling",       Title = "First Entry",      IsUnlocked = totalEntries >= 1 },
+            new Badge { IconClass = "fas fa-calendar-check", Title = "7 Days",           IsUnlocked = streakCount >= 7 },
+            new Badge { IconClass = "fas fa-camera",         Title = "Photo Buff",       IsUnlocked = entries.Any(e => !string.IsNullOrEmpty(e.ImageUrls)) },
+            new Badge { IconClass = "fas fa-award",          Title = "10 Entries",       IsUnlocked = totalEntries >= 10 },
+            new Badge { IconClass = "fas fa-pen-fancy",      Title = "20 Entries",       IsUnlocked = totalEntries >= 20 },
+            new Badge { IconClass = "fas fa-star",           Title = "35 Entries",       IsUnlocked = totalEntries >= 35 },
+            new Badge { IconClass = "fas fa-bolt",           Title = "Early Bird",       IsUnlocked = CountEarlyBirdEntries(entries) >= 5 },
+            new Badge { IconClass = "fas fa-fire",           Title = "30 Day Streak",    IsUnlocked = streakCount >= 30 },
+            new Badge { IconClass = "fas fa-moon",           Title = "Night Owl",        IsUnlocked = CountNightOwlEntries(entries) >= 5 },
+            new Badge { IconClass = "fas fa-calendar-alt",   Title = "Monthly Master",   IsUnlocked = streak.LongestStreak >= 30 },
+            new Badge { IconClass = "fas fa-align-left",     Title = "Storyteller",       IsUnlocked = entries.Any(e => CountWords(e.Content) >= 500) },
+            new Badge { IconClass = "fas fa-tags",           Title = "Tag Master",       IsUnlocked = entries.Any(e => CountDistinctTags(e.Tags) >= 5) },
+            new Badge { IconClass = "fas fa-smile-beam",      Title = "Sunshine Days",    IsUnlocked = entries.Count(e => string.Equals(e.Mood, "amazing", StringComparison.OrdinalIgnoreCase)) >= 10 },
+            new Badge { IconClass = "fas fa-rainbow",         Title = "Mood Explorer",    IsUnlocked = HasAllFiveMoods(entries) },
+            new Badge { IconClass = "fas fa-heart",           Title = "Grateful Heart",   IsUnlocked = CountFamilySocialTags(entries) >= 10 },
+            new Badge { IconClass = "fas fa-spa",             Title = "Wellness Warrior", IsUnlocked = CountHealthTagEntries(entries) >= 7 },
+            new Badge { IconClass = "fas fa-umbrella-beach",  Title = "Weekend Vibes",    IsUnlocked = HasEightConsecutiveWeekends(entries) },
+            new Badge { IconClass = "fas fa-crown",           Title = "Diary Legend",     IsUnlocked = AreAllOtherBadgesUnlocked(entries, streakCount, streak.LongestStreak, totalEntries) },
+            new Badge { IconClass = "fas fa-trophy",           Title = "50 Entries",      IsUnlocked = totalEntries >= 50 },
+        };
+    }
+
+    private int CountEarlyBirdEntries(List<DiaryEntry> entries)
+    {
+        return entries.Count(e => e.Date.Hour < 8);
+    }
+
+    private int CountNightOwlEntries(List<DiaryEntry> entries)
+    {
+        return entries.Count(e => e.Date.Hour >= 0 && e.Date.Hour < 5);
+    }
+
+    private int CountWeekendEntries(List<DiaryEntry> entries)
+    {
+        return entries.Count(e => e.Date.DayOfWeek == DayOfWeek.Saturday || e.Date.DayOfWeek == DayOfWeek.Sunday);
+    }
+
+    private static readonly string[] AllFiveMoods = { "terrible", "bad", "okay", "good", "amazing" };
+
+    private bool HasAllFiveMoods(List<DiaryEntry> entries)
+    {
+        var usedMoods = entries.Select(e => e.Mood?.ToLower().Trim())
+                                .Where(m => !string.IsNullOrEmpty(m))
+                                .Distinct()
+                                .ToHashSet();
+        return AllFiveMoods.All(m => usedMoods.Contains(m));
+    }
+
+    private int CountFamilySocialTags(List<DiaryEntry> entries)
+    {
+        return entries.Count(e => {
+            if (string.IsNullOrEmpty(e.Tags)) return false;
+            var tags = e.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                             .Select(t => t.Trim().ToLower())
+                             .ToHashSet();
+            return tags.Contains("family") || tags.Contains("social");
+        });
+    }
+
+    private int CountHealthTagEntries(List<DiaryEntry> entries)
+    {
+        return entries.Count(e => {
+            if (string.IsNullOrEmpty(e.Tags)) return false;
+            var tags = e.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                             .Select(t => t.Trim().ToLower())
+                             .ToHashSet();
+            return tags.Contains("health");
+        });
+    }
+
+    private bool HasEightConsecutiveWeekends(List<DiaryEntry> entries)
+    {
+        if (entries.Count == 0) return false;
+        var weekendDates = entries
+            .Where(e => e.Date.DayOfWeek == DayOfWeek.Saturday || e.Date.DayOfWeek == DayOfWeek.Sunday)
+            .Select(e => e.Date.Date)
+            .Distinct()
+            .OrderByDescending(d => d)
+            .ToList();
+        if (weekendDates.Count < 8) return false;
+        int consecutiveCount = 1;
+        for (int i = 0; i < weekendDates.Count - 1; i++)
+        {
+            var diff = (weekendDates[i] - weekendDates[i + 1]).Days;
+            if (diff == 7)
+            {
+                consecutiveCount++;
+                if (consecutiveCount >= 8) return true;
+            }
+            else
+            {
+                consecutiveCount = 1;
+            }
+        }
+        return consecutiveCount >= 8;
+    }
+
+    private bool AreAllOtherBadgesUnlocked(List<DiaryEntry> entries, int streakCount, int longestStreak, int total)
+    {
+        return total >= 1
+            && streakCount >= 7
+            && entries.Any(e => !string.IsNullOrEmpty(e.ImageUrls))
+            && total >= 10
+            && total >= 20
+            && total >= 35
+            && CountEarlyBirdEntries(entries) >= 5
+            && streakCount >= 30
+            && CountNightOwlEntries(entries) >= 5
+            && longestStreak >= 30
+            && entries.Any(e => CountWords(e.Content) >= 500)
+            && entries.Any(e => CountDistinctTags(e.Tags) >= 5)
+            && entries.Count(e => string.Equals(e.Mood, "amazing", StringComparison.OrdinalIgnoreCase)) >= 10
+            && HasAllFiveMoods(entries)
+            && CountFamilySocialTags(entries) >= 10
+            && CountHealthTagEntries(entries) >= 7
+            && HasEightConsecutiveWeekends(entries)
+            && total >= 50;
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex _htmlTagRegex = new System.Text.RegularExpressions.Regex("<[^>]*>", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    private int CountWords(string html)
+    {
+        var text = string.IsNullOrEmpty(html) ? string.Empty : _htmlTagRegex.Replace(html, " ");
+        var parts = text.Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length;
+    }
+
+    private int CountDistinctTags(string? tags)
+    {
+        if (string.IsNullOrWhiteSpace(tags)) return 0;
+        return tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                   .Select(t => t.Trim().ToLower())
+                   .Distinct()
+                   .Count();
+    }
 
     private (string color, string anim, string extras) GetBadgeStyle(string title) => title switch
     {
@@ -82,20 +206,17 @@
         "10 Entries"       => ("gold",   "anim-spin",       "gleam"),
         "20 Entries"       => ("gold",   "anim-pen",        "ink"),
         "35 Entries"       => ("gold",   "anim-star",       "ring"),
+        "50 Entries"       => ("gold",   "anim-trophy",     "ring2"),
         "Early Bird"       => ("gold",   "anim-zap",        ""),
         "30 Day Streak"    => ("gold",   "anim-fire",       ""),
         "Monthly Master"   => ("gold",   "anim-calstamp",   "page-sweep tick-mark"),
-        "50 Entries"       => ("gold",   "anim-trophy",     "ring2"),
         "Storyteller"      => ("teal",   "anim-type",       ""),
         "Tag Master"       => ("teal",   "anim-tagspin",    ""),
-        "Globetrotter"     => ("teal",   "anim-globe",      ""),
-        "Memory Keeper"    => ("teal",   "anim-polaroid",   ""),
         "Wellness Warrior" => ("teal",   "anim-sway",       ""),
         "Weekend Vibes"    => ("teal",   "anim-wave",       ""),
         "Sunshine Days"    => ("rose",   "anim-sunbreathe", "sun-rays"),
         "Mood Explorer"    => ("rose",   "anim-rainbow",    ""),
         "Grateful Heart"   => ("rose",   "anim-heart",      ""),
-        "Anniversary"      => ("rose",   "anim-cake",       "confetti"),
         "Night Owl"        => ("purple", "anim-moon",       ""),
         "Diary Legend"     => ("purple", "anim-crown",      "crown-ring"),
         _                  => ("gold",   "",                ""),
@@ -117,13 +238,6 @@
                 @if (extras.Contains("ring"))        { <div class="ring"></div>        }
                 @if (extras.Contains("ring2"))       { <div class="ring2"></div>       }
                 @if (extras.Contains("crown-ring"))  { <div class="crown-ring"></div>  }
-                @if (extras.Contains("confetti"))
-                {
-                    <div class="confetti">
-                        <div class="cc"></div><div class="cc"></div>
-                        <div class="cc"></div><div class="cc"></div>
-                    </div>
-                }
                 @if (extras.Contains("sun-rays"))
                 {
                     <svg class="sun-rays-svg" viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg">

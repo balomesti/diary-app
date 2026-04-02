@@ -64,7 +64,7 @@
             <div class="milestone-header">
                 <h3>Achievements</h3>
             </div>
-            <AnimatedBadges />
+            <AnimatedBadges Entries="entries" StreakInfo="streakInfo" />
         </div>
     </section>
 
@@ -201,6 +201,7 @@
     private int totalEntries = 33;
     private int streakCount = 7;
     private int nextMilestone = 50;
+    private StreakInfo? streakInfo;
 
     private IEnumerable<DiaryEntry> GetFilteredEntries()
     {
@@ -241,7 +242,7 @@
         CalculateNextMilestone();
         UpdateBadgeStatus();
 
-        var streakInfo = await DiaryService.GetStreakAsync();
+        streakInfo = await DiaryService.GetStreakAsync();
         if (streakInfo != null)
         {
             streakCount = streakInfo.CurrentStreak;
