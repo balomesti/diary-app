@@ -116,6 +116,11 @@
     transform: rotateY(180deg);
 }
 
+/* Mobile tap to flip */
+.flip-card.is-flipped .flip-inner {
+    transform: rotateY(180deg);
+}
+
 /* ── Front face ── */
 .flip-front {
     position: absolute;

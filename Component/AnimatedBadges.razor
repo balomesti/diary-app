@@ -42,7 +42,9 @@
     [Parameter] public StreakInfo? StreakInfo { get; set; }
 
     private bool isMinimized = true;
+    private string? flippedBadgeTitle;
     private void ToggleMinimize() => isMinimized = !isMinimized;
+    private void ToggleFlip(string title) => flippedBadgeTitle = flippedBadgeTitle == title ? null : title;
 
     private List<Badge> AllBadges { get; set; } = new();
 
@@ -153,7 +155,7 @@
     };
 
     private RenderFragment RenderBadgeCard(Badge badge) =>
-    @<div class="flip-card">
+    @<div class="flip-card @(flippedBadgeTitle == badge.Title ? "is-flipped" : "")" @onclick="() => ToggleFlip(badge.Title)" @onclick:stopPropagation>
         <div class="flip-inner">
 
             <!-- FRONT -->
