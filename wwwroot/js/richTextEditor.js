@@ -140,7 +140,7 @@ window.RichTextEditor = (() => {
                 btn.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite">⟳</span> Thinking...';
                 btn.style.opacity = '0.7';
             } else {
-                btn.innerHTML = '<span>✦</span> AI assist';
+                btn.innerHTML = '<span>✦</span> Inspire Me';
                 btn.style.opacity = '';
             }
         },
