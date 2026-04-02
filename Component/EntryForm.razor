@@ -94,33 +94,7 @@
 
             <div class="form-group">
                 <label class="field-label">How are you feeling?</label>
-                <div class="mood-row">
-                    <label class="mood-chip @(Mood == "terrible" ? "active" : "")">
-                        <input type="radio" name="mood" value="terrible" checked="@(Mood == "terrible")" @onchange='() => ChangeMood("terrible")' />
-                        <span class="mood-em">😢</span>
-                        <span class="mood-label">Terrible</span>
-                    </label>
-                    <label class="mood-chip @(Mood == "bad" ? "active" : "")">
-                        <input type="radio" name="mood" value="bad" checked="@(Mood == "bad")" @onchange='() => ChangeMood("bad")' />
-                        <span class="mood-em">😕</span>
-                        <span class="mood-label">Bad</span>
-                    </label>
-                    <label class="mood-chip @(Mood == "okay" ? "active" : "")">
-                        <input type="radio" name="mood" value="okay" checked="@(Mood == "okay")" @onchange='() => ChangeMood("okay")' />
-                        <span class="mood-em">😐</span>
-                        <span class="mood-label">Okay</span>
-                    </label>
-                    <label class="mood-chip @(Mood == "good" ? "active" : "")">
-                        <input type="radio" name="mood" value="good" checked="@(Mood == "good")" @onchange='() => ChangeMood("good")' />
-                        <span class="mood-em">😊</span>
-                        <span class="mood-label">Good</span>
-                    </label>
-                    <label class="mood-chip @(Mood == "amazing" ? "active" : "")">
-                        <input type="radio" name="mood" value="amazing" checked="@(Mood == "amazing")" @onchange='() => ChangeMood("amazing")' />
-                        <span class="mood-em">✨</span>
-                        <span class="mood-label">Amazing</span>
-                    </label>
-                </div>
+                <MoodSelector @bind-Mood="Mood" />
             </div>
 
             <div class="form-group">
@@ -295,7 +269,7 @@
     }
 
     private void RemoveTag(string tag) => Tags.Remove(tag);
-    private void ChangeMood(string mood) => Mood = mood;
+
 
     private async Task DetectLocation()
     {
