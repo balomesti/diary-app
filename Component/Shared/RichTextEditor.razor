@@ -47,8 +47,23 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>
         </button>
 
+        <div class="tb-sep"></div>
+
+        <button type="button" class="tb-mic @(_isListening ? "listening" : "")" @onclick="ToggleVoice" title="@(_isListening ? "Stop recording" : "Voice to text")">
+            @if (_isListening)
+            {
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                <span>Stop</span>
+            }
+            else
+            {
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                <span>Speak</span>
+            }
+        </button>
+
         <button type="button" class="tb-ai" @onclick="AiAssist">
-            <span>✦</span> AI assist
+            <span>✦</span> Inspire me
         </button>
     </div>
 
@@ -96,6 +111,7 @@
     [Parameter] public string Placeholder { get; set; } = "Write your thoughts...";
     [Parameter] public int MinHeight { get; set; } = 170;
     [Parameter] public int MaxChars { get; set; } = int.MaxValue;
+    [Parameter] public string Mood { get; set; } = "good";
 
     private string _id = Guid.NewGuid().ToString("N")[..8];
     private ElementReference _editorRef;
@@ -105,6 +121,7 @@
     private int ReadTime { get; set; } = 1;
     private int CharCount { get; set; }
     private string _selectedHeading = "";
+    private bool _isListening = false;
 
     private string IsFormatActive(string format) => _activeFormats.Contains(format) ? "active" : "";
 
@@ -248,30 +265,165 @@
         _aiLoading = true;
 
         await JS.InvokeVoidAsync("RichTextEditor.setAiLoading", _id, true);
-
         await Task.Delay(1000);
 
-        var suggestions = new[]
+        var suggestionsByMood = new Dictionary<string, string[]>
         {
-            " It reminded me of simpler times, before the weight of the world had settled in.",
-            " Perhaps that's what growth feels like — uncomfortable, but quietly necessary.",
-            " I want to hold onto this feeling a little longer before it fades.",
-            " These small, ordinary moments are the ones I'll want to return to someday.",
+            ["terrible"] = new[]
+            {
+                " Some days just feel heavier than they should, and that's okay to admit.",
+                " I'm not sure how to put this into words, but everything just feels like too much right now.",
+                " I keep reminding myself that even the worst days eventually end.",
+                " It's hard to find something to hold onto when everything feels like it's slipping.",
+                " I didn't expect today to hit me this hard, but here I am.",
+                " Sometimes crying is the only honest response to a day like this.",
+                " I just want to sleep and hope tomorrow feels a little lighter.",
+                " There's a kind of exhaustion that rest can't fix, and I'm sitting right in it.",
+                " I'm trying to be gentle with myself, even when it doesn't feel natural.",
+                " The hardest part is pretending everything is fine when it clearly isn't.",
+            },
+            ["bad"] = new[]
+            {
+                " It wasn't the worst day, but it wasn't one I'd want to repeat.",
+                " Something felt off from the moment I woke up, and it never quite righted itself.",
+                " I'm trying to shake it, but the mood has followed me around all day.",
+                " Not everything went wrong — just enough to throw the whole day off balance.",
+                " I kept waiting for things to turn around, and they sort of did, but not really.",
+                " I'm tired of explaining how I feel, so I'll just write it here instead.",
+                " It's the small frustrations that pile up and make everything feel heavier.",
+                " I gave today a fair chance and it still let me down a little.",
+                " Some days just need to be over, and this is one of them.",
+                " I'm reminding myself that a bad day isn't a bad life.",
+            },
+            ["okay"] = new[]
+            {
+                " Not every day needs to be remarkable — some days just exist, and that's fine.",
+                " It was the kind of day that passes without much fanfare, which is quietly okay.",
+                " I didn't feel on top of the world, but I didn't feel under it either.",
+                " There were small moments worth noticing, even if the day itself was unremarkable.",
+                " I'm somewhere in the middle today — not complaining, not celebrating.",
+                " Ordinary days like this one are the ones I'll probably forget, and maybe that's alright.",
+                " I did what needed doing, said what needed saying, and called it a day.",
+                " It's peaceful, in a slightly bland kind of way.",
+                " I think I'm okay, which is more than I can say for some days.",
+                " There's a quiet comfort in a day that just flows without drama.",
+            },
+            ["good"] = new[]
+            {
+                " It reminded me of simpler times, before the weight of the world had settled in.",
+                " Perhaps that's what growth feels like — uncomfortable, but quietly necessary.",
+                " I want to hold onto this feeling a little longer before it fades.",
+                " These small, ordinary moments are the ones I'll want to return to someday.",
+                " Something about today just clicked in a way that's hard to explain.",
+                " I felt like myself today — the version of me I actually like.",
+                " It's the kind of day that makes you grateful for the ordinary.",
+                " I left today feeling lighter than when I started it.",
+                " There's a warmth in good days that lingers well past the day itself.",
+                " I caught myself smiling for no particular reason, and that felt like enough.",
+            },
+            ["amazing"] = new[]
+            {
+                " I want to press this day between pages like a flower — keep it forever.",
+                " Everything aligned today in a way that felt almost too good to be real.",
+                " I'll remember this one for a long time. The kind of day that sets a new standard.",
+                " I'm genuinely happy, and I want to sit in that feeling without overthinking it.",
+                " Today felt like a reward for all the days that didn't.",
+                " I keep replaying the best parts in my head like a favourite song.",
+                " If I could bottle this feeling and save it for a harder day, I would.",
+                " I felt alive today — not just present, but fully, unmistakably alive.",
+                " The world felt a little bigger and a little kinder today.",
+                " Days like this remind me why everything else is worth it.",
+            },
         };
 
-        var suggestion = suggestions[new Random().Next(suggestions.Length)];
-        await JS.InvokeVoidAsync("RichTextEditor.insertText", _id, suggestion);
+    var mood = string.IsNullOrWhiteSpace(Mood) ? "good" : Mood.ToLower();
+    if (!suggestionsByMood.ContainsKey(mood))
+        mood = "good";
 
-        await OnInput();
-        await JS.InvokeVoidAsync("RichTextEditor.setAiLoading", _id, false);
-        _aiLoading = false;
-    }
+    var pool = suggestionsByMood[mood];
+    var suggestion = pool[new Random().Next(pool.Length)];
+
+    await JS.InvokeVoidAsync("RichTextEditor.insertText", _id, suggestion);
+    await OnInput();
+    await JS.InvokeVoidAsync("RichTextEditor.setAiLoading", _id, false);
+    _aiLoading = false;
+}
 
     public async ValueTask DisposeAsync()
     {
         if (_isInitialized)
         {
+            if (_isListening)
+                await JS.InvokeVoidAsync("RichTextEditor.stopVoice", _id);
+
             await JS.InvokeVoidAsync("RichTextEditor.destroy", _id);
         }
+    }
+
+    private async Task ToggleVoice()
+    {
+        if (_isListening)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("RichTextEditor.stopVoice", _id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error stopping voice: {ex.Message}");
+            }
+            _isListening = false;
+        }
+        else
+        {
+            try
+            {
+                var dotNetRef = DotNetObjectReference.Create(this);
+                var supported = await JS.InvokeAsync<bool>(
+                    "RichTextEditor.startVoice",
+                    _id,
+                    dotNetRef
+                );
+
+                if (!supported)
+                {
+                    Console.WriteLine("Speech recognition is not supported in this browser.");
+                    return;
+                }
+
+                _isListening = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error starting voice: {ex.Message}");
+                return;
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task OnVoiceResult(string transcript)
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(transcript))
+            {
+                await JS.InvokeVoidAsync("RichTextEditor.insertText", _id, " " + transcript.Trim());
+                await OnInput();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in OnVoiceResult: {ex.Message}");
+        }
+    }
+
+    [JSInvokable]
+    public void OnVoiceEnd()
+    {
+        _isListening = false;
+        StateHasChanged();
     }
 }

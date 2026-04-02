@@ -143,6 +143,79 @@ window.RichTextEditor = (() => {
                 btn.innerHTML = '<span>✦</span> AI assist';
                 btn.style.opacity = '';
             }
+        },
+
+        startVoice(editorId, dotnetRef) {
+            try {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    console.error('SpeechRecognition not supported');
+                    return false;
+                }
+
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then((stream) => {
+                        stream.getTracks().forEach(track => track.stop());
+
+                        const recognition = new SpeechRecognition();
+                        recognition.lang = 'en-US';
+                        recognition.continuous = true;
+                        recognition.interimResults = false;
+
+                        recognition.onresult = (event) => {
+                            try {
+                                const transcript = Array.from(event.results)
+                                    .map(r => r[0].transcript)
+                                    .join(' ');
+                                dotnetRef.invokeMethodAsync('OnVoiceResult', transcript);
+                            } catch (e) {
+                                console.error('onresult error:', e);
+                            }
+                        };
+
+                        recognition.onend = () => {
+                            try {
+                                dotnetRef.invokeMethodAsync('OnVoiceEnd');
+                            } catch (e) {
+                                console.error('onend error:', e);
+                            }
+                        };
+
+                        recognition.onerror = (event) => {
+                            console.error('SpeechRecognition error:', event.error);
+                            try {
+                                dotnetRef.invokeMethodAsync('OnVoiceEnd');
+                            } catch (e) {
+                                console.error('onerror callback error:', e);
+                            }
+                        };
+
+                        recognition.start();
+
+                        if (!instances[editorId]) {
+                            instances[editorId] = {};
+                        }
+                        instances[editorId]._recognition = recognition;
+                    })
+                    .catch((err) => {
+                        console.error('Microphone permission denied:', err);
+                        dotnetRef.invokeMethodAsync('OnVoiceEnd');
+                    });
+
+                return true;
+            } catch (e) {
+                console.error('startVoice error:', e);
+                return false;
+            }
+        },
+
+        stopVoice(editorId) {
+            const inst = instances[editorId];
+            const recognition = inst?._recognition;
+            if (recognition) {
+                recognition.stop();
+                if (inst) inst._recognition = null;
+            }
         }
     };
 })();
