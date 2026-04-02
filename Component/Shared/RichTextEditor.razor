@@ -1,4 +1,5 @@
 @inject IJSRuntime JS
+@inject SpeechService SpeechService
 @implements IAsyncDisposable
 
 <div class="editor-shell" id="editorShell-@_id">
@@ -401,6 +402,23 @@
         }
 
         StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task<string?> TranscribeAudio(string base64Audio)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(base64Audio))
+                return null;
+
+            return await SpeechService.TranscribeAudioAsync(base64Audio);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error transcribing audio: {ex.Message}");
+            return null;
+        }
     }
 
     [JSInvokable]

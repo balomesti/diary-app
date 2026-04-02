@@ -24,6 +24,9 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DiaryService>();
 builder.Services.AddScoped<UserService>();
 
+builder.Services.AddHttpClient("Speech", client => { });
+builder.Services.AddScoped<SpeechService>();
+
 await builder.Build().RunAsync();
 
 // Delegating handler to add the auth token to outgoing requests

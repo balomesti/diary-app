@@ -147,55 +147,50 @@ window.RichTextEditor = (() => {
 
         startVoice(editorId, dotnetRef) {
             try {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SpeechRecognition) {
-                    console.error('SpeechRecognition not supported');
-                    return false;
+                if (!instances[editorId]) {
+                    instances[editorId] = {};
                 }
 
                 navigator.mediaDevices.getUserMedia({ audio: true })
                     .then((stream) => {
-                        stream.getTracks().forEach(track => track.stop());
+                        const mediaRecorder = new MediaRecorder(stream, {
+                            mimeType: 'audio/webm;codecs=opus'
+                        });
+                        const audioChunks = [];
 
-                        const recognition = new SpeechRecognition();
-                        recognition.lang = 'en-US';
-                        recognition.continuous = true;
-                        recognition.interimResults = false;
-
-                        recognition.onresult = (event) => {
-                            try {
-                                const transcript = Array.from(event.results)
-                                    .map(r => r[0].transcript)
-                                    .join(' ');
-                                dotnetRef.invokeMethodAsync('OnVoiceResult', transcript);
-                            } catch (e) {
-                                console.error('onresult error:', e);
+                        mediaRecorder.ondataavailable = (event) => {
+                            if (event.data.size > 0) {
+                                audioChunks.push(event.data);
                             }
                         };
 
-                        recognition.onend = () => {
+                        mediaRecorder.onstop = async () => {
+                            stream.getTracks().forEach(track => track.stop());
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                            const arrayBuffer = await audioBlob.arrayBuffer();
+                            const base64Audio = btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)));
+
                             try {
-                                dotnetRef.invokeMethodAsync('OnVoiceEnd');
+                                const transcript = await dotnetRef.invokeMethodAsync('TranscribeAudio', base64Audio);
+                                if (transcript && transcript.trim()) {
+                                    await dotnetRef.invokeMethodAsync('OnVoiceResult', ' ' + transcript.trim());
+                                }
                             } catch (e) {
-                                console.error('onend error:', e);
+                                console.error('Transcription error:', e);
                             }
+
+                            await dotnetRef.invokeMethodAsync('OnVoiceEnd');
                         };
 
-                        recognition.onerror = (event) => {
-                            console.error('SpeechRecognition error:', event.error);
-                            try {
-                                dotnetRef.invokeMethodAsync('OnVoiceEnd');
-                            } catch (e) {
-                                console.error('onerror callback error:', e);
-                            }
+                        mediaRecorder.onerror = (event) => {
+                            console.error('MediaRecorder error:', event.error);
+                            stream.getTracks().forEach(track => track.stop());
+                            dotnetRef.invokeMethodAsync('OnVoiceEnd');
                         };
 
-                        recognition.start();
-
-                        if (!instances[editorId]) {
-                            instances[editorId] = {};
-                        }
-                        instances[editorId]._recognition = recognition;
+                        instances[editorId]._mediaRecorder = mediaRecorder;
+                        instances[editorId]._recording = true;
+                        mediaRecorder.start();
                     })
                     .catch((err) => {
                         console.error('Microphone permission denied:', err);
@@ -211,10 +206,9 @@ window.RichTextEditor = (() => {
 
         stopVoice(editorId) {
             const inst = instances[editorId];
-            const recognition = inst?._recognition;
-            if (recognition) {
-                recognition.stop();
-                if (inst) inst._recognition = null;
+            if (inst && inst._mediaRecorder && inst._recording) {
+                inst._mediaRecorder.stop();
+                inst._recording = false;
             }
         }
     };
