@@ -46,26 +46,65 @@ else
         </div>
     </section>
 
-    @if (HasMoodData)
+    @if (dayStats.Any(d => d.Count > 0))
     {
         <section class="mood-chart-section">
-            <div class="mood-chart-card">
-                <div class="mood-chart-header">
-                    <span class="mood-chart-title">MOOD THIS MONTH</span>
+            <div class="wdc-card">
+                <div class="wdc-header">
+                    <span class="wdc-title">BEST WRITING DAYS</span>
+                    <span class="wdc-subtitle">entries per day of week</span>
                 </div>
-                <div class="mood-chart-container">
-                    <svg class="mood-svg" viewBox="0 0 700 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="0" y1="15" x2="700" y2="15" class="chart-gridline" />
-                        <line x1="0" y1="45" x2="700" y2="45" class="chart-gridline" />
-                        <line x1="0" y1="75" x2="700" y2="75" class="chart-gridline" />
-                        <path d="@AreaPath" class="mood-area" />
-                        <polyline points="@LinePoints" class="mood-line" />
-                        <circle cx="@LastX" cy="@LastY" r="4" class="mood-dot" />
-                    </svg>
-                    <div class="chart-x-labels">
-                        <span>@MonthStart</span>
-                        <span>@MonthMid</span>
-                        <span>Today</span>
+
+                <div class="wdc-chart">
+                    @foreach (var day in dayStats)
+                    {
+                        <div class="wdc-col @(day.IsToday ? "wdc-today" : "")">
+                            <!-- Bar -->
+                            <div class="wdc-bar-wrap">
+                                <span class="wdc-count">@day.Count</span>
+                                <div class="wdc-bar-track">
+                                    <div class="wdc-bar-fill"
+                                         style="height: @(day.HeightPercent)%; background: @day.BarColor;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mood emoji -->
+                            <div class="wdc-mood" title="Avg mood: @day.AvgMoodLabel">
+                                @day.MoodEmoji
+                            </div>
+
+                            <!-- Day label -->
+                            <div class="wdc-label">@day.ShortName</div>
+
+                            @if (day.IsBest)
+                            {
+                                <div class="wdc-best-tag">best</div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <!-- Insights Box -->
+                @if (!string.IsNullOrEmpty(insightsText))
+                {
+                    <div class="wdc-insights">
+                        <p>@((MarkupString)insightsText)</p>
+                    </div>
+                }
+
+                <!-- Legend -->
+                <div class="wdc-legend">
+                    <div class="wdc-legend-item">
+                        <span class="wdc-legend-dot" style="background: #2d5a3d;"></span>
+                        <span>More entries</span>
+                    </div>
+                    <div class="wdc-legend-item">
+                        <span class="wdc-legend-dot" style="background: #c8e6d4;"></span>
+                        <span>Fewer entries</span>
+                    </div>
+                    <div class="wdc-legend-item">
+                        <span>emoji = avg mood that day</span>
                     </div>
                 </div>
             </div>
@@ -78,13 +117,21 @@ else
     private int Streak;
     private int Total;
     private string AvgMood = "🙂";
-    private bool HasMoodData;
-    private string LinePoints = "";
-    private string AreaPath = "";
-    private string MonthStart = "";
-    private string MonthMid = "";
-    private string LastX = "";
-    private string LastY = "";
+
+    private List<DayStat> dayStats = new();
+    private string insightsText = "";
+
+    private record DayStat(
+        string ShortName,
+        int Count,
+        double AvgMoodScore,
+        string MoodEmoji,
+        string AvgMoodLabel,
+        double HeightPercent,
+        string BarColor,
+        bool IsBest,
+        bool IsToday
+    );
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,7 +140,7 @@ else
         Total = sorted.Count;
         Streak = CalculateStreak(sorted);
         AvgMood = CalculateAvgMood(sorted);
-        BuildChart(sorted);
+        BuildWritingStats(sorted);
         IsLoading = false;
     }
 
@@ -136,58 +183,101 @@ else
         }
     }
 
-    private void BuildChart(List<DiaryEntry> sorted)
+    private void BuildWritingStats(List<DiaryEntry> entries)
     {
-        var today = DateTime.Today;
-        var firstOfMonth = new DateTime(today.Year, today.Month, 1);
-        var daysInMonth = DateTime.DaysInMonth(today.Year, today.Month);
+        var days = new[] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+        var dotNetDays = new[] {
+            DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
+            DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
+        };
+        var todayDow = DateTime.Today.DayOfWeek;
 
-        MonthStart = firstOfMonth.ToString("MMM d");
-        MonthMid = firstOfMonth.AddDays(daysInMonth / 2 - 1).ToString("MMM d");
+        var grouped = entries
+            .GroupBy(e => e.Date.DayOfWeek)
+            .ToDictionary(g => g.Key, g => g.ToList());
 
-        var dailyScores = sorted
-            .Where(e => e.Date >= firstOfMonth && e.Date <= today && !string.IsNullOrEmpty(e.Mood))
-            .GroupBy(e => e.Date.Date)
-            .Select(g => new { Day = g.Key, Score = ComputeDayAverage(g) })
-            .Where(x => x.Score.HasValue)
-            .OrderBy(x => x.Day)
-            .ToList();
+        var counts = dotNetDays.Select(d => grouped.ContainsKey(d) ? grouped[d].Count : 0).ToList();
+        int maxCount = counts.Max() == 0 ? 1 : counts.Max();
+        int minCount = counts.Where(c => c > 0).DefaultIfEmpty(0).Min();
+        int bestIndex = counts.IndexOf(counts.Max());
 
-        if (!dailyScores.Any()) return;
+        // Green ramp: low = #c8e6d4, high = #2d5a3d
+        var colorStops = new[] { "#c8e6d4", "#9aced4", "#6ab8a0", "#3d9970", "#2d5a3d" };
 
-        const double svgW = 700, svgH = 90;
-        const double padT = 10, padB = 10;
-        var chartH = svgH - padT - padB;
-        var totalDays = (today - firstOfMonth).TotalDays;
-        if (totalDays < 1) totalDays = 1;
-
-        var points = dailyScores.Select(d =>
+        dayStats = dotNetDays.Select((dow, i) =>
         {
-            var x = ((d.Day - firstOfMonth).TotalDays / totalDays) * svgW;
-            var score = d.Score.GetValueOrDefault(3.0);
-            var y = padT + chartH - ((score - 1) / 4.0) * chartH;
-            return (X: x, Y: y);
+            var entriesForDay = grouped.ContainsKey(dow) ? grouped[dow] : new List<DiaryEntry>();
+            int count = entriesForDay.Count;
+            double heightPct = maxCount > 0 ? Math.Max(4, (count / (double)maxCount) * 100) : 4;
+
+            double avgScore = entriesForDay
+                .Where(e => !string.IsNullOrEmpty(e.Mood))
+                .Select(e => MoodValue(e.Mood))
+                .DefaultIfEmpty(3)
+                .Average();
+
+            int colorIndex = count == 0 ? 0 : (int)Math.Round((count / (double)maxCount) * 4);
+            colorIndex = Math.Clamp(colorIndex, 0, 4);
+
+            return new DayStat(
+                ShortName: days[i],
+                Count: count,
+                AvgMoodScore: avgScore,
+                MoodEmoji: GetMoodEmoji(avgScore),
+                AvgMoodLabel: GetMoodLabel(avgScore),
+                HeightPercent: heightPct,
+                BarColor: colorStops[colorIndex],
+                IsBest: i == bestIndex && count > 0,
+                IsToday: dow == todayDow
+            );
         }).ToList();
 
-        if (!points.Any()) return;
+        // Build Insights
+        if (dayStats.Any(d => d.Count > 0))
+        {
+            var bestDay = dayStats[bestIndex];
+            var happiestDay = dayStats.OrderByDescending(d => d.AvgMoodScore).First(d => d.Count > 0);
+            var leastDay = dayStats.Where(d => d.Count > 0).OrderBy(d => d.Count).First();
 
-        LinePoints = string.Join(" ", points.Select(p => string.Format("{0:F1},{1:F1}", p.X, p.Y)));
+            var fullDayNames = new Dictionary<string, string> {
+                {"Mon", "Mondays"}, {"Tue", "Tuesdays"}, {"Wed", "Wednesdays"},
+                {"Thu", "Thursdays"}, {"Fri", "Fridays"}, {"Sat", "Saturdays"}, {"Sun", "Sundays"}
+            };
 
-        var first = points.First();
-        var last = points.Last();
-        LastX = string.Format("{0:F1}", last.X);
-        LastY = string.Format("{0:F1}", last.Y);
-        AreaPath = string.Format("M{0:F1},{1:F1} ", first.X, first.Y) +
-                   string.Join(" ", points.Skip(1).Select(p => string.Format("L{0:F1},{1:F1}", p.X, p.Y))) +
-                   string.Format(" L{0:F1},{1} L{2:F1},{3} Z", last.X, svgH - padB, first.X, svgH - padB);
+            insightsText = $"You write most on <strong>{fullDayNames[bestDay.ShortName]}</strong>";
+            
+            if (happiestDay.ShortName == bestDay.ShortName)
+            {
+                insightsText += $" — and it's also your happiest day {happiestDay.MoodEmoji}";
+            }
+            else
+            {
+                insightsText += $". Your happiest day is <strong>{fullDayNames[happiestDay.ShortName]}</strong> {happiestDay.MoodEmoji}";
+            }
 
-        HasMoodData = true;
+            if (leastDay.ShortName != bestDay.ShortName)
+            {
+                insightsText += $". You write least on <strong>{fullDayNames[leastDay.ShortName]}</strong>.";
+            }
+        }
     }
 
-    private static double? ComputeDayAverage(IGrouping<DateTime, DiaryEntry> group)
+    private static string GetMoodEmoji(double score)
     {
-        var scores = group.Where(x => !string.IsNullOrEmpty(x.Mood)).Select(x => MoodValue(x.Mood)).ToList();
-        return scores.Any() ? (double?)scores.Average() : null;
+        if (score < 1.5) return "😭";
+        if (score < 2.5) return "😕";
+        if (score < 3.5) return "😐";
+        if (score < 4.5) return "🙂";
+        return "✨";
+    }
+
+    private static string GetMoodLabel(double score)
+    {
+        if (score < 1.5) return "Terrible";
+        if (score < 2.5) return "Bad";
+        if (score < 3.5) return "Okay";
+        if (score < 4.5) return "Good";
+        return "Amazing";
     }
 }
 
