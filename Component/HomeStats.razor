@@ -104,7 +104,7 @@ else
                         <span>Fewer entries</span>
                     </div>
                     <div class="wdc-legend-item">
-                        <span>emoji = avg mood that day</span>
+                        <span>emoji = Average Mood That Day</span>
                     </div>
                 </div>
             </div>
@@ -208,7 +208,7 @@ else
         {
             var entriesForDay = grouped.ContainsKey(dow) ? grouped[dow] : new List<DiaryEntry>();
             int count = entriesForDay.Count;
-            double heightPct = maxCount > 0 ? Math.Max(4, (count / (double)maxCount) * 100) : 4;
+            double heightPct = maxCount > 0 ? Math.Max(4, (count / (double)maxCount) * 110) : 4;
 
             double avgScore = entriesForDay
                 .Where(e => !string.IsNullOrEmpty(e.Mood))
