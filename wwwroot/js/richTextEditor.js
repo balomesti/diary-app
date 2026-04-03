@@ -1,6 +1,16 @@
 window.RichTextEditor = (() => {
     const instances = {};
 
+    function arrayBufferToBase64(buffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary);
+    }
+
     return {
         init(editorId, editorRef, initialValue, placeholder, minHeight, maxChars) {
             const shell = document.getElementById(`editorShell-${editorId}`);
@@ -168,7 +178,7 @@ window.RichTextEditor = (() => {
                             stream.getTracks().forEach(track => track.stop());
                             const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                             const arrayBuffer = await audioBlob.arrayBuffer();
-                            const base64Audio = btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)));
+                            const base64Audio = arrayBufferToBase64(arrayBuffer);
 
                             try {
                                 const transcript = await dotnetRef.invokeMethodAsync('TranscribeAudio', base64Audio);

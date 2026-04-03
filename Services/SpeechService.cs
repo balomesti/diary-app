@@ -20,7 +20,7 @@ public class SpeechService
         {
             var httpClient = _httpClientFactory.CreateClient("Speech");
             httpClient.DefaultRequestHeaders.Clear();
-            httpClient.DefaultRequestHeaders.Add("authorization", ApiKey);
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {ApiKey}");
 
             var audioBytes = Convert.FromBase64String(base64Audio);
             var content = new ByteArrayContent(audioBytes);
