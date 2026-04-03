@@ -320,7 +320,16 @@
         font-size: 2.6rem;
     }
     .admin-carousel-btn {
-        display: none;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+    }
+    .admin-carousel-btn-prev {
+        left: 8px;
+    }
+    .admin-carousel-btn-next {
+        right: 8px;
     }
     .admin-carousel-media {
         height: 250px;

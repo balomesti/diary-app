@@ -189,7 +189,7 @@
     display: flex;
     align-items: center;
     gap: 25px;
-    max-width: 1000px;
+    max-width: 1200px;
     width: 100%;
     box-shadow: 0 10px 25px rgba(44, 35, 31, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
