@@ -26,7 +26,7 @@ else
 {
     <section class="stats-row">
         <div class="stat-card">
-            <span class="stat-icon">&#128293;</span>
+            <span class="stat-icon">🔥</span>
             <div class="stat-body">
                 <span class="stat-value">@Streak</span>
                 <span class="stat-label">Day streak</span>
@@ -77,7 +77,7 @@ else
     private bool IsLoading = true;
     private int Streak;
     private int Total;
-    private string AvgMood = "&#128578;";
+    private string AvgMood = "🙂";
     private bool HasMoodData;
     private string LinePoints = "";
     private string AreaPath = "";
@@ -114,13 +114,13 @@ else
     private static string CalculateAvgMood(List<DiaryEntry> entries)
     {
         var scores = entries.Where(e => !string.IsNullOrEmpty(e.Mood)).Select(e => MoodValue(e.Mood)).ToList();
-        if (!scores.Any()) return "&#128578;";
+        if (!scores.Any()) return "🙂";
         var avg = scores.Average();
-        if (avg < 1.5) return "&#128557;";
-        if (avg < 2.5) return "&#128533;";
-        if (avg < 3.5) return "&#128528;";
-        if (avg < 4.5) return "&#128578;";
-        return "&#2728;";
+        if (avg < 1.5) return "😭";
+        if (avg < 2.5) return "😕";
+        if (avg < 3.5) return "😐";
+        if (avg < 4.5) return "🙂";
+        return "✨";
     }
 
     private static double MoodValue(string mood)
@@ -148,7 +148,8 @@ else
         var dailyScores = sorted
             .Where(e => e.Date >= firstOfMonth && e.Date <= today && !string.IsNullOrEmpty(e.Mood))
             .GroupBy(e => e.Date.Date)
-            .Select(g => new { Day = g.Key, Score = g.Where(x => !string.IsNullOrEmpty(x.Mood)).Average(x => MoodValue(x.Mood)) })
+            .Select(g => new { Day = g.Key, Score = ComputeDayAverage(g) })
+            .Where(x => x.Score.HasValue)
             .OrderBy(x => x.Day)
             .ToList();
 
@@ -163,7 +164,8 @@ else
         var points = dailyScores.Select(d =>
         {
             var x = ((d.Day - firstOfMonth).TotalDays / totalDays) * svgW;
-            var y = padT + chartH - ((d.Score - 1) / 4.0) * chartH;
+            var score = d.Score.GetValueOrDefault(3.0);
+            var y = padT + chartH - ((score - 1) / 4.0) * chartH;
             return (X: x, Y: y);
         }).ToList();
 
@@ -181,4 +183,11 @@ else
 
         HasMoodData = true;
     }
+
+    private static double? ComputeDayAverage(IGrouping<DateTime, DiaryEntry> group)
+    {
+        var scores = group.Where(x => !string.IsNullOrEmpty(x.Mood)).Select(x => MoodValue(x.Mood)).ToList();
+        return scores.Any() ? (double?)scores.Average() : null;
+    }
 }
+
