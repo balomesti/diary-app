@@ -1,0 +1,184 @@
+@inject DiaryService DiaryService
+
+@if (IsLoading)
+{
+    <section class="stats-row">
+        <div class="stat-card skeleton">
+            <div class="stat-body">
+                <span class="stat-value skeleton-text"></span>
+                <span class="stat-label">Day streak</span>
+            </div>
+        </div>
+        <div class="stat-card skeleton">
+            <div class="stat-body">
+                <span class="stat-value skeleton-text"></span>
+                <span class="stat-label">Total entries</span>
+            </div>
+        </div>
+        <div class="stat-card skeleton">
+            <div class="stat-body">
+                <span class="stat-label">Avg mood</span>
+            </div>
+        </div>
+    </section>
+}
+else
+{
+    <section class="stats-row">
+        <div class="stat-card">
+            <span class="stat-icon">&#128293;</span>
+            <div class="stat-body">
+                <span class="stat-value">@Streak</span>
+                <span class="stat-label">Day streak</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-body">
+                <span class="stat-value">@Total</span>
+                <span class="stat-label">Total entries</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">@AvgMood</span>
+            <div class="stat-body">
+                <span class="stat-label">Avg mood</span>
+            </div>
+        </div>
+    </section>
+
+    @if (HasMoodData)
+    {
+        <section class="mood-chart-section">
+            <div class="mood-chart-card">
+                <div class="mood-chart-header">
+                    <span class="mood-chart-title">MOOD THIS MONTH</span>
+                </div>
+                <div class="mood-chart-container">
+                    <svg class="mood-svg" viewBox="0 0 700 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="0" y1="15" x2="700" y2="15" class="chart-gridline" />
+                        <line x1="0" y1="45" x2="700" y2="45" class="chart-gridline" />
+                        <line x1="0" y1="75" x2="700" y2="75" class="chart-gridline" />
+                        <path d="@AreaPath" class="mood-area" />
+                        <polyline points="@LinePoints" class="mood-line" />
+                        <circle cx="@LastX" cy="@LastY" r="4" class="mood-dot" />
+                    </svg>
+                    <div class="chart-x-labels">
+                        <span>@MonthStart</span>
+                        <span>@MonthMid</span>
+                        <span>Today</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+}
+
+@code {
+    private bool IsLoading = true;
+    private int Streak;
+    private int Total;
+    private string AvgMood = "&#128578;";
+    private bool HasMoodData;
+    private string LinePoints = "";
+    private string AreaPath = "";
+    private string MonthStart = "";
+    private string MonthMid = "";
+    private string LastX = "";
+    private string LastY = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var entries = await DiaryService.GetEntriesAsync();
+        var sorted = entries.OrderByDescending(e => e.Date).ToList();
+        Total = sorted.Count;
+        Streak = CalculateStreak(sorted);
+        AvgMood = CalculateAvgMood(sorted);
+        BuildChart(sorted);
+        IsLoading = false;
+    }
+
+    private static int CalculateStreak(List<DiaryEntry> sorted)
+    {
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var streak = 0;
+        var expected = today;
+        foreach (var e in sorted)
+        {
+            var d = DateOnly.FromDateTime(e.Date);
+            if (d == expected) { streak++; expected = expected.AddDays(-1); }
+            else if (d < expected) break;
+        }
+        return streak;
+    }
+
+    private static string CalculateAvgMood(List<DiaryEntry> entries)
+    {
+        var scores = entries.Where(e => !string.IsNullOrEmpty(e.Mood)).Select(e => MoodValue(e.Mood)).ToList();
+        if (!scores.Any()) return "&#128578;";
+        var avg = scores.Average();
+        if (avg < 1.5) return "&#128557;";
+        if (avg < 2.5) return "&#128533;";
+        if (avg < 3.5) return "&#128528;";
+        if (avg < 4.5) return "&#128578;";
+        return "&#2728;";
+    }
+
+    private static double MoodValue(string mood)
+    {
+        switch (mood.ToLower())
+        {
+            case "terrible": return 1;
+            case "bad": return 2;
+            case "okay": return 3;
+            case "good": return 4;
+            case "amazing": return 5;
+            default: return 3;
+        }
+    }
+
+    private void BuildChart(List<DiaryEntry> sorted)
+    {
+        var today = DateTime.Today;
+        var firstOfMonth = new DateTime(today.Year, today.Month, 1);
+        var daysInMonth = DateTime.DaysInMonth(today.Year, today.Month);
+
+        MonthStart = firstOfMonth.ToString("MMM d");
+        MonthMid = firstOfMonth.AddDays(daysInMonth / 2 - 1).ToString("MMM d");
+
+        var dailyScores = sorted
+            .Where(e => e.Date >= firstOfMonth && e.Date <= today && !string.IsNullOrEmpty(e.Mood))
+            .GroupBy(e => e.Date.Date)
+            .Select(g => new { Day = g.Key, Score = g.Where(x => !string.IsNullOrEmpty(x.Mood)).Average(x => MoodValue(x.Mood)) })
+            .OrderBy(x => x.Day)
+            .ToList();
+
+        if (!dailyScores.Any()) return;
+
+        const double svgW = 700, svgH = 90;
+        const double padT = 10, padB = 10;
+        var chartH = svgH - padT - padB;
+        var totalDays = (today - firstOfMonth).TotalDays;
+        if (totalDays < 1) totalDays = 1;
+
+        var points = dailyScores.Select(d =>
+        {
+            var x = ((d.Day - firstOfMonth).TotalDays / totalDays) * svgW;
+            var y = padT + chartH - ((d.Score - 1) / 4.0) * chartH;
+            return (X: x, Y: y);
+        }).ToList();
+
+        if (!points.Any()) return;
+
+        LinePoints = string.Join(" ", points.Select(p => string.Format("{0:F1},{1:F1}", p.X, p.Y)));
+
+        var first = points.First();
+        var last = points.Last();
+        LastX = string.Format("{0:F1}", last.X);
+        LastY = string.Format("{0:F1}", last.Y);
+        AreaPath = string.Format("M{0:F1},{1:F1} ", first.X, first.Y) +
+                   string.Join(" ", points.Skip(1).Select(p => string.Format("L{0:F1},{1:F1}", p.X, p.Y))) +
+                   string.Format(" L{0:F1},{1} L{2:F1},{3} Z", last.X, svgH - padB, first.X, svgH - padB);
+
+        HasMoodData = true;
+    }
+}

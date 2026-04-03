@@ -1,0 +1,172 @@
+.stats-row {
+    display: flex;
+    gap: 12px;
+    margin: 24px 0 16px;
+}
+
+.stat-card {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid #ede9e3;
+    border-radius: 14px;
+    padding: 18px 16px;
+    text-align: center;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.stat-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+    transform: translateY(-1px);
+}
+
+.stat-card.skeleton {
+    min-height: 80px;
+}
+
+.skeleton-text {
+    display: inline-block;
+    width: 40px;
+    height: 28px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.stat-icon {
+    font-size: 26px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.stat-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c2a1e;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #9a9181;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+.mood-chart-section {
+    margin: 0 0 24px;
+}
+
+.mood-chart-card {
+    background: #ffffff;
+    border: 1px solid #ede9e3;
+    border-radius: 14px;
+    padding: 20px 22px 14px;
+}
+
+.mood-chart-header {
+    margin-bottom: 14px;
+}
+
+.mood-chart-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #9a9181;
+    text-transform: uppercase;
+}
+
+.mood-chart-container {
+    position: relative;
+}
+
+.mood-svg {
+    width: 100%;
+    height: 90px;
+    display: block;
+    overflow: visible;
+}
+
+.chart-gridline {
+    stroke: #ede9e3;
+    stroke-width: 0.8;
+}
+
+.mood-area {
+    fill: #2d5a3d;
+    fill-opacity: 0.10;
+}
+
+.mood-line {
+    fill: none;
+    stroke: #2d5a3d;
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    animation: drawLine 1.2s ease-out forwards;
+}
+
+.mood-dot {
+    fill: #2d5a3d;
+    r: 4;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-out 1.1s forwards;
+}
+
+.chart-x-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    padding: 0 2px;
+}
+
+.chart-x-labels span {
+    font-size: 11px;
+    color: #9a9181;
+}
+
+@keyframes drawLine {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-row {
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        flex: 1 1 calc(50% - 6px);
+        min-width: 0;
+    }
+
+    .stat-card:last-child {
+        flex: 1 1 100%;
+    }
+}

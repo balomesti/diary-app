@@ -10,7 +10,7 @@
             <h1>Welcome to</h1>
             <h1> Diary Me</h1>
             <p>Capture your thoughts, memories, and experiences.</p>
-            
+
             <div class="hero-buttons">
                 <NavLink class="btn-outline" href="/diary">View Previous Entries</NavLink>
                 <NavLink class="btn-solid" href="/diary/add">Start a New Entry</NavLink>
@@ -18,13 +18,15 @@
         </div>
 
         <div class="hero-image-wrapper">
-            <!-- High quality video to match the journal aesthetic -->
             <video autoplay muted loop playsinline class="hero-video">
                 <source src="images/main2.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         </div>
     </section>
+
+    <!-- STATS & MOOD CHART -->
+    <HomeStats />
 
     <!-- BOTTOM SECTION: Recent Entries -->
     <section class="recent-entries">
@@ -67,11 +69,11 @@
                                 </div>
                             }
                         </div>
-                        
+
                         <div class="entry-text">
                             <div class="entry-date">@entry.Date.ToString("MMMM d, yyyy")</div>
                             <h3>@entry.Title</h3>
-                            
+
                             @if (!string.IsNullOrEmpty(entry.Location) || !string.IsNullOrEmpty(entry.Weather) || !string.IsNullOrEmpty(entry.Mood))
                             {
                                 <div class="context-ribbon">
