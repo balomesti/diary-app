@@ -250,7 +250,10 @@
     // ── Helper methods ──
     private int CountEarlyBirdEntries(List<DiaryEntry> e)  => e.Count(x => x.Date.Hour < 8);
     private int CountNightOwlEntries(List<DiaryEntry> e)   => e.Count(x => x.Date.Hour is >= 0 and < 5);
-    private int CountTotalPhotos(List<DiaryEntry> e)       => e.Count(x => !string.IsNullOrEmpty(x.ImageUrls));
+    private int CountTotalPhotos(List<DiaryEntry> e) =>
+        e.Sum(x => string.IsNullOrEmpty(x.ImageUrls)
+            ? 0
+            : x.ImageUrls.Split(',', StringSplitOptions.RemoveEmptyEntries).Length);
     private int CountDistinctLocations(List<DiaryEntry> e) => e.Select(x => x.Location?.Trim().ToLower()).Where(l => !string.IsNullOrEmpty(l)).Distinct().Count();
 
     private static readonly string[] AllFiveMoods = { "terrible", "bad", "okay", "good", "amazing" };
