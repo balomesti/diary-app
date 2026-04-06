@@ -1,4 +1,40 @@
 /* ═══════════════════════════════════════════════════════════════
+   Stats Toggle
+   ═══════════════════════════════════════════════════════════════ */
+
+.stats-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 24px 0 16px;
+}
+
+.stats-toggle button {
+    padding: 10px 24px;
+    border: 1px solid #ede9e3;
+    border-radius: 25px;
+    background: transparent;
+    color: #9a9181;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.stats-toggle button:hover {
+    background-color: rgba(45, 90, 61, 0.1);
+    color: #2d5a3d;
+}
+
+.stats-toggle-btn-active {
+    background-color: #2d5a3d;
+    color: #ffffff;
+    border: 1px solid #2d5a3d;
+    box-shadow: 0 4px 10px rgba(44, 35, 31, 0.03);
+}
+
+/* ═══════════════════════════════════════════════════════════════
    Stats Row
    ═══════════════════════════════════════════════════════════════ */
 
@@ -396,6 +432,52 @@
 @keyframes badgePop {
     from { opacity: 0; transform: scale(0.5) translateY(4px); }
     to   { opacity: 1; transform: scale(1)   translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Community Mood Grid
+   ═══════════════════════════════════════════════════════════════ */
+
+.community-mood-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 20px;
+    justify-content: center;
+}
+
+.community-mood-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: #f8f5f0;
+    border: 1px solid #ede9e3;
+    border-radius: 14px;
+    padding: 16px 20px;
+    min-width: 100px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.community-mood-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.community-mood-emoji {
+    font-size: 32px;
+    line-height: 1;
+}
+
+.community-mood-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2c2a1e;
+}
+
+.community-mood-count {
+    font-size: 11px;
+    color: #9a9181;
 }
 
 /* ═══════════════════════════════════════════════════════════════

@@ -1,5 +1,10 @@
 @inject DiaryService DiaryService
 
+<div class="stats-toggle" role="tablist" aria-label="Stats mode">
+    <button type="button" class="@StatsButtonClass(StatsMode.Personal)" @onclick="() => SelectMode(StatsMode.Personal)">Personal Stats</button>
+    <button type="button" class="@StatsButtonClass(StatsMode.Community)" @onclick="() => SelectMode(StatsMode.Community)">Community Stats</button>
+</div>
+
 @if (IsLoading)
 {
     <section class="stats-row">
@@ -24,6 +29,8 @@
 }
 else
 {
+    @if (mode == StatsMode.Personal)
+    {
     <section class="stats-row">
         <div class="stat-card">
             <span class="stat-icon">🔥</span>
@@ -110,9 +117,55 @@ else
             </div>
         </section>
     }
+    }
+    else
+    {
+    <section class="stats-row">
+        <div class="stat-card">
+            <div class="stat-body">
+                <span class="stat-value">@CommunityTotalEntries</span>
+                <span class="stat-label">Total Community Entries</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-body">
+                <span class="stat-value">@CommunityActiveUsers</span>
+                <span class="stat-label">Active Writers</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-body">
+                <span class="stat-value">@CommunityTopMood</span>
+                <span class="stat-label">Community Mood</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="mood-chart-section">
+        <div class="wdc-card">
+            <div class="wdc-header">
+                <span class="wdc-title">COMMUNITY MOOD TRENDS</span>
+                <span class="wdc-subtitle">how the community is feeling</span>
+            </div>
+            <div class="community-mood-grid">
+                @foreach (var mood in CommunityMoodStats)
+                {
+                    <div class="community-mood-card">
+                        <span class="community-mood-emoji">@mood.Emoji</span>
+                        <span class="community-mood-label">@mood.Mood</span>
+                        <span class="community-mood-count">@mood.Count entries</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+    }
 }
 
 @code {
+    private enum StatsMode { Personal, Community }
+    private StatsMode mode = StatsMode.Personal;
+
     private bool IsLoading = true;
     private int Streak;
     private int Total;
@@ -120,6 +173,37 @@ else
 
     private List<DayStat> dayStats = new();
     private string insightsText = "";
+
+    private int CommunityTotalEntries = 1247;
+    private int CommunityActiveUsers = 342;
+    private string CommunityTopMood = "😊";
+
+    private List<CommunityMoodStat> CommunityMoodStats = new();
+
+    private record CommunityMoodStat(string Mood, string Emoji, int Count);
+
+    private string StatsButtonClass(StatsMode m) => m == mode ? "stats-toggle-btn-active" : "";
+
+    private void SelectMode(StatsMode m)
+    {
+        mode = m;
+        if (mode == StatsMode.Community && !CommunityMoodStats.Any())
+        {
+            BuildCommunityStats();
+        }
+    }
+
+    private void BuildCommunityStats()
+    {
+        CommunityMoodStats = new List<CommunityMoodStat>
+        {
+            new("Amazing", "✨", 312),
+            new("Good", "😊", 486),
+            new("Okay", "😐", 298),
+            new("Bad", "😕", 98),
+            new("Terrible", "😭", 53)
+        };
+    }
 
     private record DayStat(
         string ShortName,
