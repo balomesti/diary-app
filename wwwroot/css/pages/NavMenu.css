@@ -6,7 +6,7 @@
     color: #2C231F;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
     border-bottom: 1px solid rgba(212, 201, 189, 0.6);
 }
 
