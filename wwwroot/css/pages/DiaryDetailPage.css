@@ -82,7 +82,7 @@
     z-index: 51;
 }
 
-.btn-edit, .btn-delete, .btn-share {
+.btn-edit, .btn-delete, .btn-share, .btn-download {
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 500;
@@ -123,6 +123,17 @@
 }
 .btn-share:hover { background: #cde2cf; border-color: rgba(94,125,99,0.5); }
 .btn-share svg { flex-shrink: 0; }
+
+.btn-download {
+    background: var(--accent-2);
+    color: var(--sky);
+    border-color: rgba(94, 99, 125, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-download:hover { background: #cddae2; border-color: rgba(94, 99, 125, 0.5); }
+.btn-download svg { flex-shrink: 0; }
 
 .share-dropdown {
     position: absolute;

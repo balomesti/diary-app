@@ -73,6 +73,16 @@
                     }
                 </div>
 
+                <!-- Download button -->
+                <button class="btn-download" @onclick="DownloadEntry">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download
+                </button>
+
                 <button class="btn-edit" @onclick="EditEntry">Edit Entry</button>
                 <button class="btn-delete" @onclick="DeleteEntry">Delete</button>
             </div>
@@ -270,6 +280,15 @@
         var text = Uri.EscapeDataString($"📖 {entry.Title}\n\n{GetExcerpt(entry.Content, 200)}\n\n— Diary Me");
         await JSRuntime.InvokeVoidAsync("open", $"https://t.me/share/url?url={Uri.EscapeDataString(NavigationManager.Uri)}&text={text}", "_blank");
         await ShowToast("✈️ Opening Telegram...");
+    }
+
+    private async Task DownloadEntry()
+    {
+        if (entry == null) return;
+        var content = $"{entry.Title}\n{entry.Date:yyyy-MM-dd}\n\n{StripHtml(entry.Content)}";
+        var fileName = $"diary-{entry.Title.Replace(" ", "-").ToLower()}-{entry.Date:yyyyMMdd}.txt";
+        await JSRuntime.InvokeVoidAsync("DiaryShare.downloadText", content, fileName);
+        await ShowToast("📥 Downloading entry...");
     }
 
     private async Task ShowToast(string msg)
