@@ -59,3 +59,31 @@ window.DiaryShare = {
         URL.revokeObjectURL(url);
     }
 };
+
+window.downloadEntryAsImage = async function (elementId, fileName) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
+    const canvas = await html2canvas(el, {
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null, // use CSS background (gradient)
+        scale: 3, // higher scale for clarity
+        logging: false,
+    });
+
+    const { jsPDF } = window.jspdf;
+    
+    // Calculate PDF dimensions based on element ratio
+    const imgWidth = 210; // A4 width in mm
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    
+    const pdf = new jsPDF({
+        orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
+        unit: 'mm',
+        format: [imgWidth, imgHeight] // Custom format to fit the card perfectly
+    });
+
+    pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
+    pdf.save(fileName.replace('.png', '.pdf'));
+};

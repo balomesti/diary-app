@@ -125,10 +125,8 @@
                 </div>
             </div>
 
-            <article class="journal-page">
-
+            <article class="journal-page" id="journal-page-article">
                 <header class="journal-header">
-
                     <div class="journal-dateline">
                         <div class="date-badge">
                             <span class="date-badge-day">@entry.Date.ToString("dd")</span>
@@ -282,14 +280,13 @@
         await ShowToast("✈️ Opening Telegram...");
     }
 
-    private async Task DownloadEntry()
-    {
-        if (entry == null) return;
-        var content = $"{entry.Title}\n{entry.Date:yyyy-MM-dd}\n\n{StripHtml(entry.Content)}";
-        var fileName = $"diary-{entry.Title.Replace(" ", "-").ToLower()}-{entry.Date:yyyyMMdd}.txt";
-        await JSRuntime.InvokeVoidAsync("DiaryShare.downloadText", content, fileName);
-        await ShowToast("📥 Downloading entry...");
-    }
+private async Task DownloadEntry()
+{
+    if (entry == null) return;
+    var fileName = $"diary-{entry.Title.Replace(" ", "-").ToLower()}-{entry.Date:yyyyMMdd}.png";
+    await JSRuntime.InvokeVoidAsync("downloadEntryAsImage", "share-card", fileName);
+    await ShowToast("📥 Downloading entry...");
+}
 
     private async Task ShowToast(string msg)
     {
