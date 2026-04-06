@@ -434,50 +434,12 @@
     to   { opacity: 1; transform: scale(1)   translateY(0); }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   Community Mood Grid
-   ═══════════════════════════════════════════════════════════════ */
-
-.community-mood-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 20px;
-    justify-content: center;
-}
-
-.community-mood-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    background: #f8f5f0;
-    border: 1px solid #ede9e3;
-    border-radius: 14px;
-    padding: 16px 20px;
-    min-width: 100px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.community-mood-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
-
-.community-mood-emoji {
-    font-size: 32px;
-    line-height: 1;
-}
-
-.community-mood-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: #2c2a1e;
-}
-
-.community-mood-count {
-    font-size: 11px;
+/* ── Community Loading ── */
+.community-loading {
+    text-align: center;
+    padding: 30px;
     color: #9a9181;
+    font-size: 0.9rem;
 }
 
 /* ═══════════════════════════════════════════════════════════════

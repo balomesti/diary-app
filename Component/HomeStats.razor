@@ -1,4 +1,5 @@
 @inject DiaryService DiaryService
+@inject CommunityService CommunityService
 
 <div class="stats-toggle" role="tablist" aria-label="Stats mode">
     <button type="button" class="@StatsButtonClass(StatsMode.Personal)" @onclick="() => SelectMode(StatsMode.Personal)">Personal Stats</button>
@@ -27,10 +28,8 @@
         </div>
     </section>
 }
-else
+else if (mode == StatsMode.Personal)
 {
-    @if (mode == StatsMode.Personal)
-    {
     <section class="stats-row">
         <div class="stat-card">
             <span class="stat-icon">🔥</span>
@@ -66,7 +65,6 @@ else
                     @foreach (var day in dayStats.Select((d, i) => new { Day = d, Index = i + 1 }))
                     {
                         <div class="wdc-col col-@day.Index @(day.Day.IsToday ? "wdc-today" : "")">
-                            <!-- Bar -->
                             <div class="wdc-bar-wrap">
                                 <span class="wdc-count">@day.Day.Count</span>
                                 <div class="wdc-bar-track">
@@ -76,12 +74,10 @@ else
                                 </div>
                             </div>
 
-                            <!-- Mood emoji -->
                             <div class="wdc-mood mood-@day.Index" title="Avg mood: @day.Day.AvgMoodLabel">
                                 @day.Day.MoodEmoji
                             </div>
 
-                            <!-- Day label -->
                             <div class="wdc-label">@day.Day.ShortName</div>
 
                             @if (day.Day.IsBest)
@@ -92,7 +88,6 @@ else
                     }
                 </div>
 
-                <!-- Insights Box -->
                 @if (!string.IsNullOrEmpty(insightsText))
                 {
                     <div class="wdc-insights">
@@ -100,7 +95,6 @@ else
                     </div>
                 }
 
-                <!-- Legend -->
                 <div class="wdc-legend">
                     <div class="wdc-legend-item">
                         <span class="wdc-legend-dot" style="background: #2d5a3d;"></span>
@@ -117,48 +111,126 @@ else
             </div>
         </section>
     }
-    }
-    else
-    {
-    <section class="stats-row">
-        <div class="stat-card">
-            <div class="stat-body">
-                <span class="stat-value">@CommunityTotalEntries</span>
-                <span class="stat-label">Total Community Entries</span>
-            </div>
+}
+else if (mode == StatsMode.Community)
+{
+    <div class="community-header">
+        <h2 class="community-title">Community</h2>
+        <div class="time-filters">
+            <button class="filter-pill @(ActiveCommunityFilter == "today" ? "active" : "")"
+                    @onclick='() => SetCommunityFilter("today")'>Today</button>
+            <button class="filter-pill @(ActiveCommunityFilter == "week" ? "active" : "")"
+                    @onclick='() => SetCommunityFilter("week")'>This week</button>
+            <button class="filter-pill @(ActiveCommunityFilter == "month" ? "active" : "")"
+                    @onclick='() => SetCommunityFilter("month")'>This month</button>
         </div>
-        <div class="stat-card">
-            <div class="stat-body">
-                <span class="stat-value">@CommunityActiveUsers</span>
-                <span class="stat-label">Active Writers</span>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-body">
-                <span class="stat-value">@CommunityTopMood</span>
-                <span class="stat-label">Community Mood</span>
-            </div>
-        </div>
-    </section>
+    </div>
 
-    <section class="mood-chart-section">
-        <div class="wdc-card">
-            <div class="wdc-header">
-                <span class="wdc-title">COMMUNITY MOOD TRENDS</span>
-                <span class="wdc-subtitle">how the community is feeling</span>
-            </div>
-            <div class="community-mood-grid">
-                @foreach (var mood in CommunityMoodStats)
-                {
-                    <div class="community-mood-card">
-                        <span class="community-mood-emoji">@mood.Emoji</span>
-                        <span class="community-mood-label">@mood.Mood</span>
-                        <span class="community-mood-count">@mood.Count entries</span>
+    @if (communityStats != null)
+    {
+        <div class="community-grid">
+            <!-- Left Column: Community Mood -->
+            <div class="community-card mood-panel">
+                <div class="card-header-label">COMMUNITY MOOD @ActiveCommunityFilter.ToUpper()</div>
+                
+                <div class="dominant-mood-hero">
+                    <span class="dominant-emoji">@GetMoodEmoji(communityStats.DominantMood)</span>
+                    <div class="dominant-info">
+                        <h3>@Capitalize(communityStats.DominantMood)</h3>
+                        <p>Dominant mood across @communityStats.TotalEntriesToday entries @(ActiveCommunityFilter == "today" ? "today" : "this " + ActiveCommunityFilter.Replace("week", "week").Replace("month", "month"))</p>
                     </div>
+                </div>
+
+                <div class="mood-dist-list">
+                    @foreach (var mood in MoodsDescending)
+                    {
+                        var count = communityStats.MoodCounts.GetValueOrDefault(mood, 0);
+                        var pct = communityStats.TotalEntriesToday > 0
+                            ? (int)Math.Round((double)count / communityStats.TotalEntriesToday * 100)
+                            : 0;
+                        <div class="mood-dist-row">
+                            <span class="mood-dist-emoji">@GetMoodEmoji(mood)</span>
+                            <div class="mood-dist-track">
+                                <div class="mood-dist-fill mood-fill-@mood" style="width: @pct%"></div>
+                            </div>
+                            <span class="mood-dist-pct">@pct%</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="quick-stats-grid">
+                    <div class="qs-item">
+                        <span class="qs-val">@communityStats.TotalEntriesToday</span>
+                        <span class="qs-label">entries @ActiveCommunityFilter</span>
+                    </div>
+                    <div class="qs-item">
+                        <span class="qs-val">@communityStats.ActiveUsersToday</span>
+                        <span class="qs-label">active users</span>
+                    </div>
+                    <div class="qs-item">
+                        <span class="qs-val">@communityStats.AvgCommunityScore.ToString("F1")</span>
+                        <span class="qs-label">avg score</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Mood Leaderboard -->
+            <div class="community-card leaderboard-panel">
+                <div class="leaderboard-header">
+                    <div class="card-header-label">MOOD LEADERBOARD</div>
+                    <div class="toggle-group">
+                        <button class="toggle-btn @(LeaderboardSort == "score" ? "active" : "")" 
+                                @onclick='() => SetLeaderboardSort("score")'>Score</button>
+                        <button class="toggle-btn @(LeaderboardSort == "streak" ? "active" : "")" 
+                                @onclick='() => SetLeaderboardSort("streak")'>Streak</button>
+                    </div>
+                </div>
+
+                @if (leaderboard != null)
+                {
+                    <div class="leaderboard-list">
+                        @for (int i = 0; i < leaderboard.Count; i++)
+                        {
+                            var entry = leaderboard[i];
+                            <div class="leaderboard-row @(entry.IsCurrentUser ? "is-me" : "")">
+                                <span class="rank-circle">@(i + 1)</span>
+                                <div class="avatar" style="background-color: @entry.AvatarBg; color: @entry.AvatarFg;">
+                                    @entry.Initials
+                                </div>
+                                <div class="user-info">
+                                    <span class="user-name">@entry.DisplayName</span>
+                                    @if (entry.IsCurrentUser)
+                                    {
+                                        <span class="me-badge">you</span>
+                                    }
+                                </div>
+                                <div class="user-score">
+                                    @if (LeaderboardSort == "score")
+                                    {
+                                        <span class="score-val">@entry.AvgMoodScore.ToString("F1")</span><span class="score-max">/5</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="score-val">@entry.Streak</span><span class="score-max">d</span>
+                                    }
+                                    <span class="user-mood">@GetMoodEmoji(entry.CurrentMood)</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="leaderboard-loading">Loading...</div>
                 }
             </div>
         </div>
-    </section>
+    }
+    else
+    {
+        <div class="community-loading">
+            <p>Loading community stats...</p>
+        </div>
     }
 }
 
@@ -174,35 +246,42 @@ else
     private List<DayStat> dayStats = new();
     private string insightsText = "";
 
-    private int CommunityTotalEntries = 1247;
-    private int CommunityActiveUsers = 342;
-    private string CommunityTopMood = "😊";
-
-    private List<CommunityMoodStat> CommunityMoodStats = new();
-
-    private record CommunityMoodStat(string Mood, string Emoji, int Count);
+    private CommunityStats? communityStats;
+    private List<LeaderboardEntry>? leaderboard;
+    private string ActiveCommunityFilter = "today";
+    private string LeaderboardSort = "score";
+    private static readonly string[] MoodsDescending = { "amazing", "good", "okay", "bad", "terrible" };
 
     private string StatsButtonClass(StatsMode m) => m == mode ? "stats-toggle-btn-active" : "";
 
     private void SelectMode(StatsMode m)
     {
         mode = m;
-        if (mode == StatsMode.Community && !CommunityMoodStats.Any())
+        if (mode == StatsMode.Community && communityStats == null)
         {
-            BuildCommunityStats();
+            _ = LoadCommunityStatsAsync();
         }
+        StateHasChanged();
     }
 
-    private void BuildCommunityStats()
+    private async Task LoadCommunityStatsAsync()
     {
-        CommunityMoodStats = new List<CommunityMoodStat>
-        {
-            new("Amazing", "✨", 312),
-            new("Good", "😊", 486),
-            new("Okay", "😐", 298),
-            new("Bad", "😕", 98),
-            new("Terrible", "😭", 53)
-        };
+        communityStats = await CommunityService.GetCommunityStatsAsync(ActiveCommunityFilter);
+        leaderboard = await CommunityService.GetLeaderboardAsync(ActiveCommunityFilter, LeaderboardSort);
+        StateHasChanged();
+    }
+
+    private async Task SetCommunityFilter(string filter)
+    {
+        ActiveCommunityFilter = filter;
+        await LoadCommunityStatsAsync();
+    }
+
+    private async Task SetLeaderboardSort(string sort)
+    {
+        LeaderboardSort = sort;
+        leaderboard = await CommunityService.GetLeaderboardAsync(ActiveCommunityFilter, LeaderboardSort);
+        StateHasChanged();
     }
 
     private record DayStat(
@@ -254,23 +333,21 @@ else
         return "✨";
     }
 
-    private static double MoodValue(string mood)
+    private static double MoodValue(string mood) => mood.ToLower() switch
     {
-        switch (mood.ToLower())
-        {
-            case "terrible": return 1;
-            case "bad": return 2;
-            case "okay": return 3;
-            case "good": return 4;
-            case "amazing": return 5;
-            default: return 3;
-        }
-    }
+        "terrible" => 1,
+        "bad"      => 2,
+        "okay"     => 3,
+        "good"     => 4,
+        "amazing"  => 5,
+        _          => 3
+    };
 
     private void BuildWritingStats(List<DiaryEntry> entries)
     {
         var days = new[] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
-        var dotNetDays = new[] {
+        var dotNetDays = new[]
+        {
             DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
             DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
         };
@@ -282,10 +359,8 @@ else
 
         var counts = dotNetDays.Select(d => grouped.ContainsKey(d) ? grouped[d].Count : 0).ToList();
         int maxCount = counts.Max() == 0 ? 1 : counts.Max();
-        int minCount = counts.Where(c => c > 0).DefaultIfEmpty(0).Min();
         int bestIndex = counts.IndexOf(counts.Max());
 
-        // Green ramp: low = #c8e6d4, high = #2d5a3d
         var colorStops = new[] { "#c8e6d4", "#9aced4", "#6ab8a0", "#3d9970", "#2d5a3d" };
 
         dayStats = dotNetDays.Select((dow, i) =>
@@ -316,33 +391,27 @@ else
             );
         }).ToList();
 
-        // Build Insights
         if (dayStats.Any(d => d.Count > 0))
         {
             var bestDay = dayStats[bestIndex];
             var happiestDay = dayStats.OrderByDescending(d => d.AvgMoodScore).First(d => d.Count > 0);
             var leastDay = dayStats.Where(d => d.Count > 0).OrderBy(d => d.Count).First();
 
-            var fullDayNames = new Dictionary<string, string> {
-                {"Mon", "Mondays"}, {"Tue", "Tuesdays"}, {"Wed", "Wednesdays"},
-                {"Thu", "Thursdays"}, {"Fri", "Fridays"}, {"Sat", "Saturdays"}, {"Sun", "Sundays"}
+            var fullDayNames = new Dictionary<string, string>
+            {
+                {"Mon","Mondays"},{"Tue","Tuesdays"},{"Wed","Wednesdays"},
+                {"Thu","Thursdays"},{"Fri","Fridays"},{"Sat","Saturdays"},{"Sun","Sundays"}
             };
 
             insightsText = $"You write most on <strong>{fullDayNames[bestDay.ShortName]}</strong>";
-            
+
             if (happiestDay.ShortName == bestDay.ShortName)
-            {
                 insightsText += $" — and it's also your happiest day {happiestDay.MoodEmoji}";
-            }
             else
-            {
                 insightsText += $". Your happiest day is <strong>{fullDayNames[happiestDay.ShortName]}</strong> {happiestDay.MoodEmoji}";
-            }
 
             if (leastDay.ShortName != bestDay.ShortName)
-            {
                 insightsText += $". You write least on <strong>{fullDayNames[leastDay.ShortName]}</strong>.";
-            }
         }
     }
 
@@ -355,6 +424,19 @@ else
         return "✨";
     }
 
+    private static string GetMoodEmoji(string? mood) => (mood ?? "").ToLower() switch
+    {
+        "terrible" => "😢",
+        "bad"      => "😕",
+        "okay"     => "😐",
+        "good"     => "😊",
+        "amazing"  => "✨",
+        _          => "😊"
+    };
+
+    private static string Capitalize(string s) =>
+        string.IsNullOrEmpty(s) ? s : char.ToUpper(s[0]) + s[1..];
+
     private static string GetMoodLabel(double score)
     {
         if (score < 1.5) return "Terrible";
@@ -364,4 +446,3 @@ else
         return "Amazing";
     }
 }
-

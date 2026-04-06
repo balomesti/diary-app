@@ -22,6 +22,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DiaryService>();
+builder.Services.AddScoped<CommunityService>();
 builder.Services.AddScoped<UserService>();
 
 builder.Services.AddHttpClient("Speech", client => { });
