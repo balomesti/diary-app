@@ -102,7 +102,7 @@
 }
 
 .stat-label {
-    font-size: 12px;
+    font-size: 16px;
     color: #9a9181;
     font-weight: 400;
     letter-spacing: 0.01em;
@@ -110,7 +110,7 @@
 
 /* ── Fire icon: drops in then flickers ── */
 .icon-fire {
-    font-size: 26px;
+    font-size: 42px;
     line-height: 1;
     display: inline-block;
     flex-shrink: 0;
@@ -122,7 +122,7 @@
 
 /* ── Mood icon: spins in then wobbles ── */
 .icon-mood {
-    font-size: 26px;
+    font-size: 42px;
     line-height: 1;
     display: inline-block;
     flex-shrink: 0;
