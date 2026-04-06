@@ -17,7 +17,7 @@
         </div>
         <div class="stat-card skeleton">
             <div class="stat-body">
-                <span class="stat-label">Avg mood</span>
+                <span class="stat-label">Average Mood</span>
             </div>
         </div>
     </section>
@@ -56,28 +56,28 @@ else
                 </div>
 
                 <div class="wdc-chart">
-                    @foreach (var day in dayStats)
+                    @foreach (var day in dayStats.Select((d, i) => new { Day = d, Index = i + 1 }))
                     {
-                        <div class="wdc-col @(day.IsToday ? "wdc-today" : "")">
+                        <div class="wdc-col col-@day.Index @(day.Day.IsToday ? "wdc-today" : "")">
                             <!-- Bar -->
                             <div class="wdc-bar-wrap">
-                                <span class="wdc-count">@day.Count</span>
+                                <span class="wdc-count">@day.Day.Count</span>
                                 <div class="wdc-bar-track">
                                     <div class="wdc-bar-fill"
-                                         style="height: @(day.HeightPercent)%; background: @day.BarColor;">
+                                         style="height: @(day.Day.HeightPercent)%; background: @day.Day.BarColor;">
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Mood emoji -->
-                            <div class="wdc-mood" title="Avg mood: @day.AvgMoodLabel">
-                                @day.MoodEmoji
+                            <div class="wdc-mood mood-@day.Index" title="Avg mood: @day.Day.AvgMoodLabel">
+                                @day.Day.MoodEmoji
                             </div>
 
                             <!-- Day label -->
-                            <div class="wdc-label">@day.ShortName</div>
+                            <div class="wdc-label">@day.Day.ShortName</div>
 
-                            @if (day.IsBest)
+                            @if (day.Day.IsBest)
                             {
                                 <div class="wdc-best-tag">best</div>
                             }

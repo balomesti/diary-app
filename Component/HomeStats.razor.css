@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════════════════════
+   Stats Row
+   ═══════════════════════════════════════════════════════════════ */
+
 .stats-row {
     display: flex;
     gap: 12px;
@@ -16,36 +20,33 @@
     padding: 18px 16px;
     text-align: center;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
+    opacity: 0;
+    animation: cardFadeUp 0.5s ease forwards;
 }
+
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.12s; }
+.stat-card:nth-child(3) { animation-delay: 0.19s; }
 
 .stat-card:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
 .stat-card.skeleton {
-    min-height: 80px;
+    min-height: 60px;
+    animation: none;
+    opacity: 1;
 }
 
 .skeleton-text {
     display: inline-block;
     width: 40px;
     height: 28px;
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background: linear-gradient(90deg, #f0ece6 25%, #e8e3db 50%, #f0ece6 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
     border-radius: 4px;
-}
-
-@keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-.stat-icon {
-    font-size: 26px;
-    line-height: 1;
-    flex-shrink: 0;
 }
 
 .stat-body {
@@ -61,6 +62,7 @@
     color: #2c2a1e;
     line-height: 1.1;
     letter-spacing: -0.5px;
+    animation: valuePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both;
 }
 
 .stat-label {
@@ -70,8 +72,38 @@
     letter-spacing: 0.01em;
 }
 
+/* ── Fire icon: drops in then flickers ── */
+.icon-fire {
+    font-size: 26px;
+    line-height: 1;
+    display: inline-block;
+    flex-shrink: 0;
+    opacity: 0;
+    animation:
+        iconDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards,
+        fireFlicker 1.8s ease-in-out 1.2s infinite;
+}
+
+/* ── Mood icon: spins in then wobbles ── */
+.icon-mood {
+    font-size: 26px;
+    line-height: 1;
+    display: inline-block;
+    flex-shrink: 0;
+    opacity: 0;
+    animation:
+        moodSpin 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.55s forwards,
+        moodWobble 2.4s ease-in-out 1.4s infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Chart Section
+   ═══════════════════════════════════════════════════════════════ */
+
 .mood-chart-section {
     margin: 0 0 24px;
+    opacity: 0;
+    animation: cardFadeUp 0.5s ease 0.28s forwards;
 }
 
 .wdc-card {
@@ -82,7 +114,6 @@
     min-height: 350px;
 }
 
-/* Header */
 .wdc-header {
     display: flex;
     align-items: baseline;
@@ -103,17 +134,16 @@
     color: #b8b0a4;
 }
 
-/* Chart grid */
+/* ── Bar chart ── */
 .wdc-chart {
     display: flex;
     align-items: flex-end;
     gap: 12px;
     height: 300px;
     padding-bottom: 4px;
-    margin-bottom: 20px;
+    margin-bottom: 28px;
 }
 
-/* Each day column */
 .wdc-col {
     flex: 1;
     display: flex;
@@ -122,14 +152,21 @@
     gap: 8px;
     height: 100%;
     position: relative;
-    transition: transform 0.2s;
+    transition: transform 0.2s ease;
+    opacity: 0;
+    animation: colFadeIn 0.3s ease forwards;
 }
 
-.wdc-col:hover {
-    transform: translateY(-2px);
-}
+.wdc-col:hover { transform: translateY(-3px); }
 
-/* Bar wrapper */
+.col-1 { animation-delay: 0.30s; }
+.col-2 { animation-delay: 0.38s; }
+.col-3 { animation-delay: 0.46s; }
+.col-4 { animation-delay: 0.54s; }
+.col-5 { animation-delay: 0.62s; }
+.col-6 { animation-delay: 0.70s; }
+.col-7 { animation-delay: 0.78s; }
+
 .wdc-bar-wrap {
     flex: 1;
     width: 100%;
@@ -147,7 +184,7 @@
     line-height: 1;
     opacity: 0;
     transform: translateY(4px);
-    transition: opacity 0.2s, transform 0.2s;
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .wdc-col:hover .wdc-count {
@@ -159,7 +196,6 @@
     width: 100%;
     max-width: 40px;
     height: 100%;
-    max-height: 100%;
     background: #f5f2ed;
     border-radius: 8px;
     overflow: hidden;
@@ -167,47 +203,54 @@
     align-items: flex-end;
 }
 
+.wdc-today .wdc-bar-track { background: #eaf3de; }
+
+/* THE KEY FIX: scaleY from 0→1 with origin at bottom */
 .wdc-bar-fill {
     width: 100%;
-    max-height: 120%;
     border-radius: 8px;
-    animation: barGrow 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    animation: barScaleUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-@keyframes barGrow {
-    from { height: 0; }
-}
+.col-1 .wdc-bar-fill { animation-delay: 0.32s; }
+.col-2 .wdc-bar-fill { animation-delay: 0.40s; }
+.col-3 .wdc-bar-fill { animation-delay: 0.48s; }
+.col-4 .wdc-bar-fill { animation-delay: 0.56s; }
+.col-5 .wdc-bar-fill { animation-delay: 0.64s; }
+.col-6 .wdc-bar-fill { animation-delay: 0.72s; }
+.col-7 .wdc-bar-fill { animation-delay: 0.80s; }
 
-/* Stagger bar animations */
-.wdc-col:nth-child(1) .wdc-bar-fill { animation-delay: 0.05s; }
-.wdc-col:nth-child(2) .wdc-bar-fill { animation-delay: 0.10s; }
-.wdc-col:nth-child(3) .wdc-bar-fill { animation-delay: 0.15s; }
-.wdc-col:nth-child(4) .wdc-bar-fill { animation-delay: 0.20s; }
-.wdc-col:nth-child(5) .wdc-bar-fill { animation-delay: 0.25s; }
-.wdc-col:nth-child(6) .wdc-bar-fill { animation-delay: 0.30s; }
-.wdc-col:nth-child(7) .wdc-bar-fill { animation-delay: 0.35s; }
-
-/* Mood emoji */
+/* ── Bar mood emojis: pop in, then each has a unique idle loop ── */
 .wdc-mood {
     font-size: 16px;
     line-height: 1;
+    display: inline-block;
     cursor: default;
+    opacity: 0;
 }
 
-/* Day label */
+.mood-1 { animation: emojiPop .35s cubic-bezier(.34,1.56,.64,1) .82s both, moodBounce 2.2s ease-in-out 1.6s infinite; }
+.mood-2 { animation: emojiPop .35s cubic-bezier(.34,1.56,.64,1) .88s both, moodTilt   2.6s ease-in-out 1.7s infinite; }
+.mood-3 { animation: emojiPop .35s cubic-bezier(.34,1.56,.64,1) .94s both, moodBounce 2.8s ease-in-out 1.8s infinite; }
+.mood-4 { animation: emojiPop .35s cubic-bezier(.34,1.56,.64,1) 1.00s both, moodTilt  3.0s ease-in-out 1.9s infinite; }
+.mood-5 { animation: emojiPop .35s cubic-bezier(.34,1.56,.64,1) 1.06s both, moodPulse 2.0s ease-in-out 2.0s infinite; }
+.mood-6 { animation: emojiPop .35s cubic-bezier(.34,1.56,.64,1) 1.12s both, moodBounce 2.4s ease-in-out 2.1s infinite; }
+.mood-7 { animation: emojiPop .35s cubic-bezier(.34,1.56,.64,1) 1.18s both, moodTilt  2.2s ease-in-out 2.2s infinite; }
+
 .wdc-label {
     font-size: 11px;
     color: #9a9181;
     font-weight: 500;
+    letter-spacing: 0.02em;
 }
 
-/* Today highlight */
 .wdc-today .wdc-label {
     color: #2d5a3d;
     font-weight: 700;
 }
 
-/* Best day badge */
 .wdc-best-tag {
     position: absolute;
     bottom: -22px;
@@ -220,15 +263,19 @@
     border-radius: 999px;
     padding: 2px 6px;
     line-height: 1.4;
+    opacity: 0;
+    animation: badgePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 1.2s forwards;
 }
 
-/* Insights Box */
+/* ── Insights & Legend ── */
 .wdc-insights {
     background: #f8faf7;
     border-left: 3px solid #2d5a3d;
-    border-radius: 4px 8px 8px 4px;
+    border-radius: 0 8px 8px 0;
     padding: 12px 16px;
     margin-bottom: 20px;
+    opacity: 0;
+    animation: cardFadeUp 0.5s ease 1.1s forwards;
 }
 
 .wdc-insights p {
@@ -238,17 +285,16 @@
     line-height: 1.5;
 }
 
-.wdc-insights strong {
-    color: #2c2a1e;
-}
+.wdc-insights strong { color: #2c2a1e; }
 
-/* Legend */
 .wdc-legend {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
     padding-top: 14px;
     border-top: 1px solid #f0ece6;
+    opacity: 0;
+    animation: cardFadeUp 0.4s ease 1.3s forwards;
 }
 
 .wdc-legend-item {
@@ -263,19 +309,113 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
+    flex-shrink: 0;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   Keyframes
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes cardFadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+@keyframes valuePop {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+/* Fire icon: drop in from above */
+@keyframes iconDrop {
+    from { opacity: 0; transform: translateY(-14px) scale(0.6); }
+    to   { opacity: 1; transform: translateY(0)     scale(1); }
+}
+
+/* Fire icon: continuous flicker */
+@keyframes fireFlicker {
+    0%,  100% { transform: scale(1)    rotate(0deg); }
+    25%        { transform: scale(1.12) rotate(-4deg); }
+    50%        { transform: scale(1.06) rotate(3deg); }
+    75%        { transform: scale(1.10) rotate(-2deg); }
+}
+
+/* Mood icon: spin in */
+@keyframes moodSpin {
+    from { opacity: 0; transform: rotate(-180deg) scale(0.4); }
+    to   { opacity: 1; transform: rotate(0deg)    scale(1); }
+}
+
+/* Mood icon: continuous gentle wobble */
+@keyframes moodWobble {
+    0%,  100% { transform: rotate(0deg); }
+    20%        { transform: rotate(-10deg); }
+    40%        { transform: rotate(10deg); }
+    60%        { transform: rotate(-6deg); }
+    80%        { transform: rotate(6deg); }
+}
+
+@keyframes colFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes barScaleUp {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+}
+
+@keyframes emojiPop {
+    from { opacity: 0; transform: scale(0.4); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* Bar emoji idle loops */
+@keyframes moodBounce {
+    0%,  100% { transform: translateY(0); }
+    40%        { transform: translateY(-4px); }
+    60%        { transform: translateY(-2px); }
+}
+
+@keyframes moodTilt {
+    0%,  100% { transform: rotate(0deg); }
+    30%        { transform: rotate(-12deg); }
+    70%        { transform: rotate(10deg); }
+}
+
+@keyframes moodPulse {
+    0%,  100% { transform: scale(1); }
+    50%        { transform: scale(1.25); }
+}
+
+@keyframes badgePop {
+    from { opacity: 0; transform: scale(0.5) translateY(4px); }
+    to   { opacity: 1; transform: scale(1)   translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════════ */
+
 @media (max-width: 480px) {
-    .stats-row {
-        flex-wrap: wrap;
-    }
+    .stats-row { flex-wrap: wrap; }
+    .stat-card { flex: 1 1 calc(50% - 6px); min-width: 0; }
+    .stat-card:last-child { flex: 1 1 100%; }
+}
 
-    .stat-card {
-        flex: 1 1 calc(50% - 6px);
-        min-width: 0;
-    }
-
-    .stat-card:last-child {
-        flex: 1 1 100%;
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .stat-card, .stat-value, .icon-fire, .icon-mood,
+    .mood-chart-section, .wdc-col, .wdc-bar-fill,
+    .wdc-mood, .mood-1, .mood-2, .mood-3, .mood-4, .mood-5, .mood-6, .mood-7,
+    .wdc-best-tag, .wdc-insights, .wdc-legend {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
     }
 }
