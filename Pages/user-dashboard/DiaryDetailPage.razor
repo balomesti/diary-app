@@ -3,7 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
-<PageTitle>@(entry?.Title ?? "Loading...") - Diary Me</PageTitle>
+<PageTitle>@(entry?.Title ?? "Loading...") - Inkly</PageTitle>
 
 <div class="diary-detail-page">
     <div class="diary-page">
@@ -105,7 +105,7 @@
         {
             <!-- HIDDEN IMAGE CARD (rendered off-screen, captured by html2canvas) -->
             <div id="share-card" class="share-card-hidden">
-                <div class="sc-watermark">Diary Me</div>
+                <div class="sc-watermark">Inkly</div>
                 <div class="sc-date">@entry.Date.ToString("dddd, MMMM d, yyyy")</div>
                 <div class="sc-title">@entry.Title</div>
                 @if (!string.IsNullOrEmpty(entry.Location) || !string.IsNullOrEmpty(entry.Weather) || !string.IsNullOrEmpty(entry.Mood))
@@ -229,7 +229,7 @@
                             <line x1="17.5" y1="15" x2="9" y2="15"/>
                         </svg>
                     </div>
-                    <span class="footer-text">Written on @entry.Date.ToString("MMMM d, yyyy") · Diary Me</span>
+                    <span class="footer-text">Written on @entry.Date.ToString("MMMM d, yyyy") · Inkly</span>
                 </div>
 
             </article>
@@ -266,7 +266,7 @@
     {
         showShareMenu = false;
         if (entry == null) return;
-        var text = Uri.EscapeDataString($"📖 {entry.Title}\n\n{GetExcerpt(entry.Content, 200)}\n\n— Diary Me");
+        var text = Uri.EscapeDataString($"📖 {entry.Title}\n\n{GetExcerpt(entry.Content, 200)}\n\n— Inkly");
         await JSRuntime.InvokeVoidAsync("open", $"https://wa.me/?text={text}", "_blank");
         await ShowToast("💬 Opening WhatsApp...");
     }
@@ -275,7 +275,7 @@
     {
         showShareMenu = false;
         if (entry == null) return;
-        var text = Uri.EscapeDataString($"📖 {entry.Title}\n\n{GetExcerpt(entry.Content, 200)}\n\n— Diary Me");
+        var text = Uri.EscapeDataString($"📖 {entry.Title}\n\n{GetExcerpt(entry.Content, 200)}\n\n— Inkly");
         await JSRuntime.InvokeVoidAsync("open", $"https://t.me/share/url?url={Uri.EscapeDataString(NavigationManager.Uri)}&text={text}", "_blank");
         await ShowToast("✈️ Opening Telegram...");
     }

@@ -31,7 +31,7 @@ window.DiaryShare = {
                 const blob = await (await fetch(dataUrl)).blob();
                 const file = new File([blob], filename, { type: 'image/png' });
                 if (navigator.canShare({ files: [file] })) {
-                    await navigator.share({ files: [file], title: 'Diary Me' });
+                    await navigator.share({ files: [file], title: 'Inkly' });
                     return;
                 }
             }

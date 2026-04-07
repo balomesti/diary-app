@@ -11,7 +11,7 @@
                  class="navmenu-profile-image"
                  @onclick="NavigateToSettings"
                  @onclick:stopPropagation />
-            <span class="navmenu-brand-text">Diary Me</span>
+            <span class="navmenu-brand-text">@username</span>
         </NavLink>
 
         <nav class="navmenu-desktop-links" aria-label="Main navigation">
@@ -54,7 +54,7 @@
         <NavLink class="nav-drawer-brand" href="/home" Match="NavLinkMatch.All" @onclick="CloseMenu">
             <img src="@(string.IsNullOrEmpty(profileImageUrl) ? "images/pic1.jpg" : profileImageUrl)"
                  alt="Profile" class="nav-drawer-avatar" />
-            <span class="nav-drawer-title">Diary Me</span>
+            <span class="nav-drawer-title">@username</span>
         </NavLink>
         <button class="nav-close-btn" type="button" @onclick="ToggleNavMenu" aria-label="Close menu">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -114,6 +114,7 @@
 @code {
     private bool collapseNavMenu = true;
     private string profileImageUrl = string.Empty;
+    private string username = "";
 
     private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
     private void CloseMenu() => collapseNavMenu = true;
@@ -129,10 +130,18 @@
         var user = authState.User;
         if (user.Identity?.IsAuthenticated == true)
         {
+            username = user.Identity.Name ?? "";
             var profile = await UserService.GetProfileAsync();
-            if (profile != null && !string.IsNullOrEmpty(profile.ProfileImg))
+            if (profile != null)
             {
-                profileImageUrl = profile.ProfileImg;
+                if (!string.IsNullOrEmpty(profile.ProfileImg))
+                {
+                    profileImageUrl = profile.ProfileImg;
+                }
+                if (!string.IsNullOrEmpty(profile.Username))
+                {
+                    username = profile.Username;
+                }
             }
         }
     }
