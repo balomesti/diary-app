@@ -131,7 +131,7 @@
     inset: 0;
     background: rgba(44, 31, 22, 0.35);
     backdrop-filter: blur(3px);
-    z-index: 150;
+    z-index: 1100;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.35s ease;
@@ -150,7 +150,7 @@
     height: 100dvh;
     background: rgba(253, 251, 247, 0.95);
     backdrop-filter: blur(20px);
-    z-index: 200;
+    z-index: 1200;
     display: flex;
     flex-direction: column;
     padding: 0;
@@ -169,7 +169,7 @@
     justify-content: space-between;
     padding: 18px 20px 16px;
     border-bottom: 1px solid rgba(212, 201, 189, 0.3);
-    background: rgba(253, 251, 247, 0.8);
+    background: #FDFBF7;
 }
 
 .nav-drawer-brand {
