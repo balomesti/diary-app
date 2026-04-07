@@ -15,7 +15,7 @@
                     <span class="inkly-text">Inkly</span>
                 </span>
             </h1>
-            <p class="subtitle">Capture your thoughts, memories, and experiences — one day at a time.</p>
+            <p class="subtitle">Capture your thoughts, memories, and experiences one day at a time.</p>
             <div class="btn-row">
                 <NavLink class="btn-outline" href="/diary">Previous Entries</NavLink>
                 <NavLink class="btn-solid" href="/diary/add">Start New Entry</NavLink>
@@ -30,25 +30,30 @@
             <div class="ink-drop"></div>
             <div class="ink-drop"></div>
             <div class="ink-drop"></div>
+            <p class="hint">Your Memories</p>
             <div class="journal-stack">
                 <div class="journal-card">
-                    <div class="card-date">MON, JAN 6</div>
+                    <div class="card-date">@GetDayName(Today.AddDays(-2))</div>
                     <div class="card-line full"></div>
                     <div class="card-line med"></div>
                     <div class="card-line short"></div>
+                    <div class="card-tag">🌤 reflective</div>
                 </div>
                 <div class="journal-card">
                     <div class="card-dot"></div>
-                    <div class="card-date">TUE, JAN 7</div>
+                    <div class="card-date">@GetDayName(Today.AddDays(-1))</div>
                     <div class="card-line full"></div>
                     <div class="card-line med"></div>
+                    <div class="card-line full accent"></div>
+                    <div class="card-tag">✨ grateful</div>
                 </div>
-                <div class="journal-card">
+                <div class="journal-card" style="position: relative;">
                     <div class="card-dot"></div>
                     <div class="card-date">TODAY</div>
                     <div class="writing-line"></div>
                     <div class="writing-line-2"></div>
                     <div class="cursor-blink"></div>
+                    <div class="card-tag">📝 in progress</div>
                 </div>
             </div>
         </div>
@@ -130,6 +135,7 @@
 
 @code {
     private List<DiaryEntry>? recentEntries;
+    private DateTime Today => DateTime.Today;
 
     protected override async Task OnInitializedAsync()
     {
@@ -139,6 +145,8 @@
             .Take(4)
             .ToList();
     }
+
+    private string GetDayName(DateTime date) => date.ToString("ddd, MMM d").ToUpper();
 
     private static string GetMoodEmoji(string mood) => mood.ToLower() switch
     {
