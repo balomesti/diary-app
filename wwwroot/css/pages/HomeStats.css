@@ -320,6 +320,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(230, 126, 34, 0.25) 0%, rgba(255, 149, 0, 0.15) 100%);
+    box-shadow: 0 4px 15px rgba(230, 126, 34, 0.15);
 }
 
 .fire-wrap {
@@ -327,32 +333,38 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
+    z-index: 1;
 }
 
 .fire-wrap .main-icon {
-    font-size: 2rem;
+    font-size: 2.8rem;
     animation: fireFlicker 1.8s ease-in-out infinite;
+    position: relative;
+    z-index: 2;
 }
 
 .fire-wrap .spark {
     position: absolute;
-    width: 4px;
-    height: 4px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: #FF9500;
-    box-shadow: 0 0 4px #FF9500;
-    animation: spark-fly 1s ease-out infinite;
+    background: #FFD700;
+    box-shadow: 0 0 10px #FF9500, 0 0 20px #FFD700;
+    animation: spark-fly 1.2s ease-out infinite;
+    z-index: 3;
+    pointer-events: none;
 }
 
-.fire-wrap .spark:nth-child(2) { left: 30%; animation-delay: 0.15s; }
-.fire-wrap .spark:nth-child(3) { left: 50%; animation-delay: 0.35s; }
-.fire-wrap .spark:nth-child(4) { left: 70%; animation-delay: 0.55s; }
+.fire-wrap .spark:nth-child(2) { left: 20%; animation-delay: 0.1s; }
+.fire-wrap .spark:nth-child(3) { left: 50%; animation-delay: 0.4s; }
+.fire-wrap .spark:nth-child(4) { left: 80%; animation-delay: 0.7s; }
 
 @keyframes spark-fly {
-    0%   { transform: translateY(0) scale(1); opacity: 1; }
-    100% { transform: translateY(-20px) scale(0.3); opacity: 0; }
+    0%   { transform: translateY(0) scale(1) rotate(0deg); opacity: 0; }
+    20%  { opacity: 1; }
+    100% { transform: translateY(-45px) scale(0.2) rotate(180deg); opacity: 0; }
 }
 
 @keyframes fireFlicker {
