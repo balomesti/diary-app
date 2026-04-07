@@ -4,23 +4,53 @@
 <PageTitle>Inkly - Home</PageTitle>
 
 <div class="home-page-container">
-    <!-- TOP SECTION: Welcome & Actions -->
+    <!-- TOP SECTION: Redesigned Hero Section -->
     <section class="hero-section">
-        <div class="hero-content">
-            <h1>Welcome to Inkly</h1>
-            <p>Capture your thoughts, memories, and experiences.</p>
-
-            <div class="hero-buttons">
-                <NavLink class="btn-outline" href="/diary">View Previous Entries</NavLink>
-                <NavLink class="btn-solid" href="/diary/add">Start a New Entry</NavLink>
+        <div class="hero-left">
+            <div class="tagline">your personal diary</div>
+            <h1 class="title">
+                <span class="title-word">Welcome</span>
+                <span class="title-word">to</span>
+                <span class="inkly-wrap">
+                    <span class="inkly-text">Inkly</span>
+                </span>
+            </h1>
+            <p class="subtitle">Capture your thoughts, memories, and experiences — one day at a time.</p>
+            <div class="btn-row">
+                <NavLink class="btn-outline" href="/diary">Previous Entries</NavLink>
+                <NavLink class="btn-solid" href="/diary/add">Start New Entry</NavLink>
             </div>
         </div>
 
-        <div class="hero-image-wrapper">
-            <video autoplay muted loop playsinline class="hero-video">
-                <source src="images/main2.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+        <div class="hero-right">
+            <svg class="quill-svg" width="48" height="90" viewBox="0 0 48 90" fill="none">
+                <path d="M24 88 C16 60 8 40 2 10 C14 18 28 22 46 8 C38 30 32 54 24 88Z" fill="#D4C9BD" stroke="#b5a898" stroke-width="1" />
+                <path d="M24 88 L24 50" stroke="#8B7355" stroke-width="1.2" stroke-linecap="round" />
+            </svg>
+            <div class="ink-drop"></div>
+            <div class="ink-drop"></div>
+            <div class="ink-drop"></div>
+            <div class="journal-stack">
+                <div class="journal-card">
+                    <div class="card-date">MON, JAN 6</div>
+                    <div class="card-line full"></div>
+                    <div class="card-line med"></div>
+                    <div class="card-line short"></div>
+                </div>
+                <div class="journal-card">
+                    <div class="card-dot"></div>
+                    <div class="card-date">TUE, JAN 7</div>
+                    <div class="card-line full"></div>
+                    <div class="card-line med"></div>
+                </div>
+                <div class="journal-card">
+                    <div class="card-dot"></div>
+                    <div class="card-date">TODAY</div>
+                    <div class="writing-line"></div>
+                    <div class="writing-line-2"></div>
+                    <div class="cursor-blink"></div>
+                </div>
+            </div>
         </div>
     </section>
 
