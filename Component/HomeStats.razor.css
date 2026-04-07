@@ -5,33 +5,78 @@
 .stats-toggle {
     display: flex;
     justify-content: center;
-    gap: 12px;
-    margin: 24px 0 16px;
+    gap: 8px;
+    margin: 0 0 32px;
 }
 
 .stats-toggle button {
-    padding: 10px 24px;
-    border: 1px solid #ede9e3;
-    border-radius: 25px;
-    background: transparent;
+    padding: 14px 32px;
+    border: 2px solid #e0dbd0;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.6);
     color: #9a9181;
     font-family: 'Nunito', sans-serif;
     font-weight: 700;
     font-size: 0.95rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+    position: relative;
+}
+
+.stats-toggle button::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(85, 107, 85, 0.3) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
 }
 
 .stats-toggle button:hover {
-    background-color: rgba(45, 90, 61, 0.1);
-    color: #2d5a3d;
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #c8c4bc;
+    color: #2c2a1e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .stats-toggle-btn-active {
-    background-color: #2d5a3d;
+    background: linear-gradient(135deg, #556B55 0%, #3d5a3d 100%);
     color: #ffffff;
-    border: 1px solid #2d5a3d;
-    box-shadow: 0 4px 10px rgba(44, 35, 31, 0.03);
+    border: 2px solid #556B55;
+    box-shadow: 0 4px 16px rgba(85, 107, 85, 0.35);
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+.stats-toggle-btn-active::before {
+    background: linear-gradient(135deg, rgba(85, 107, 85, 0.4) 0%, transparent 60%);
+    opacity: 1;
+}
+
+.stats-toggle-btn-active:hover {
+    background: linear-gradient(135deg, #5d7a5d 0%, #456345 100%);
+    border-color: #5d7a5d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(85, 107, 85, 0.45);
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 
+            0 4px 16px rgba(85, 107, 85, 0.25),
+            0 0 8px 2px rgba(85, 107, 85, 0.1);
+    }
+    50% {
+        box-shadow: 
+            0 4px 20px rgba(85, 107, 85, 0.5),
+            0 0 30px 8px rgba(85, 107, 85, 0.3);
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════════

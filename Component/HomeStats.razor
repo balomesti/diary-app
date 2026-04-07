@@ -1,6 +1,7 @@
 @inject DiaryService DiaryService
 @inject CommunityService CommunityService
 
+<div class="home-stats-wrapper">
 <div class="stats-toggle" role="tablist" aria-label="Stats mode">
     <button type="button" class="@StatsButtonClass(StatsMode.Personal)" @onclick="() => SelectMode(StatsMode.Personal)">Personal Stats</button>
     <button type="button" class="@StatsButtonClass(StatsMode.Community)" @onclick="() => SelectMode(StatsMode.Community)">Community Stats</button>
@@ -213,7 +214,7 @@ else if (mode == StatsMode.Community)
                                     {
                                         <span class="score-val">@entry.Streak</span><span class="score-max">d</span>
                                     }
-                                    <span class="user-mood">@GetMoodEmoji(entry.CurrentMood)</span>
+                                    <span class="user-mood">@GetMoodEmoji(entry.AvgMoodScore)</span>
                                 </div>
                             </div>
                         }
@@ -446,3 +447,4 @@ else if (mode == StatsMode.Community)
         return "Amazing";
     }
 }
+</div>

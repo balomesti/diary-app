@@ -1,6 +1,12 @@
 /* ═══════════════════════════════════════════════════════════════
    Community Redesign (Global)
    ═══════════════════════════════════════════════════════════════ */
+.home-stats-wrapper {
+    background-color: #f1ede6;
+    padding: 40px;
+    border-radius: 20px;
+    margin: 0 0 20px;
+}
 
 .community-header {
     display: flex;
