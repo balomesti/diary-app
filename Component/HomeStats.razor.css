@@ -1059,10 +1059,178 @@
    Responsive
    ═══════════════════════════════════════════════════════════════ */
 
+@media (max-width: 768px) {
+    .stats-toggle {
+        margin-bottom: 24px;
+    }
+    
+    .stats-toggle button {
+        padding: 10px 20px;
+        font-size: 0.85rem;
+    }
+
+    .community-header {
+        gap: 10px;
+    }
+
+    .time-filters {
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .time-filters .filter-pill {
+        flex: 1 1 calc(33.33% - 6px);
+        text-align: center;
+        font-size: 0.8rem;
+        padding: 8px 10px;
+    }
+
+    .wdc-card {
+        padding: 16px;
+        min-height: auto;
+    }
+
+    .wdc-header {
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 20px;
+    }
+
+    .wdc-chart {
+        gap: 6px;
+        height: 240px;
+        margin-bottom: 20px;
+    }
+
+    .wdc-bar-track {
+        max-width: none;
+    }
+
+    .wdc-label {
+        font-size: 10px;
+    }
+
+    .wdc-mood {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 640px) {
+    .stats-row { 
+        flex-wrap: wrap; 
+        gap: 10px;
+    }
+    
+    .stat-card { 
+        flex: 1 1 calc(50% - 5px); 
+        padding: 14px 12px;
+    }
+    
+    .stat-card:last-child { 
+        flex: 1 1 100%; 
+    }
+
+    .time-filters .filter-pill {
+        flex: 1 1 calc(50% - 5px);
+    }
+
+    .time-filters .filter-pill:last-child {
+        flex-basis: 100%;
+    }
+
+    .streak-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .fire-wrap {
+        width: 45px;
+        height: 45px;
+    }
+
+    .fire-wrap .main-icon, .streak-cold, .streak-out {
+        font-size: 2rem;
+    }
+
+    .stat-value {
+        font-size: 22px;
+    }
+
+    .stat-label {
+        font-size: 14px;
+    }
+
+    .icon-mood, .icon-fire {
+        font-size: 32px;
+    }
+}
+
 @media (max-width: 480px) {
-    .stats-row { flex-wrap: wrap; }
-    .stat-card { flex: 1 1 calc(50% - 6px); min-width: 0; }
-    .stat-card:last-child { flex: 1 1 100%; }
+    .stats-toggle {
+        gap: 6px;
+    }
+    
+    .stats-toggle button {
+        padding: 8px 14px;
+        flex: 1;
+    }
+
+    .time-filters .filter-pill {
+        flex: 1 1 100%;
+        padding: 8px;
+    }
+
+    .mood-dist-row {
+        gap: 8px;
+    }
+
+    .mood-dist-pct {
+        width: 28px;
+        font-size: 0.7rem;
+    }
+
+    .quick-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .qs-item {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 4px 0;
+    }
+
+    .qs-val {
+        font-size: 1.2rem;
+    }
+
+    .dominant-mood-hero {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+
+    .dominant-emoji {
+        font-size: 4rem;
+    }
+
+    .leaderboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .leaderboard-row {
+        flex-wrap: wrap;
+        padding: 8px;
+    }
+
+    .user-score {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 6px;
+    }
 }
 
 /* Respect reduced-motion preferences */
