@@ -131,7 +131,6 @@ else if (mode == StatsMode.Personal)
 else if (mode == StatsMode.Community)
 {
     <div class="community-header">
-        <h2 class="community-title">Community</h2>
         <div class="time-filters">
             <button class="filter-pill @(ActiveCommunityFilter == "today" ? "active" : "")"
                     @onclick='() => SetCommunityFilter("today")'>Today</button>
@@ -148,7 +147,7 @@ else if (mode == StatsMode.Community)
             <!-- Left Column: Community Mood -->
             <div class="community-card mood-panel">
                 <div class="card-header-label">COMMUNITY MOOD @ActiveCommunityFilter.ToUpper()</div>
-                
+
                 <div class="dominant-mood-hero">
                     <span class="dominant-emoji">@GetMoodEmoji(communityStats.DominantMood)</span>
                     <div class="dominant-info">
