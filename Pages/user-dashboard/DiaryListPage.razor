@@ -20,17 +20,40 @@
         <div class="gamification-row">
             <!-- Streak Card -->
             <div class="stat-card streak-card">
-                <div class="streak-icon">   
+                <div class="streak-icon streak-icon--@CurrentStreakStatus.ToString().ToLower()">
                     <div class="fire-wrap">
-                        <span class="main-icon">🔥</span>
-                        <span class="spark"></span>
-                        <span class="spark"></span>
-                        <span class="spark"></span>
+                        @if (CurrentStreakStatus == StreakStatus.Active)
+                        {
+                            <span class="main-icon">🔥</span>
+                            <span class="spark"></span>
+                            <span class="spark"></span>
+                            <span class="spark"></span>
+                        }
+                        else if (CurrentStreakStatus == StreakStatus.AtRisk)
+                        {
+                            <span class="main-icon streak-cold">🔥</span>
+                            <span class="streak-warning-badge">!</span>
+                        }
+                        else
+                        {
+                            <span class="main-icon streak-out">🔥</span>
+                        }
                     </div>
                 </div>
                 <div class="stat-info">
                     <h3>@streakCount Day Streak</h3>
-                    <p>@(streakCount > 0 ? "You're on fire! Keep it up." : "Start your streak today!")</p>
+                    @if (CurrentStreakStatus == StreakStatus.AtRisk)
+                    {
+                        <p class="streak-label-warning">Entry today to save it!</p>
+                    }
+                    else if (CurrentStreakStatus == StreakStatus.Lost)
+                    {
+                        <p class="streak-label-lost">Streak reset</p>
+                    }
+                    else
+                    {
+                        <p>You're on fire! Keep it up.</p>
+                    }
                 </div>
             </div>
 
@@ -202,6 +225,8 @@
     private int streakCount = 7;
     private int nextMilestone = 50;
     private StreakInfo? streakInfo;
+    private StreakStatus CurrentStreakStatus = StreakStatus.Active;
+    private enum StreakStatus { Active, AtRisk, Lost }
 
     private IEnumerable<DiaryEntry> GetFilteredEntries()
     {
@@ -241,13 +266,8 @@
         }
         CalculateNextMilestone();
         UpdateBadgeStatus();
-
-        streakInfo = await DiaryService.GetStreakAsync();
-        if (streakInfo != null)
-        {
-            streakCount = streakInfo.CurrentStreak;
-        }
-        UpdateBadgeStatus();
+        CalculateStreakForDiaryList();
+        streakInfo = new StreakInfo { CurrentStreak = streakCount, LongestStreak = streakCount };
     }
 
     private void UpdateBadgeStatus()
@@ -276,6 +296,35 @@
                     break;
             }
         }
+    }
+
+    private void CalculateStreakForDiaryList()
+    {
+        var sorted = entries?.OrderByDescending(e => e.Date).ToList() ?? new List<DiaryEntry>();
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var yesterday = today.AddDays(-1);
+
+        bool hasEntryToday = sorted.Any(e => DateOnly.FromDateTime(e.Date) == today);
+        bool hasEntryYesterday = sorted.Any(e => DateOnly.FromDateTime(e.Date) == yesterday);
+
+        if (!hasEntryToday && !hasEntryYesterday)
+        {
+            CurrentStreakStatus = StreakStatus.Lost;
+            return;
+        }
+
+        var streak = 0;
+        var expected = hasEntryToday ? today : yesterday;
+
+        foreach (var e in sorted)
+        {
+            var d = DateOnly.FromDateTime(e.Date);
+            if (d == expected) { streak++; expected = expected.AddDays(-1); }
+            else if (d < expected) break;
+        }
+
+        streakCount = streak;
+        CurrentStreakStatus = hasEntryToday ? StreakStatus.Active : StreakStatus.AtRisk;
     }
 
     private void CalculateNextMilestone()
