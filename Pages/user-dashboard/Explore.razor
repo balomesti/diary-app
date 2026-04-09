@@ -74,17 +74,19 @@
                 </div>
 
                 <div class="explore-post-body">
-                    <span class="explore-post-badge">Explore</span>
                     <h2 class="explore-post-title">@item.Title</h2>
                     <p class="explore-post-caption @(item.IsExpanded ? "" : "clamped")" id="cap-@item.Id">@item.Description</p>
-                    <button class="explore-post-read-more" id="rmb-@item.Id" @onclick="() => ToggleReadMore(item)">
-                        @(item.IsExpanded ? "Show less" : "Read more")
-                    </button>
+                    @if (item.NeedsReadMore)
+                    {
+                        <button class="explore-post-read-more" id="rmb-@item.Id" @onclick="() => ToggleReadMore(item)">
+                            @(item.IsExpanded ? "Show less" : "Read more")
+                        </button>
+                    }
                 </div>
 
                 <div class="explore-post-actions">
                     <button class="explore-post-action-btn" @onclick="() => HandleShare(item, item.Title)">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                         Share
                     </button>
                     <div class="explore-post-spacer"></div>
@@ -118,7 +120,8 @@
                     CreatedAt = n.CreatedAt,
                     ImageUrl = n.ImageUrl,
                     VideoUrl = n.VideoUrl,
-                    ImageUrls = string.IsNullOrWhiteSpace(n.ImageUrl) ? new List<string>() : new List<string> { n.ImageUrl }
+                    ImageUrls = string.IsNullOrWhiteSpace(n.ImageUrl) ? new List<string>() : new List<string> { n.ImageUrl },
+                    NeedsReadMore = n.Content.Length > 280
                 })
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
@@ -193,6 +196,7 @@
         public List<string> ImageUrls { get; set; } = new();
         public int GalleryIndex { get; set; }
         public bool IsExpanded { get; set; }
+        public bool NeedsReadMore { get; set; }
         public string[] GalleryBackgrounds => Explore.GalleryBackgrounds;
     }
 

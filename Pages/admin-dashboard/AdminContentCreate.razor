@@ -3,6 +3,7 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject DiaryService DiaryService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 
 <PageTitle>Admin Content Create</PageTitle>
 
@@ -42,9 +43,27 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Image (Optional)</label>
-                    <InputFile class="form-control" OnChange="HandleExploreImageSelected" accept="image/*" />
-                    <div class="help-text">JPG/PNG up to a reasonable size.</div>
+                    <label class="field-label">Images</label>
+                    <label class="upload-zone" for="explore-file-input">
+                        <InputFile id="explore-file-input" OnChange="HandleExploreImageSelected" accept="image/*" multiple style="display:none" />
+                        <div class="upload-icon">📷</div>
+                        <div>Tap to add photos</div>
+                    </label>
+                    @if (exploreImageFiles.Any())
+                    {
+                        <div class="image-previews-grid">
+                            @foreach (var img in exploreImageFiles)
+                            {
+                                <div class="image-preview-container">
+                                    <img src="@img.PreviewUrl" alt="Image Preview" class="image-preview" />
+                                    <button type="button" class="image-preview-remove" @onclick="() => RemoveImage(img)">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                        <button type="button" class="btn-outline btn-clear" @onclick="ClearImages">Clear All</button>
+                    }
                 </div>
 
                 <div class="form-group">
@@ -120,12 +139,13 @@
         statusMessage = "";
         try
         {
-            await DiaryService.CreateNewsAsync(exploreModel.Title, exploreModel.Content, exploreImageFile, exploreVideoFile);
+            var imageFiles = exploreImageFiles.Select(x => x.File).ToList();
+            await DiaryService.CreateNewsAsync(exploreModel.Title, exploreModel.Content, imageFiles, exploreVideoFile);
 
             statusMessage = "Explore post published successfully!";
             isError = false;
             exploreModel = new();
-            exploreImageFile = null;
+            exploreImageFiles.Clear();
             exploreVideoFile = null;
         }
         catch (Exception ex)
@@ -178,12 +198,44 @@
         public string Message { get; set; } = "";
     }
 
-    private IBrowserFile? exploreImageFile;
     private IBrowserFile? exploreVideoFile;
+    private List<ImageFileEntry> exploreImageFiles = new();
 
-    private void HandleExploreImageSelected(InputFileChangeEventArgs args)
+    private async void HandleExploreImageSelected(InputFileChangeEventArgs args)
     {
-        exploreImageFile = args.File;
+        foreach (var file in args.GetMultipleFiles())
+        {
+            var previewUrl = await GetDataUrlAsync(file);
+            exploreImageFiles.Add(new ImageFileEntry { File = file, PreviewUrl = previewUrl });
+        }
+        StateHasChanged();
+    }
+
+    private async Task<string> GetDataUrlAsync(IBrowserFile file)
+    {
+        using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+        using var ms = new MemoryStream();
+        await stream.CopyToAsync(ms);
+        var bytes = ms.ToArray();
+        return $"data:{file.ContentType};base64,{Convert.ToBase64String(bytes)}";
+    }
+
+    private void RemoveImage(ImageFileEntry entry)
+    {
+        exploreImageFiles.Remove(entry);
+        StateHasChanged();
+    }
+
+    private void ClearImages()
+    {
+        exploreImageFiles.Clear();
+        StateHasChanged();
+    }
+
+    private sealed class ImageFileEntry
+    {
+        public IBrowserFile File { get; set; } = null!;
+        public string? PreviewUrl { get; set; }
     }
 
     private void HandleExploreVideoSelected(InputFileChangeEventArgs args)
