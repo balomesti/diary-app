@@ -1,4 +1,5 @@
 @page "/explore"
+@using System.Linq
 @inject DiaryService DiaryService
 @inject IJSRuntime JS
 
@@ -51,7 +52,12 @@
                     }
                     else
                     {
-                        <img class="explore-post-gallery-img" src="@item.ImageUrl" alt="@item.Title" />
+                        @foreach (var (url, index) in item.ImageUrls.Select((u, i) => (u, i)))
+                        {
+                            <img class="explore-post-gallery-img @(index == item.GalleryIndex ? "active" : "")" 
+                                 src="@url" 
+                                 alt="@item.Title" />
+                        }
                     }
 
                     @if (item.ImageUrls.Count > 1)
