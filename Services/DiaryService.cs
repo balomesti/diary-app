@@ -144,26 +144,23 @@ namespace diary_app.Services
         }
 
         // Admin News and Announcements
-        public async Task<bool> CreateNewsAsync(string title, string content, IReadOnlyList<IBrowserFile>? imageFiles, IBrowserFile? videoFile = null)
+        public async Task<bool> CreateNewsAsync(string title, string content, IBrowserFile? imageFile, IBrowserFile? videoFile = null)
         {
             using var form = new MultipartFormDataContent();
             form.Add(new StringContent(title ?? string.Empty), "Title");
             form.Add(new StringContent(content ?? string.Empty), "Content");
             form.Add(new StringContent(DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")), "CreatedAt");
 
-            if (imageFiles != null)
+            if (imageFile != null)
             {
-                foreach (var imageFile in imageFiles)
-                {
-                    var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10));
-                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
-                    form.Add(fileContent, "Images", imageFile.Name);
-                }
+                var fileContent = new StreamContent(imageFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // 10MB max
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
+                form.Add(fileContent, "Image", imageFile.Name);
             }
 
             if (videoFile != null)
             {
-                var fileContent = new StreamContent(videoFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 100));
+                var fileContent = new StreamContent(videoFile.OpenReadStream(maxAllowedSize: 1024 * 1024 * 100)); // 100MB max for video
                 fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(videoFile.ContentType);
                 form.Add(fileContent, "Video", videoFile.Name);
             }
