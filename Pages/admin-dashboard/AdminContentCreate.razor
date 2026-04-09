@@ -145,11 +145,7 @@
         statusMessage = "";
         try
         {
-            await DiaryService.CreateAnnouncementAsync(new
-            {
-                title = noticeModel.Title,
-                message = noticeModel.Message
-            });
+            await DiaryService.CreateAnnouncementAsync(noticeModel.Title, noticeModel.Message);
 
             statusMessage = "Notice published successfully!";
             isError = false;
