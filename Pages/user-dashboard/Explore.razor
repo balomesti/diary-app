@@ -1,5 +1,6 @@
 @page "/explore"
 @inject DiaryService DiaryService
+@inject IJSRuntime JS
 
 <PageTitle>Explore</PageTitle>
 
@@ -9,6 +10,8 @@
 </section>
 
 <section class="explore-feed">
+    <p class="explore-label">New features preview</p>
+
     @if (!string.IsNullOrEmpty(loadError))
     {
         <div class="explore-error" role="alert">@loadError</div>
@@ -27,30 +30,66 @@
         {
             <article class="explore-post-card">
                 <div class="explore-post-author-row">
-                    <div class="explore-post-avatar"></div>
-                    <p class="explore-post-author-name">@item.Author</p>
+                    <div class="explore-post-avatar">@GetAvatarInitials(item.Author)</div>
+                    <div class="explore-post-author-meta">
+                        <span class="explore-post-author-name">@item.Author</span>
+                        <span class="explore-post-timestamp">@TimeAgo(item.CreatedAt)</span>
+                    </div>
                 </div>
 
-                @if (!string.IsNullOrWhiteSpace(item.VideoUrl))
-                {
-                    <video class="explore-post-video" controls>
-                        <source src="@item.VideoUrl" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                }
-                else if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                {
-                    <img class="explore-post-media" src="@item.ImageUrl" alt="@item.Title" />
-                }
-                else
-                {
-                    <div class="explore-post-media" style="background-color: #E7E5E4;"></div>
-                }
+                <div class="explore-post-gallery" id="gallery-@item.Id" style="background: @item.GalleryBackgrounds[item.GalleryIndex]">
+                    @if (string.IsNullOrWhiteSpace(item.ImageUrl) && string.IsNullOrWhiteSpace(item.VideoUrl))
+                    {
+                        <div class="explore-post-gallery-placeholder">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        </div>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(item.VideoUrl))
+                    {
+                        <video class="explore-post-video" controls>
+                            <source src="@item.VideoUrl" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    }
+                    else
+                    {
+                        <img class="explore-post-gallery-img" src="@item.ImageUrl" alt="@item.Title" />
+                    }
+
+                    @if (item.ImageUrls.Count > 1)
+                    {
+                        <span class="explore-post-gallery-count">@(item.GalleryIndex + 1) / @item.ImageUrls.Count</span>
+                        <div class="explore-post-gallery-dots">
+                            @for (int i = 0; i < item.ImageUrls.Count; i++)
+                            {
+                                var index = i;
+                                <div class="explore-post-gallery-dot @(index == item.GalleryIndex ? "active" : "")" @onclick="() => SetSlide(item, index)"></div>
+                            }
+                        </div>
+                        <button class="explore-post-gallery-nav prev" @onclick="() => PrevSlide(item)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                        </button>
+                        <button class="explore-post-gallery-nav next" @onclick="() => NextSlide(item)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                    }
+                </div>
 
                 <div class="explore-post-body">
                     <span class="explore-post-badge">Explore</span>
                     <h2 class="explore-post-title">@item.Title</h2>
-                    <p class="explore-post-caption">@item.Description</p>
+                    <p class="explore-post-caption @(item.IsExpanded ? "" : "clamped")" id="cap-@item.Id">@item.Description</p>
+                    <button class="explore-post-read-more" id="rmb-@item.Id" @onclick="() => ToggleReadMore(item)">
+                        @(item.IsExpanded ? "Show less" : "Read more")
+                    </button>
+                </div>
+
+                <div class="explore-post-actions">
+                    <button class="explore-post-action-btn" @onclick="() => HandleShare(item, item.Title)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        Share
+                    </button>
+                    <div class="explore-post-spacer"></div>
                 </div>
             </article>
         }
@@ -73,13 +112,15 @@
             updates = items
                 .Select(n => new UpdateItem
                 {
+                    Id = n.Id,
                     Kind = "Explore",
                     Title = n.Title,
                     Description = n.Content,
                     Author = n.Author,
                     CreatedAt = n.CreatedAt,
                     ImageUrl = n.ImageUrl,
-                    VideoUrl = n.VideoUrl
+                    VideoUrl = n.VideoUrl,
+                    ImageUrls = string.IsNullOrWhiteSpace(n.ImageUrl) ? new List<string>() : new List<string> { n.ImageUrl }
                 })
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
@@ -94,8 +135,56 @@
         }
     }
 
+    private static readonly string[] GalleryBackgrounds = { "#b5c4b1", "#c4b5b5", "#b5b9c4" };
+
+    private static string TimeAgo(DateTime date)
+    {
+        var diff = Math.Floor((DateTime.Now - date).TotalSeconds);
+        if (diff < 60) return "just now";
+        if (diff < 3600) return Math.Floor(diff / 60) + "m ago";
+        if (diff < 86400) return Math.Floor(diff / 3600) + "h ago";
+        if (diff < 604800) return Math.Floor(diff / 86400) + "d ago";
+        return date.ToString("MMM d");
+    }
+
+    private static string GetAvatarInitials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+            return (parts[0][0] + "" + parts[1][0]).ToUpper();
+        return parts[0][0].ToString().ToUpper();
+    }
+
+    private void SetSlide(UpdateItem item, int index)
+    {
+        item.GalleryIndex = index;
+    }
+
+    private void PrevSlide(UpdateItem item)
+    {
+        item.GalleryIndex = (item.GalleryIndex - 1 + item.ImageUrls.Count) % item.ImageUrls.Count;
+    }
+
+    private void NextSlide(UpdateItem item)
+    {
+        item.GalleryIndex = (item.GalleryIndex + 1) % item.ImageUrls.Count;
+    }
+
+    private void ToggleReadMore(UpdateItem item)
+    {
+        item.IsExpanded = !item.IsExpanded;
+    }
+
+    private async Task HandleShare(UpdateItem item, string title)
+    {
+        var text = "Check out: " + title;
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
+    }
+
     private sealed class UpdateItem
     {
+        public int Id { get; set; }
         public string Kind { get; set; } = "";
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
@@ -103,6 +192,10 @@
         public DateTime CreatedAt { get; set; }
         public string ImageUrl { get; set; } = "";
         public string VideoUrl { get; set; } = "";
+        public List<string> ImageUrls { get; set; } = new();
+        public int GalleryIndex { get; set; }
+        public bool IsExpanded { get; set; }
+        public string[] GalleryBackgrounds => Explore.GalleryBackgrounds;
     }
 
     private sealed class NewsPostDto
