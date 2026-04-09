@@ -149,7 +149,7 @@ namespace diary_app.Services
             using var form = new MultipartFormDataContent();
             form.Add(new StringContent(title ?? string.Empty), "Title");
             form.Add(new StringContent(content ?? string.Empty), "Content");
-            form.Add(new StringContent(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss")), "CreatedAt");
+            form.Add(new StringContent(DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")), "CreatedAt");
 
             if (imageFile != null)
             {
@@ -180,7 +180,7 @@ namespace diary_app.Services
             {
                 title = title,
                 message = message,
-                createdAt = DateTime.UtcNow
+                createdAt = DateTime.Now
             };
             var response = await _http.PostAsJsonAsync("api/Admin/announcements", announcement);
             if (!response.IsSuccessStatusCode)
