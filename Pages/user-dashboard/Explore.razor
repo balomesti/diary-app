@@ -90,13 +90,68 @@
                     }
                 </div>
 
-                <div class="explore-post-actions">
-                    <button class="explore-post-action-btn" @onclick="() => HandleShare(item, item.Title)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                        Share
+                <div class="reaction-bar">
+                    <button class="reaction-btn heart @(item.Reacted.Contains("heart") ? "reacted heart" : "")" @onclick='() => ToggleReaction(item, "heart")'>
+                        <span class="reaction-emoji">❤️</span><span class="reaction-count">@item.ReactionCounts.GetValueOrDefault("heart")</span>
                     </button>
-                    <div class="explore-post-spacer"></div>
+                    <button class="reaction-btn fire @(item.Reacted.Contains("fire") ? "reacted fire" : "")" @onclick='() => ToggleReaction(item, "fire")'>
+                        <span class="reaction-emoji">🔥</span><span class="reaction-count">@item.ReactionCounts.GetValueOrDefault("fire")</span>
+                    </button>
+                    <button class="reaction-btn bulb @(item.Reacted.Contains("bulb") ? "reacted bulb" : "")" @onclick='() => ToggleReaction(item, "bulb")'>
+                        <span class="reaction-emoji">💡</span><span class="reaction-count">@item.ReactionCounts.GetValueOrDefault("bulb")</span>
+                    </button>
+                    <button class="reaction-btn clap @(item.Reacted.Contains("clap") ? "reacted clap" : "")" @onclick='() => ToggleReaction(item, "clap")'>
+                        <span class="reaction-emoji">👏</span><span class="reaction-count">@item.ReactionCounts.GetValueOrDefault("clap")</span>
+                    </button>
+                    <div class="action-right">
+                        <button class="icon-btn @(item.ShowComments ? "active" : "")" @onclick="() => ToggleComments(item)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span>@item.Comments.Count</span>
+                        </button>
+                        <button class="icon-btn" @onclick="() => HandleShare(item, item.Title)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        </button>
+                    </div>
                 </div>
+
+                @if (item.ShowComments)
+                {
+                    <div class="comments-section">
+                        <hr class="divider" />
+                        <div class="comments-list">
+                            @foreach (var (c, idx) in item.Comments.Select((c, i) => (c, i)))
+                            {
+                                if (idx < item.VisibleComments)
+                                {
+                                    <div class="comment-row">
+                                        <div class="comment-avatar" style="background:#dbeafe;color:#1e40af">@GetAvatarInitials(c.Author)</div>
+                                        <div class="comment-bubble">
+                                            <div class="comment-author">@c.Author</div>
+                                            <div class="comment-text">@c.Text</div>
+                                            <div class="comment-meta">
+                                                <span class="comment-time">@TimeAgo(c.CreatedAt)</span>
+                                                <button class="comment-like-btn @(c.Liked ? "liked" : "")" @onclick="() => ToggleCommentLike(c)">♥ @(c.Liked ? "Liked" : "Like")</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        @if (item.Comments.Count > item.VisibleComments)
+                        {
+                            <button class="show-more-btn" @onclick="() => ShowMoreComments(item)">View more comments</button>
+                        }
+                        <div class="comment-input-row">
+                            <div class="comment-input-avatar">Me</div>
+                            <div class="comment-input-wrap">
+                                <input placeholder="Write a comment…" @bind="item.NewCommentText" />
+                                <button class="comment-send-btn" disabled="@string.IsNullOrWhiteSpace(item.NewCommentText)" @onclick="() => AddComment(item)">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
             </article>
         }
     }
@@ -183,6 +238,43 @@
         item.IsExpanded = !item.IsExpanded;
     }
 
+    private void ToggleComments(UpdateItem item)
+    {
+        item.ShowComments = !item.ShowComments;
+    }
+
+    private void ShowMoreComments(UpdateItem item)
+    {
+        item.VisibleComments = Math.Min(item.VisibleComments + 2, item.Comments.Count);
+    }
+
+    private void ToggleReaction(UpdateItem item, string key)
+    {
+        if (item.Reacted.Contains(key))
+        {
+            item.Reacted.Remove(key);
+            item.ReactionCounts[key] = Math.Max(0, item.ReactionCounts.GetValueOrDefault(key) - 1);
+        }
+        else
+        {
+            item.Reacted.Add(key);
+            item.ReactionCounts[key] = item.ReactionCounts.GetValueOrDefault(key) + 1;
+        }
+    }
+
+    private void ToggleCommentLike(CommentItem c)
+    {
+        c.Liked = !c.Liked;
+    }
+
+    private void AddComment(UpdateItem item)
+    {
+        var text = item.NewCommentText?.Trim();
+        if (string.IsNullOrEmpty(text)) return;
+        item.Comments.Add(new CommentItem { Author = "You", Text = text, CreatedAt = DateTime.Now });
+        item.NewCommentText = string.Empty;
+    }
+
     private async Task HandleShare(UpdateItem item, string title)
     {
         var text = "Check out: " + title;
@@ -204,6 +296,20 @@
         public bool IsExpanded { get; set; }
         public bool NeedsReadMore { get; set; }
         public string[] GalleryBackgrounds => Explore.GalleryBackgrounds;
+        public bool ShowComments { get; set; }
+        public int VisibleComments { get; set; } = 2;
+        public string NewCommentText { get; set; } = "";
+        public List<CommentItem> Comments { get; set; } = new();
+        public Dictionary<string, int> ReactionCounts { get; set; } = new() { { "heart", 0 }, { "fire", 0 }, { "bulb", 0 }, { "clap", 0 } };
+        public List<string> Reacted { get; set; } = new();
+    }
+
+    private sealed class CommentItem
+    {
+        public string Author { get; set; } = "";
+        public string Text { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+        public bool Liked { get; set; }
     }
 
     private sealed class NewsPostDto
