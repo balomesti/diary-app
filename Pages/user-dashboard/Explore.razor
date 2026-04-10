@@ -157,11 +157,17 @@
                             {
                                 <div class="comment-input-avatar">Me</div>
                             }
-                            <div class="comment-input-wrap">
-                                <input placeholder="Write a comment…" @bind="item.NewCommentText" />
-                                <button class="comment-send-btn" disabled="@string.IsNullOrWhiteSpace(item.NewCommentText)" @onclick="() => AddComment(item)">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                                </button>
+                            <div style="position: relative; flex: 1;">
+                                <div id="emoji-anchor-@item.Id" style="position: absolute; bottom: 40px; right: 0; z-index: 999;"></div>
+                                <div class="comment-input-wrap">
+                                    <input placeholder="Write a comment…" id="comment-input-@item.Id" @bind="item.NewCommentText" />
+                                    <button class="emoji-trigger-btn" @onclick="() => ToggleEmojiPicker(item)">
+                                        😊
+                                    </button>
+                                    <button class="comment-send-btn" disabled="@string.IsNullOrWhiteSpace(item.NewCommentText)" @onclick="() => AddComment(item)">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -336,6 +342,22 @@
             c.LikeCount = result.LikeCount;
         }
         catch { }
+    }
+
+    private async Task ToggleEmojiPicker(UpdateItem item)
+    {
+        var anchorId = $"emoji-anchor-{item.Id}";
+        await JS.InvokeVoidAsync("emojiPicker.show", DotNetObjectReference.Create(this), anchorId, item.Id.ToString());
+    }
+
+    [JSInvokable]
+    public void HandleEmojiSelected(string inputId, string emoji)
+    {
+        var item = updates.FirstOrDefault(u => u.Id.ToString() == inputId);
+        if (item != null && !string.IsNullOrEmpty(emoji))
+        {
+            item.NewCommentText += emoji;
+        }
     }
 
     private async Task AddComment(UpdateItem item)
