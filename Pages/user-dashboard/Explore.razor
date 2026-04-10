@@ -351,12 +351,13 @@
     }
 
     [JSInvokable]
-    public void HandleEmojiSelected(string inputId, string emoji)
+    public async Task HandleEmojiSelected(string inputId, string emoji)
     {
         var item = updates.FirstOrDefault(u => u.Id.ToString() == inputId);
         if (item != null && !string.IsNullOrEmpty(emoji))
         {
             item.NewCommentText += emoji;
+            await InvokeAsync(() => StateHasChanged());
         }
     }
 
