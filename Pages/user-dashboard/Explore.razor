@@ -202,6 +202,19 @@
                     item.Reacted = userReactions;
                 }
                 catch { }
+
+                try
+                {
+                    var comments = await DiaryService.GetCommentsAsync(item.Id);
+                    item.Comments = comments.Select(c => new CommentItem
+                    {
+                        Id = c.Id,
+                        Author = c.Author,
+                        Text = c.Text,
+                        CreatedAt = c.CreatedAt
+                    }).ToList();
+                }
+                catch { }
             }
         }
         catch (Exception ex)
@@ -294,11 +307,28 @@
         c.Liked = !c.Liked;
     }
 
-    private void AddComment(UpdateItem item)
+    private async Task AddComment(UpdateItem item)
     {
         var text = item.NewCommentText?.Trim();
         if (string.IsNullOrEmpty(text)) return;
-        item.Comments.Add(new CommentItem { Author = "You", Text = text, CreatedAt = DateTime.Now });
+        try
+        {
+            var comment = await DiaryService.AddCommentAsync(item.Id, text);
+            if (comment != null)
+            {
+                item.Comments.Insert(0, new CommentItem
+                {
+                    Id = comment.Id,
+                    Author = comment.Author,
+                    Text = comment.Text,
+                    CreatedAt = comment.CreatedAt
+                });
+            }
+        }
+        catch
+        {
+            item.Comments.Insert(0, new CommentItem { Author = "You", Text = text, CreatedAt = DateTime.Now });
+        }
         item.NewCommentText = string.Empty;
     }
 
@@ -333,6 +363,7 @@
 
     private sealed class CommentItem
     {
+        public int Id { get; set; }
         public string Author { get; set; } = "";
         public string Text { get; set; } = "";
         public DateTime CreatedAt { get; set; }

@@ -256,6 +256,28 @@ namespace diary_app.Services
             var reactions = await response.Content.ReadFromJsonAsync<List<string>>();
             return reactions ?? new List<string>();
         }
+
+        public async Task<List<CommentDto>> GetCommentsAsync(int newsPostId)
+        {
+            var response = await _http.GetAsync($"api/Community/comments/{newsPostId}");
+            if (!response.IsSuccessStatusCode)
+            {
+                return new List<CommentDto>();
+            }
+            return await response.Content.ReadFromJsonAsync<List<CommentDto>>() ?? new List<CommentDto>();
+        }
+
+        public async Task<CommentDto?> AddCommentAsync(int newsPostId, string text)
+        {
+            var request = new { newsPostId = newsPostId, text = text };
+            var response = await _http.PostAsJsonAsync("api/Community/comment", request);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Add comment failed ({(int)response.StatusCode}): {body}");
+            }
+            return await response.Content.ReadFromJsonAsync<CommentDto>();
+        }
     }
 
     public class ReactionResult
@@ -268,5 +290,14 @@ namespace diary_app.Services
     {
         public string Type { get; set; } = string.Empty;
         public int Count { get; set; }
+    }
+
+    public class CommentDto
+    {
+        public int Id { get; set; }
+        public int NewsPostId { get; set; }
+        public string Author { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
     }
 }
