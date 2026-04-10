@@ -278,6 +278,28 @@ namespace diary_app.Services
             }
             return await response.Content.ReadFromJsonAsync<CommentDto>();
         }
+
+        public async Task<CommentLikeResult> ToggleCommentLikeAsync(int commentId)
+        {
+            var request = new { commentId = commentId };
+            var response = await _http.PostAsJsonAsync("api/Community/comment/like", request);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Toggle comment like failed ({(int)response.StatusCode}): {body}");
+            }
+            return await response.Content.ReadFromJsonAsync<CommentLikeResult>() ?? new CommentLikeResult();
+        }
+
+        public async Task<CurrentUserDto?> GetCurrentUserAsync()
+        {
+            var response = await _http.GetAsync("api/Community/me");
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+            return await response.Content.ReadFromJsonAsync<CurrentUserDto>();
+        }
     }
 
     public class ReactionResult
@@ -299,6 +321,21 @@ namespace diary_app.Services
         public string Author { get; set; } = string.Empty;
         public string? ProfileImg { get; set; }
         public string Text { get; set; } = string.Empty;
+        public int LikeCount { get; set; }
+        public bool Liked { get; set; }
         public DateTime CreatedAt { get; set; }
+    }
+
+    public class CommentLikeResult
+    {
+        public bool Liked { get; set; }
+        public int LikeCount { get; set; }
+    }
+
+    public class CurrentUserDto
+    {
+        public int Id { get; set; }
+        public string Username { get; set; } = string.Empty;
+        public string? ProfileImg { get; set; }
     }
 }
