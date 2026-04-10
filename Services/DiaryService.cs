@@ -222,5 +222,51 @@ namespace diary_app.Services
             var items = await response.Content.ReadFromJsonAsync<List<T>>();
             return items ?? new List<T>();
         }
+
+        public async Task<ReactionResult> ToggleReactionAsync(int newsPostId, string reactionType)
+        {
+            var request = new { newsPostId = newsPostId, reactionType = reactionType };
+            var response = await _http.PostAsJsonAsync("api/Community/reaction", request);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Toggle reaction failed ({(int)response.StatusCode}): {body}");
+            }
+            return await response.Content.ReadFromJsonAsync<ReactionResult>() ?? new ReactionResult();
+        }
+
+        public async Task<Dictionary<string, int>> GetReactionCountsAsync(int newsPostId)
+        {
+            var response = await _http.GetAsync($"api/Community/reactions/{newsPostId}");
+            if (!response.IsSuccessStatusCode)
+            {
+                return new Dictionary<string, int> { { "heart", 0 }, { "fire", 0 }, { "bulb", 0 }, { "clap", 0 } };
+            }
+            var items = await response.Content.ReadFromJsonAsync<List<ReactionCountItem>>() ?? new List<ReactionCountItem>();
+            return items.ToDictionary(x => x.Type, x => x.Count);
+        }
+
+        public async Task<List<string>> GetUserReactionsAsync(int newsPostId)
+        {
+            var response = await _http.GetAsync($"api/Community/reactions/{newsPostId}/user");
+            if (!response.IsSuccessStatusCode)
+            {
+                return new List<string>();
+            }
+            var reactions = await response.Content.ReadFromJsonAsync<List<string>>();
+            return reactions ?? new List<string>();
+        }
+    }
+
+    public class ReactionResult
+    {
+        public bool Toggled { get; set; }
+        public List<ReactionCountItem> Counts { get; set; } = new();
+    }
+
+    public class ReactionCountItem
+    {
+        public string Type { get; set; } = string.Empty;
+        public int Count { get; set; }
     }
 }

@@ -186,6 +186,23 @@
                 })
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
+
+            foreach (var item in updates)
+            {
+                try
+                {
+                    var counts = await DiaryService.GetReactionCountsAsync(item.Id);
+                    item.ReactionCounts = counts;
+                }
+                catch { }
+
+                try
+                {
+                    var userReactions = await DiaryService.GetUserReactionsAsync(item.Id);
+                    item.Reacted = userReactions;
+                }
+                catch { }
+            }
         }
         catch (Exception ex)
         {
@@ -248,17 +265,27 @@
         item.VisibleComments = Math.Min(item.VisibleComments + 2, item.Comments.Count);
     }
 
-    private void ToggleReaction(UpdateItem item, string key)
+    private async Task ToggleReaction(UpdateItem item, string key)
     {
-        if (item.Reacted.Contains(key))
+        try
         {
-            item.Reacted.Remove(key);
-            item.ReactionCounts[key] = Math.Max(0, item.ReactionCounts.GetValueOrDefault(key) - 1);
+            var result = await DiaryService.ToggleReactionAsync(item.Id, key);
+            item.ReactionCounts = new Dictionary<string, int> { { "heart", 0 }, { "fire", 0 }, { "bulb", 0 }, { "clap", 0 } };
+            foreach (var count in result.Counts)
+            {
+                item.ReactionCounts[count.Type] = count.Count;
+            }
+            if (result.Toggled && !item.Reacted.Contains(key))
+            {
+                item.Reacted.Add(key);
+            }
+            else if (!result.Toggled)
+            {
+                item.Reacted.Remove(key);
+            }
         }
-        else
+        catch
         {
-            item.Reacted.Add(key);
-            item.ReactionCounts[key] = item.ReactionCounts.GetValueOrDefault(key) + 1;
         }
     }
 
