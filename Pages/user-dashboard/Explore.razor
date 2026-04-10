@@ -124,7 +124,14 @@
                                 if (idx < item.VisibleComments)
                                 {
                                     <div class="comment-row">
-                                        <div class="comment-avatar" style="background:#dbeafe;color:#1e40af">@GetAvatarInitials(c.Author)</div>
+                                        @if (!string.IsNullOrEmpty(c.ProfileImg))
+                                        {
+                                            <img class="comment-avatar" src="@c.ProfileImg" alt="@c.Author" />
+                                        }
+                                        else
+                                        {
+                                            <div class="comment-avatar" style="background:#dbeafe;color:#1e40af">@GetAvatarInitials(c.Author)</div>
+                                        }
                                         <div class="comment-bubble">
                                             <div class="comment-author">@c.Author</div>
                                             <div class="comment-text">@c.Text</div>
@@ -210,6 +217,7 @@
                     {
                         Id = c.Id,
                         Author = c.Author,
+                        ProfileImg = c.ProfileImg,
                         Text = c.Text,
                         CreatedAt = c.CreatedAt
                     }).ToList();
@@ -231,7 +239,8 @@
 
     private static string TimeAgo(DateTime date)
     {
-        var diff = Math.Floor((DateTime.Now - date).TotalSeconds);
+        var utcDate = date.Kind == DateTimeKind.Utc ? date : date.ToUniversalTime();
+        var diff = Math.Floor((DateTime.UtcNow - utcDate).TotalSeconds);
         if (diff < 60) return "just now";
         if (diff < 3600) return Math.Floor(diff / 60) + "m ago";
         if (diff < 86400) return Math.Floor(diff / 3600) + "h ago";
@@ -320,6 +329,7 @@
                 {
                     Id = comment.Id,
                     Author = comment.Author,
+                    ProfileImg = comment.ProfileImg,
                     Text = comment.Text,
                     CreatedAt = comment.CreatedAt
                 });
@@ -327,7 +337,7 @@
         }
         catch
         {
-            item.Comments.Insert(0, new CommentItem { Author = "You", Text = text, CreatedAt = DateTime.Now });
+            item.Comments.Insert(0, new CommentItem { Author = "You", Text = text, CreatedAt = DateTime.UtcNow });
         }
         item.NewCommentText = string.Empty;
     }
@@ -365,6 +375,7 @@
     {
         public int Id { get; set; }
         public string Author { get; set; } = "";
+        public string? ProfileImg { get; set; }
         public string Text { get; set; } = "";
         public DateTime CreatedAt { get; set; }
         public bool Liked { get; set; }

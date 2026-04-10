@@ -297,6 +297,7 @@ namespace diary_app.Services
         public int Id { get; set; }
         public int NewsPostId { get; set; }
         public string Author { get; set; } = string.Empty;
+        public string? ProfileImg { get; set; }
         public string Text { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
     }
