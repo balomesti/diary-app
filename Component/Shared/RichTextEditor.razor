@@ -1,4 +1,4 @@
-@inject IJSRuntime JS
+    @inject IJSRuntime JS
 @inject SpeechService SpeechService
 @implements IAsyncDisposable
 
@@ -317,6 +317,7 @@
     }
 
     private bool _aiLoading;
+    private string _lastAiSuggestion = "";
 
     private async Task AiAssist()
     {
@@ -400,7 +401,10 @@
         mood = "good";
 
     var pool = suggestionsByMood[mood];
-    var suggestion = pool[new Random().Next(pool.Length)];
+    var availablePool = pool.Where(s => s != _lastAiSuggestion).ToArray();
+    if (availablePool.Length == 0) availablePool = pool;
+    var suggestion = availablePool[new Random().Next(availablePool.Length)];
+    _lastAiSuggestion = suggestion;
 
     await JS.InvokeVoidAsync("RichTextEditor.insertText", _id, suggestion);
     await OnInput();
