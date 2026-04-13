@@ -27,7 +27,7 @@ builder.Services.AddScoped<CommunityService>(sp =>
 builder.Services.AddScoped<UserService>();
 
 builder.Services.AddHttpClient("Speech", client => { });
-builder.Services.AddScoped<SpeechService>();
+builder.Services.AddSingleton<SpeechService>();
 
 await builder.Build().RunAsync();
 

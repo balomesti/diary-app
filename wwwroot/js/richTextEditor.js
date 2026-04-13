@@ -183,7 +183,7 @@ window.RichTextEditor = (() => {
                             try {
                                 const transcript = await dotnetRef.invokeMethodAsync('TranscribeAudio', base64Audio);
                                 if (transcript && transcript.trim()) {
-                                    await dotnetRef.invokeMethodAsync('OnVoiceResult', ' ' + transcript.trim());
+                                    await dotnetRef.invokeMethodAsync('OnVoiceResult', transcript.trim());
                                 }
                             } catch (e) {
                                 console.error('Transcription error:', e);
